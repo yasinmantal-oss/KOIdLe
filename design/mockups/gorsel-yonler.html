@@ -1,0 +1,548 @@
+<title>KOIdLe Görsel Yönler</title>
+<script>document.documentElement.dataset.yon="klasik"</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Lilita+One&family=Alegreya+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   Ortak iskelet: tüm yönler aynı markup'ı kullanır,
+   farkı yalnızca [data-yon] altındaki token'lar ve
+   birkaç yöne özgü kural yaratır.
+   ========================================================= */
+:root{
+  color-scheme:dark;
+  --page:#14110d; --ink:#efe6d2; --ink-dim:#a89a80;
+  --panel-bg:linear-gradient(#3a3128,#1e1915); --panel-border:#8a6a3a; --panel-glow:#c9a24a;
+  --radius:4px; --border-w:2px;
+  --title-font:"Cinzel",serif; --body-font:"Alegreya Sans",sans-serif; --num-font:"Cinzel",serif;
+  --hp-a:#ff5a4a; --hp-b:#8c0f0a; --mp-a:#5ab0ff; --mp-b:#0d3a8c;
+  --gem:#2f7fe0; --gem-hi:#9fd2ff;
+  --atk:#e8b23a; --hpv:#d8382c;
+  --board-bg:#4d4a38; --lane-bg:rgba(0,0,0,.18); --slot:rgba(255,240,200,.08);
+  --nation-me:#3b7bff; --nation-opp:#e0352b;
+  --g-common:#d9d4c7; --g-magic:#5aa7ff; --g-rare:#ffd84a; --g-unique:#ff9a2e;
+  --glow8:#ff6fd8;
+  --tab-active:#c9a24a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--ink);font-family:var(--body-font);transition:background .4s}
+body{min-height:100vh;padding:16px;overflow-x:hidden}
+.wrap{max-width:1280px;margin:0 auto}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+header.top h1{font-family:var(--title-font);font-size:clamp(20px,3vw,30px);letter-spacing:.04em}
+header.top p{color:var(--ink-dim);font-size:14px;max-width:560px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{font:inherit;font-weight:700;font-size:14px;color:var(--ink);background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.15);padding:9px 14px;border-radius:999px;cursor:pointer;min-height:40px}
+.tabs button[aria-selected="true"]{background:var(--tab-active);color:#140f08;border-color:transparent}
+
+/* ---------------- Savaş masası ---------------- */
+.board-shell{container-type:inline-size;width:100%}
+.board{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:calc(var(--radius)*2);
+  background:var(--board-bg);border:var(--border-w) solid var(--panel-border);
+  box-shadow:0 0 0 1px #000, 0 20px 50px rgba(0,0,0,.6);font-size:1.25cqw}
+.board .scene{position:absolute;inset:0}
+.board .vignette{position:absolute;inset:0;pointer-events:none}
+.board .embers{position:absolute;inset:0;pointer-events:none;overflow:hidden;display:none}
+.board .embers i{position:absolute;bottom:-2%;width:.35em;height:.35em;border-radius:50%;background:#ff8a3a;
+  box-shadow:0 0 .6em #ff6a1a;animation:rise linear infinite;opacity:.0}
+@keyframes rise{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.9}100%{transform:translateY(-110cqw) translateX(4em);opacity:0}}
+
+.lane{position:absolute;left:21%;right:21%;height:17%;display:grid;grid-template-columns:repeat(5,1fr);gap:1.2%;
+  padding:.6% 1%;background:var(--lane-bg);border-radius:var(--radius)}
+.lane.opp{top:21.5%} .lane.me{top:41.5%}
+.slot{border-radius:calc(var(--radius)*1.5);background:var(--slot);position:relative;display:flex;align-items:center;justify-content:center}
+.divider{position:absolute;left:18%;right:18%;top:39.8%;height:.25%;background:linear-gradient(90deg,transparent,var(--panel-glow),transparent);opacity:.6}
+
+/* Birim (masadaki çağrı/totem) */
+.unit{position:relative;width:86%;height:92%;border-radius:calc(var(--radius)*1.5);overflow:visible;
+  border:.18em solid var(--panel-border);background:#222;box-shadow:0 .4em .8em rgba(0,0,0,.5)}
+.unit .art{position:absolute;inset:0;border-radius:inherit;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.unit .art svg{width:52%;height:52%;opacity:.85}
+.unit .uname{position:absolute;left:-4%;right:-4%;bottom:14%;text-align:center;font-size:.72em;font-weight:800;
+  background:rgba(0,0,0,.72);padding:.15em 0;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat{position:absolute;bottom:-.7em;width:2.1em;height:2.1em;display:flex;align-items:center;justify-content:center;
+  font-family:var(--num-font);font-weight:900;font-size:1.05em;color:#fff;border-radius:50%;
+  text-shadow:0 .08em 0 #000,0 0 .2em #000}
+.stat.atk{left:-.6em;background:radial-gradient(circle at 35% 30%,#ffe9a8,var(--atk) 45%,#7a4b08)}
+.stat.hp{right:-.6em;background:radial-gradient(circle at 35% 30%,#ffb3a8,var(--hpv) 45%,#5a0805)}
+.unit.taunt{box-shadow:0 0 0 .25em #9aa4b0,0 .4em .8em rgba(0,0,0,.5)}
+.unit.taunt::after{content:"PROVOKE";position:absolute;top:-1.1em;left:50%;transform:translateX(-50%);font-size:.55em;font-weight:800;
+  background:#9aa4b0;color:#111;padding:.1em .5em;border-radius:.3em;letter-spacing:.08em}
+
+/* Kahramanlar */
+.hero{position:absolute;display:flex;align-items:center;gap:1.2%;width:48%}
+.hero.opp{top:2%;left:30%}
+.hero.me{bottom:22.5%;left:26%}
+.portrait{position:relative;flex:0 0 auto;width:6.4em;height:6.4em;border-radius:50%;
+  border:.25em solid var(--panel-border);box-shadow:0 0 0 .12em #000,0 0 1.2em rgba(0,0,0,.6);overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.portrait svg{width:58%;height:58%}
+.nation{position:absolute;bottom:-.1em;right:-.1em;width:2.2em;height:2.2em;border-radius:50%;border:.15em solid #111}
+.hero .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:.35em}
+.hero .nm{font-family:var(--title-font);font-weight:700;font-size:1.15em;white-space:nowrap;text-shadow:0 .1em .2em #000}
+.hero .nm small{font-family:var(--body-font);font-weight:500;color:var(--ink-dim);font-size:.75em;margin-left:.4em}
+.bar{position:relative;height:1.35em;border-radius:.7em;background:#0a0807;border:.12em solid #000;overflow:hidden;box-shadow:inset 0 .1em .3em #000}
+.bar i{position:absolute;inset:0;right:auto;border-radius:inherit}
+.bar.hp i{background:linear-gradient(#ffffff55,transparent 45%),linear-gradient(var(--hp-a),var(--hp-b))}
+.bar.mp i{background:linear-gradient(#ffffff55,transparent 45%),linear-gradient(var(--mp-a),var(--mp-b))}
+.bar b{position:relative;z-index:1;display:block;text-align:center;font-family:var(--num-font);font-size:.82em;line-height:1.6em;font-weight:700;text-shadow:0 .08em .1em #000}
+.pips{display:flex;gap:.3em;align-items:center;font-size:.8em;color:var(--ink-dim)}
+.pips span{width:1em;height:1em;transform:rotate(45deg);border:.12em solid #000;background:#2a2620}
+.pips span.on{background:linear-gradient(135deg,#ffb46a,#d9480f);box-shadow:0 0 .5em #ff7a2a}
+
+.armor{position:absolute;top:-.3em;left:4.6em;width:2.4em;height:2.6em;display:flex;align-items:center;justify-content:center;
+  font-family:var(--num-font);font-weight:900;color:#fff;font-size:1em;z-index:2;
+  background:linear-gradient(#c9ced6,#6c737e);clip-path:polygon(50% 0,100% 15%,92% 70%,50% 100%,8% 70%,0 15%);text-shadow:0 .08em .1em #000}
+
+/* Silah: +8 parıltısı */
+.weapon{position:relative;flex:0 0 auto;width:5.2em;height:5.2em;border-radius:var(--radius);border:.2em solid var(--panel-border);
+  background:radial-gradient(circle,#3a2a3a,#140d14);display:flex;align-items:center;justify-content:center;isolation:isolate}
+.weapon svg{width:70%;height:70%;filter:drop-shadow(0 0 .3em var(--glow8))}
+.weapon::before{content:"";position:absolute;inset:-.45em;border-radius:inherit;z-index:-1;
+  background:conic-gradient(from 0deg,transparent,var(--glow8),transparent 30%,var(--glow8) 50%,transparent 70%,var(--glow8),transparent);
+  filter:blur(.35em);animation:spin 3.2s linear infinite;opacity:.9}
+@keyframes spin{to{transform:rotate(360deg)}}
+.weapon .plus{position:absolute;top:-.7em;left:-.5em;font-family:var(--num-font);font-weight:900;font-size:1em;color:#fff;
+  background:var(--glow8);padding:.05em .35em;border-radius:.3em;box-shadow:0 0 .6em var(--glow8)}
+.weapon .stat{bottom:-.8em;width:1.9em;height:1.9em;font-size:.95em}
+.weapon .stat.dur{right:-.6em;background:radial-gradient(circle at 35% 30%,#e6e6e6,#8a8f98 45%,#2b2e33)}
+
+.hpower{flex:0 0 auto;width:4.6em;height:4.6em;border-radius:50%;border:.2em solid var(--panel-border);
+  background:radial-gradient(circle at 40% 35%,#6b7d8f,#1c232b);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.hpower svg{width:55%;height:55%}
+.hpower .cost{position:absolute;top:-.6em;left:50%;transform:translateX(-50%)}
+.potion{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.1em;font-size:.75em;color:var(--ink-dim)}
+.potion .flask{width:3.2em;height:3.2em;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 40% 35%,#ff9a8a,#b3150c 60%,#4a0603);
+  border:.18em solid #000;box-shadow:0 0 .6em rgba(255,60,40,.5)}
+
+/* Kartlar */
+.cost{width:2.3em;height:2.3em;display:flex;align-items:center;justify-content:center;font-family:var(--num-font);font-weight:900;color:#fff;font-size:1.1em;
+  background:radial-gradient(circle at 35% 30%,var(--gem-hi),var(--gem) 50%,#0a2458);border-radius:50%;border:.12em solid #000;text-shadow:0 .08em .1em #000}
+.cost.hpcost{background:radial-gradient(circle at 35% 30%,#ffb3a8,var(--hpv) 50%,#4a0603)}
+.hand{position:absolute;left:26%;right:24%;bottom:-8%;height:24%;display:flex;justify-content:center}
+.card{position:relative;width:8.8em;height:12.2em;flex:0 0 auto;margin:0 -.9em;border-radius:calc(var(--radius)*2);
+  background:var(--panel-bg);border:.2em solid var(--panel-border);box-shadow:0 .5em 1em rgba(0,0,0,.6);
+  display:flex;flex-direction:column;padding:.45em;gap:.3em;transform-origin:50% 120%}
+.hand .card:nth-child(1){transform:rotate(-12deg) translateY(1.2em)}
+.hand .card:nth-child(2){transform:rotate(-6deg) translateY(.3em)}
+.hand .card:nth-child(3){transform:rotate(0) translateY(-1.6em);z-index:2;box-shadow:0 0 0 .2em var(--panel-glow),0 0 2em var(--panel-glow)}
+.hand .card:nth-child(4){transform:rotate(6deg) translateY(.3em)}
+.hand .card:nth-child(5){transform:rotate(12deg) translateY(1.2em)}
+.card .cost{position:absolute;top:-.6em;left:-.6em;z-index:2}
+.card .art{height:44%;border-radius:var(--radius);overflow:hidden;display:flex;align-items:center;justify-content:center;border:.12em solid #000}
+.card .art svg{width:48%;height:48%}
+.card .cname{font-family:var(--title-font);font-weight:700;font-size:.82em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .ctext{font-size:.7em;line-height:1.25;text-align:center;color:var(--ink);opacity:.92}
+.card .ctype{margin-top:auto;font-size:.58em;text-align:center;color:var(--ink-dim);letter-spacing:.12em;text-transform:uppercase}
+.card .gem{position:absolute;left:50%;top:44%;transform:translate(-50%,10%) rotate(45deg);width:.9em;height:.9em;border:.1em solid #000}
+
+.opp-hand{position:absolute;top:-5.5%;left:62%;display:flex}
+.opp-hand .back{width:4.2em;height:5.8em;margin:0 -.7em;border-radius:var(--radius);border:.15em solid var(--panel-border);
+  background:repeating-linear-gradient(45deg,#2a1a1a 0 .4em,#3a2323 .4em .8em);box-shadow:0 .3em .6em rgba(0,0,0,.6)}
+.opp-hand .back:nth-child(odd){transform:rotate(-4deg)} .opp-hand .back:nth-child(even){transform:rotate(4deg)}
+
+.endturn{position:absolute;right:3%;top:44%;display:flex;flex-direction:column;align-items:center;gap:.5em}
+.endturn button{font-family:var(--title-font);font-weight:900;font-size:1.05em;padding:.8em 1.2em;border-radius:var(--radius);cursor:pointer;
+  color:#1a1206;background:linear-gradient(#ffe08a,#c98a1a);border:.18em solid #3a2606;box-shadow:0 .3em 0 #3a2606,0 0 1.2em rgba(255,190,60,.5)}
+.timer{width:9em;height:.55em;background:#000;border-radius:.3em;overflow:hidden}
+.timer i{display:block;height:100%;width:62%;background:linear-gradient(90deg,#ffd84a,#ff7a2a)}
+.endturn small{font-size:.75em;color:var(--ink-dim)}
+
+.log{position:absolute;left:1.5%;bottom:3%;max-width:20%;width:17%;padding:.6em .7em;font-size:.72em;line-height:1.45;border-radius:var(--radius);
+  background:rgba(0,0,0,.55);border:.1em solid rgba(255,255,255,.08)}
+.log p span{font-weight:800}
+.log .s{color:#ffd84a} .log .a{color:#7fb6ff} .log .k{color:#ff7a6a}
+.deck{position:absolute;right:3%;bottom:6%;width:5em;height:7em;border-radius:var(--radius);border:.15em solid var(--panel-border);
+  background:repeating-linear-gradient(45deg,#1a2238 0 .4em,#223052 .4em .8em);display:flex;align-items:flex-end;justify-content:center;padding-bottom:.3em;
+  font-size:.75em;font-weight:800;box-shadow:.3em .3em 0 #000,.6em .6em 0 #111}
+.turnbadge{position:absolute;left:1.5%;top:3%;font-family:var(--title-font);font-weight:700;font-size:.9em;padding:.4em .8em;
+  background:rgba(0,0,0,.5);border-radius:var(--radius);border:.1em solid rgba(255,255,255,.1)}
+.turnbadge em{font-style:normal;color:var(--ink-dim);font-family:var(--body-font);font-size:.85em;display:block}
+
+/* ---------------- Alt paneller ---------------- */
+.row{display:grid;grid-template-columns:1.1fr 1fr .8fr;gap:14px;margin-top:16px}
+.panel{position:relative;background:var(--panel-bg);border:var(--border-w) solid var(--panel-border);border-radius:calc(var(--radius)*2);
+  padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.panel h3{font-family:var(--title-font);font-size:15px;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:10px;text-transform:uppercase}
+.tt-name{font-family:var(--title-font);font-weight:900;font-size:22px;color:var(--g-rare);text-shadow:0 0 12px rgba(255,216,74,.35)}
+.tt-name .plus{color:#fff;background:var(--glow8);padding:0 6px;border-radius:4px;margin-right:6px;box-shadow:0 0 10px var(--glow8);font-size:18px}
+.tt-sub{color:var(--g-rare);opacity:.8;font-size:14px;margin:2px 0 10px}
+.tt-lines{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:15px;padding:10px 0;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1)}
+.tt-lines dd{text-align:right;font-weight:700}
+.tt-lines .up{color:#7dff8a}
+.tt-lines .fire{color:#ff8a4a}
+.tt-cards{margin-top:10px;font-size:14px}
+.tt-cards b{color:var(--g-magic)}
+.dura{margin-top:10px;font-size:13px;color:var(--ink-dim)}
+.dura .bar{height:10px;margin-top:4px;border-radius:5px}
+.dura .bar i{background:linear-gradient(90deg,#8fd16a,#3d8a2a)}
+.req{font-size:13px;color:#ff7a6a;margin-top:8px}
+
+.anvil-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.anvil-step{font-family:var(--num-font);font-weight:900;font-size:30px}
+.anvil-step span{color:var(--glow8);text-shadow:0 0 12px var(--glow8)}
+.anvil-step .arrow{color:var(--ink-dim);font-size:20px;margin:0 6px}
+.chance{font-family:var(--num-font);font-weight:900;font-size:34px;color:#7dff8a;text-align:right;line-height:1}
+.chance small{display:block;font-family:var(--body-font);font-weight:500;font-size:12px;color:var(--ink-dim)}
+.heat{margin:14px 0 6px;font-size:13px;color:var(--ink-dim);display:flex;justify-content:space-between}
+.heatbar{height:16px;border-radius:8px;background:#0a0807;border:1px solid #000;overflow:hidden;position:relative}
+.heatbar i{position:absolute;inset:0;width:60%;background:linear-gradient(90deg,#ffd84a,#ff7a2a,#ff2a2a);box-shadow:0 0 14px #ff6a1a}
+.costs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;font-size:14px}
+.costs span{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);padding:5px 9px;border-radius:6px}
+.warn{font-size:13px;color:#ffb46a;margin-bottom:12px}
+.strike{width:100%;min-height:48px;font-family:var(--title-font);font-weight:900;font-size:18px;letter-spacing:.06em;cursor:pointer;
+  color:#1a1206;background:linear-gradient(#ffe08a,#c98a1a);border:2px solid #3a2606;border-radius:var(--radius);box-shadow:0 4px 0 #3a2606,0 0 22px rgba(255,190,60,.35)}
+
+.bigcard-wrap{display:flex;justify-content:center;align-items:center;container-type:inline-size;padding:10px 0 4px}
+.bigcard-wrap .card{font-size:min(17px,9cqw);margin:0}
+
+.notes{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.note{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);font-size:14.5px;line-height:1.5}
+.note h4{font-family:var(--title-font);font-size:13px;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:6px;text-transform:uppercase}
+.note.blend li{margin-left:18px}
+[data-note]{display:none}
+:root[data-yon="klasik"] [data-note="klasik"],:root[data-yon="resimsel"] [data-note="resimsel"],
+:root[data-yon="stilize"] [data-note="stilize"],:root[data-yon="harman"] [data-note="harman"]{display:block}
+@media (prefers-reduced-motion:reduce){.board .embers{display:none!important}.weapon::before{animation:none}}
+footer{margin-top:18px;color:var(--ink-dim);font-size:13px}
+
+/* =========================================================
+   1) MODERN KLASİK
+   ========================================================= */
+:root[data-yon="klasik"] .board .scene{
+  background:
+    radial-gradient(ellipse at 50% 48%,rgba(255,230,170,.18),transparent 55%),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0 2px,transparent 2px 6.2cqw),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 2px,transparent 2px 6.2cqw),
+    linear-gradient(#6a654c,#3f3c2c)}
+:root[data-yon="klasik"] .board .vignette{background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65))}
+:root[data-yon="klasik"] .panel::before,:root[data-yon="klasik"] .panel::after{content:"";position:absolute;width:14px;height:14px;
+  border:2px solid var(--panel-glow);transform:rotate(45deg);background:#1e1915;top:-8px}
+:root[data-yon="klasik"] .panel::before{left:-8px} :root[data-yon="klasik"] .panel::after{right:-8px}
+:root[data-yon="klasik"] .card{background:linear-gradient(#4a3d2c,#231b13);box-shadow:inset 0 0 0 .15em #1a130b,inset 0 0 0 .3em #6b5230,0 .5em 1em rgba(0,0,0,.6)}
+:root[data-yon="klasik"] .card .art{background:radial-gradient(circle at 50% 40%,#6b5a3a,#211a10)}
+:root[data-yon="klasik"] .unit .art{background:radial-gradient(circle at 50% 40%,#5a4a32,#1c150d)}
+:root[data-yon="klasik"] .portrait{background:radial-gradient(circle at 50% 35%,#5d6b7a,#161b21)}
+:root[data-yon="klasik"] .portrait.opp{background:radial-gradient(circle at 50% 35%,#7a4a3a,#1f0f0b)}
+
+/* =========================================================
+   2) KARANLIK RESİMSEL (Diablo IV çizgisi)
+   ========================================================= */
+:root[data-yon="resimsel"]{
+  --page:#090808; --ink:#e3dccf; --ink-dim:#8a8073;
+  --panel-bg:linear-gradient(#171312,#0c0a0a); --panel-border:#3d2b26; --panel-glow:#b3261e;
+  --radius:1px; --border-w:1px;
+  --title-font:"Cormorant Garamond",serif; --num-font:"Cormorant Garamond",serif;
+  --hp-a:#9e1b14; --hp-b:#3d0805; --mp-a:#3a5a7a; --mp-b:#101c2b;
+  --gem:#3a4a5a; --gem-hi:#8aa0b5; --atk:#a8823a; --hpv:#8a1a12;
+  --board-bg:#141110; --lane-bg:rgba(0,0,0,.35); --slot:rgba(255,255,255,.03);
+  --glow8:#d84aa8; --tab-active:#b3261e;
+}
+:root[data-yon="resimsel"] .tabs button[aria-selected="true"]{color:#fff}
+:root[data-yon="resimsel"] .board .scene{
+  background:
+    radial-gradient(ellipse at 50% 30%,rgba(179,38,30,.22),transparent 50%),
+    radial-gradient(ellipse at 20% 90%,rgba(80,60,40,.25),transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(#211a17,#0b0909)}
+:root[data-yon="resimsel"] .board .vignette{background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.85))}
+:root[data-yon="resimsel"] .board .embers{display:block}
+:root[data-yon="resimsel"] .portrait{border-radius:2px;background:radial-gradient(circle at 50% 30%,#3a3530,#0c0a09);filter:saturate(.6)}
+:root[data-yon="resimsel"] .portrait.opp{background:radial-gradient(circle at 50% 30%,#4a1f1a,#0c0707)}
+:root[data-yon="resimsel"] .bar{height:.9em;border-radius:0}
+:root[data-yon="resimsel"] .bar b{line-height:1.05em;font-size:.7em}
+:root[data-yon="resimsel"] .bar i{border-radius:0}
+:root[data-yon="resimsel"] .card{background:linear-gradient(#141010,#080606)}
+:root[data-yon="resimsel"] .card .art{height:56%;background:radial-gradient(circle at 50% 35%,#4a3a30,#0a0807);filter:saturate(.55) contrast(1.15)}
+:root[data-yon="resimsel"] .card .cname{font-size:.95em;letter-spacing:.04em}
+:root[data-yon="resimsel"] .card .ctext{font-style:italic;font-family:"Cormorant Garamond",serif;font-size:.78em}
+:root[data-yon="resimsel"] .unit .art{background:radial-gradient(circle at 50% 35%,#3a2e28,#0a0807);filter:saturate(.5)}
+:root[data-yon="resimsel"] .unit,:root[data-yon="resimsel"] .weapon,:root[data-yon="resimsel"] .hpower{border-width:.1em}
+:root[data-yon="resimsel"] .stat{border-radius:2px;width:1.8em;height:1.8em;font-size:1em}
+:root[data-yon="resimsel"] .cost{border-radius:2px;transform:rotate(45deg)}
+:root[data-yon="resimsel"] .card .cost{transform:rotate(45deg)}
+:root[data-yon="resimsel"] .cost::first-line{}
+:root[data-yon="resimsel"] .endturn button,:root[data-yon="resimsel"] .strike{color:#f3e9e4;background:linear-gradient(#5a1510,#2a0805);border-color:#000;box-shadow:0 0 1.2em rgba(179,38,30,.45)}
+:root[data-yon="resimsel"] .panel{box-shadow:0 0 0 1px #000,0 20px 50px rgba(0,0,0,.7)}
+:root[data-yon="resimsel"] .tt-name{font-size:24px}
+:root[data-yon="resimsel"] .chance{color:#c9d6b0}
+:root[data-yon="resimsel"] .hand .card:nth-child(3){box-shadow:0 0 0 .1em var(--panel-glow),0 0 2.4em rgba(179,38,30,.6)}
+
+/* =========================================================
+   3) STİLİZE (Hearthstone / Warcraft çizgisi)
+   ========================================================= */
+:root[data-yon="stilize"]{
+  --page:#1d1430; --ink:#fff8ea; --ink-dim:#d6c3a6;
+  --panel-bg:linear-gradient(#7a5232,#4a2f1a); --panel-border:#2b1a0e; --panel-glow:#ffcf3f;
+  --radius:9px; --border-w:4px;
+  --title-font:"Lilita One",sans-serif; --num-font:"Lilita One",sans-serif;
+  --hp-a:#ff6b5a; --hp-b:#c4231a; --mp-a:#5fc4ff; --mp-b:#1a6fd6;
+  --gem:#1f8bff; --gem-hi:#bfe6ff; --atk:#ffc21f; --hpv:#ff3b2f;
+  --board-bg:#8a6a3c; --lane-bg:rgba(60,35,10,.35); --slot:rgba(255,240,200,.18);
+  --glow8:#ff5fe0; --tab-active:#ffcf3f;
+}
+:root[data-yon="stilize"] .board .scene{
+  background:
+    radial-gradient(ellipse at 50% 48%,rgba(255,240,190,.45),transparent 60%),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 .3cqw,transparent .3cqw 9cqw),
+    linear-gradient(#c79a5c,#8a6232)}
+:root[data-yon="stilize"] .board{box-shadow:0 0 0 6px #2b1a0e,0 0 0 12px #6b4524,0 20px 50px rgba(0,0,0,.6)}
+:root[data-yon="stilize"] .board .vignette{background:radial-gradient(ellipse at center,transparent 60%,rgba(40,20,5,.45))}
+:root[data-yon="stilize"] .stat,:root[data-yon="stilize"] .cost,:root[data-yon="stilize"] .armor,
+:root[data-yon="stilize"] .weapon .plus{-webkit-text-stroke:.09em #000;paint-order:stroke fill;font-size:1.25em}
+:root[data-yon="stilize"] .card{background:linear-gradient(#a8763f,#6b4524);border-width:.28em}
+:root[data-yon="stilize"] .card .art{border-radius:50% 50% 10% 10%/40% 40% 10% 10%;border-width:.2em;background:radial-gradient(circle at 50% 40%,#7ad1ff,#2a6fb0)}
+:root[data-yon="stilize"] .card .ctext{background:#f3e3c3;color:#2b1a0e;border-radius:.4em;padding:.3em;font-weight:700}
+:root[data-yon="stilize"] .card .cname{background:#2b1a0e;border-radius:.4em;padding:.15em 0;color:#fff}
+:root[data-yon="stilize"] .unit{border-radius:50% 50% 45% 45%/55% 55% 45% 45%;border-width:.25em;border-color:#2b1a0e}
+:root[data-yon="stilize"] .unit .art{background:radial-gradient(circle at 50% 40%,#9ad37a,#3f7a2a)}
+:root[data-yon="stilize"] .unit.opp-u .art{background:radial-gradient(circle at 50% 40%,#d38a7a,#7a2a2a)}
+:root[data-yon="stilize"] .portrait{border-width:.35em;border-color:#2b1a0e;background:radial-gradient(circle at 50% 35%,#7ab8ff,#24508a)}
+:root[data-yon="stilize"] .portrait.opp{background:radial-gradient(circle at 50% 35%,#ff9a7a,#8a2a1a)}
+:root[data-yon="stilize"] .bar{border-width:.18em;height:1.6em}
+:root[data-yon="stilize"] .hero .nm{font-weight:400}
+:root[data-yon="stilize"] .tt-name{font-weight:400}
+:root[data-yon="stilize"] .panel{box-shadow:0 0 0 3px #6b4524,0 10px 30px rgba(0,0,0,.45)}
+:root[data-yon="stilize"] .lane{border-radius:2em}
+:root[data-yon="stilize"] .slot{border-radius:50%}
+
+/* =========================================================
+   4) HARMAN
+   Klasik'in metal ve süslü çerçeve dili + Resimsel'in ışık,
+   vinyet ve kor atmosferi + Stilize'nin okunaklı rakamları
+   ve büyük dokunma alanları.
+   ========================================================= */
+:root[data-yon="harman"]{
+  --page:#0e0c0b; --ink:#f0e7d4; --ink-dim:#9c907b;
+  --panel-bg:linear-gradient(#2a2420,#121010); --panel-border:#7a5c34; --panel-glow:#d9a441;
+  --radius:7px; --border-w:2px;
+  --title-font:"Cinzel",serif; --num-font:"Lilita One",sans-serif;
+  --hp-a:#ff4a3a; --hp-b:#7a0c08; --mp-a:#4aa8ff; --mp-b:#0b2f78;
+  --gem:#2a74d9; --gem-hi:#a8d8ff; --atk:#f0b53a; --hpv:#e0352b;
+  --board-bg:#1c1814; --lane-bg:rgba(0,0,0,.28); --slot:rgba(255,230,180,.06);
+  --glow8:#ff5fd2; --tab-active:#d9a441;
+}
+:root[data-yon="harman"] .board .scene{
+  background:
+    radial-gradient(ellipse at 50% 46%,rgba(255,200,120,.2),transparent 52%),
+    radial-gradient(ellipse at 50% 0%,rgba(59,123,255,.12),transparent 40%),
+    radial-gradient(ellipse at 50% 100%,rgba(224,53,43,.10),transparent 40%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 6.2cqw),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 6.2cqw),
+    linear-gradient(#3a3428,#16130f)}
+:root[data-yon="harman"] .board .vignette{background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.8))}
+:root[data-yon="harman"] .board .embers{display:block}
+:root[data-yon="harman"] .board .embers i{opacity:.0;background:#ffb46a}
+:root[data-yon="harman"] .stat,:root[data-yon="harman"] .cost,:root[data-yon="harman"] .armor,
+:root[data-yon="harman"] .weapon .plus{-webkit-text-stroke:.08em #000;paint-order:stroke fill;font-size:1.2em}
+:root[data-yon="harman"] .card{background:linear-gradient(#2e2620,#120f0d);box-shadow:inset 0 0 0 .14em #000,inset 0 0 0 .26em #5a4426,0 .5em 1em rgba(0,0,0,.7)}
+:root[data-yon="harman"] .card .art{height:50%;background:radial-gradient(circle at 50% 35%,#5a4632,#0d0a08);filter:saturate(.8) contrast(1.1)}
+:root[data-yon="harman"] .card .cname{font-weight:900;font-size:.86em}
+:root[data-yon="harman"] .card .ctext{font-weight:500;font-size:.74em}
+:root[data-yon="harman"] .unit .art{background:radial-gradient(circle at 50% 35%,#4a3a2a,#0d0a08)}
+:root[data-yon="harman"] .portrait{background:radial-gradient(circle at 50% 30%,#4a5a6e,#0e1218);box-shadow:0 0 0 .12em #000,0 0 1.6em rgba(59,123,255,.35)}
+:root[data-yon="harman"] .portrait.opp{background:radial-gradient(circle at 50% 30%,#6e3a30,#140806);box-shadow:0 0 0 .12em #000,0 0 1.6em rgba(224,53,43,.35)}
+:root[data-yon="harman"] .panel::before,:root[data-yon="harman"] .panel::after{content:"";position:absolute;width:12px;height:12px;
+  border:2px solid var(--panel-glow);transform:rotate(45deg);background:#121010;top:-7px}
+:root[data-yon="harman"] .panel::before{left:-7px} :root[data-yon="harman"] .panel::after{right:-7px}
+:root[data-yon="harman"] .hpower,:root[data-yon="harman"] .endturn button{min-width:4.8em;min-height:4.8em}
+:root[data-yon="harman"] .endturn button{min-height:auto;padding:1em 1.4em}
+
+@media (max-width:900px){
+  .row{grid-template-columns:1fr}
+  .notes{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  body{padding:12px 16px}
+  .notes{grid-template-columns:1fr}
+}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sword" viewBox="0 0 64 64"><path fill="#e9e3d6" d="M50 6 58 6 58 14 30 42 22 34Z"/><path fill="#b98a3a" d="M18 36 28 46 25 49 22 46 12 56 8 52 18 42 15 39Z"/><path fill="#fff" opacity=".5" d="M52 8 56 8 30 34 28 32Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 64 64"><path fill="#9aa4b0" d="M32 4 56 12 54 36C52 48 42 56 32 60 22 56 12 48 10 36L8 12Z"/><path fill="#d8dee6" d="M32 10 50 16 48 35C46 44 39 50 32 54Z"/></symbol>
+    <symbol id="i-skull" viewBox="0 0 64 64"><path fill="#e6dcc8" d="M32 6C18 6 10 16 10 28c0 8 4 13 8 15v9h28v-9c4-2 8-7 8-15C54 16 46 6 32 6Z"/><circle cx="23" cy="30" r="6" fill="#1a1410"/><circle cx="41" cy="30" r="6" fill="#1a1410"/><path fill="#1a1410" d="M29 40h6l-3 6Z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 64 64"><path fill="#ff7a2a" d="M32 4C36 18 50 22 50 40a18 18 0 0 1-36 0c0-10 6-14 8-22 4 6 4 10 6 12 2-8 4-16 4-26Z"/><path fill="#ffd84a" d="M32 30c2 6 8 8 8 16a8 8 0 0 1-16 0c0-5 4-8 8-16Z"/></symbol>
+    <symbol id="i-bow" viewBox="0 0 64 64"><path fill="none" stroke="#c9a46a" stroke-width="5" d="M16 6c26 10 26 42 0 52"/><path stroke="#eee" stroke-width="2" d="M16 6v52"/><path stroke="#ddd" stroke-width="3" d="M10 32h44"/><path fill="#ddd" d="M54 32l-8-5v10Z"/></symbol>
+    <symbol id="i-holy" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#ffe8a0" opacity=".35"/><path fill="#fff4cc" d="M28 8h8v16h16v8H36v24h-8V32H12v-8h16Z"/></symbol>
+    <symbol id="i-totem" viewBox="0 0 64 64"><rect x="22" y="8" width="20" height="48" rx="3" fill="#6b4a2a"/><rect x="18" y="14" width="28" height="10" fill="#8a2a1a"/><circle cx="27" cy="34" r="3" fill="#ffd84a"/><circle cx="37" cy="34" r="3" fill="#ffd84a"/></symbol>
+    <symbol id="i-banner" viewBox="0 0 64 64"><rect x="14" y="4" width="4" height="56" fill="#8a6a3a"/><path fill="#3b7bff" d="M18 8h34l-8 12 8 12H18Z"/></symbol>
+    <symbol id="i-helm" viewBox="0 0 64 64"><path fill="#a8b0ba" d="M32 6C18 6 12 18 12 30v20l10 6V36h20v20l10-6V30C52 18 46 6 32 6Z"/><rect x="22" y="28" width="20" height="5" fill="#111"/></symbol>
+    <symbol id="i-orc" viewBox="0 0 64 64"><path fill="#7a8a4a" d="M32 8c-14 0-22 10-22 24 0 12 10 24 22 24s22-12 22-24C54 18 46 8 32 8Z"/><path fill="#f3eadb" d="M20 40l3 10 3-9Zm24 0-3 10-3-9Z"/><rect x="18" y="26" width="10" height="4" fill="#ff3a2a"/><rect x="36" y="26" width="10" height="4" fill="#ff3a2a"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 64 64"><path fill="#ff4a3a" d="M32 6C40 20 50 30 50 42a18 18 0 0 1-36 0C14 30 24 20 32 6Z"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 64 64"><path fill="none" stroke="#bfe6ff" stroke-width="5" stroke-linecap="round" d="M8 24h34a8 8 0 1 0-8-8M8 36h44a8 8 0 1 1-8 8M8 48h20"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Görsel Yön Karşılaştırması</h1>
+      <p>Aynı ekranın dört yorumu. Görseller yer tutucu; asıl karar çerçeve dili, renk, ışık ve tipografi.</p>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-t="klasik" aria-selected="true">1 · Modern Klasik</button>
+      <button role="tab" data-t="resimsel" aria-selected="false">2 · Karanlık Resimsel</button>
+      <button role="tab" data-t="stilize" aria-selected="false">3 · Stilize</button>
+      <button role="tab" data-t="harman" aria-selected="false">4 · Harman</button>
+    </nav>
+  </header>
+
+  <!-- ================= SAVAŞ MASASI ================= -->
+  <div class="board-shell">
+    <div class="board" role="img" aria-label="Savaş masası mockup'ı">
+      <div class="scene"></div>
+      <div class="embers" id="embers"></div>
+
+      <div class="turnbadge">7. Tur<em>Sıra sende</em></div>
+
+      <div class="opp-hand"><div class="back"></div><div class="back"></div><div class="back"></div><div class="back"></div><div class="back"></div></div>
+
+      <!-- Rakip -->
+      <div class="hero opp">
+        <div class="portrait opp"><svg><use href="#i-orc"/></svg><span class="nation" style="background:var(--nation-opp)"></span></div>
+        <div class="info">
+          <div class="nm">Gorrak <small>Rahip · Lv 19</small></div>
+          <div class="bar hp"><i style="width:60%"></i><b>18 / 30</b></div>
+          <div class="bar mp"><i style="width:100%"></i><b>6 / 6 MP</b></div>
+        </div>
+      </div>
+
+      <div class="lane opp">
+        <div class="slot"></div>
+        <div class="slot"><div class="unit opp-u"><div class="art"><svg><use href="#i-skull"/></svg></div><div class="uname">Mezar Kurdu</div><span class="stat atk">3</span><span class="stat hp">2</span></div></div>
+        <div class="slot"><div class="unit taunt opp-u"><div class="art"><svg><use href="#i-totem"/></svg></div><div class="uname">Kan Totemi</div><span class="stat atk">0</span><span class="stat hp">5</span></div></div>
+        <div class="slot"><div class="unit opp-u"><div class="art"><svg><use href="#i-bow"/></svg></div><div class="uname">Kemik Okçusu</div><span class="stat atk">2</span><span class="stat hp">3</span></div></div>
+        <div class="slot"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="lane me">
+        <div class="slot"></div>
+        <div class="slot"><div class="unit"><div class="art"><svg><use href="#i-banner"/></svg></div><div class="uname">Alay Sancağı</div><span class="stat atk">0</span><span class="stat hp">3</span></div></div>
+        <div class="slot"><div class="unit"><div class="art"><svg><use href="#i-helm"/></svg></div><div class="uname">Paralı Muhafız</div><span class="stat atk">3</span><span class="stat hp">4</span></div></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+      </div>
+
+      <!-- Oyuncu -->
+      <div class="hero me">
+        <div class="portrait"><svg><use href="#i-helm"/></svg><span class="nation" style="background:var(--nation-me)"></span><span class="armor">4</span></div>
+        <div class="info">
+          <div class="nm">Yasin <small>Savaşçı · Lv 18</small></div>
+          <div class="bar hp"><i style="width:80%"></i><b>24 / 30</b></div>
+          <div class="bar mp"><i style="width:71%"></i><b>5 / 7 MP</b></div>
+          <div class="pips">Öfke <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+        </div>
+        <div class="weapon"><span class="plus">+8</span><svg><use href="#i-sword"/></svg><span class="stat atk">5</span><span class="stat dur">2</span></div>
+        <div class="hpower"><span class="cost">2</span><svg><use href="#i-shield"/></svg></div>
+        <div class="potion"><div class="flask"></div>×2</div>
+      </div>
+
+      <div class="hand">
+        <div class="card"><span class="cost">2</span><div class="art"><svg><use href="#i-shield"/></svg></div><div class="cname">Kalkan Duvarı</div><div class="ctext">+5 Zırh kazan.</div><div class="ctype">Savunma</div></div>
+        <div class="card"><span class="cost hpcost">3</span><div class="art"><svg><use href="#i-drop"/></svg></div><div class="cname">Kan Öfkesi</div><div class="ctext">3 HP öde. Bu tur silahına +4 saldırı.</div><div class="ctype">Öfke</div></div>
+        <div class="card"><span class="cost">3</span><div class="art"><svg><use href="#i-sword"/></svg></div><div class="cname">Yarma</div><div class="ctext">6 hasar ver. Silahın +7 veya üstüyse 1 Öfke kazan.</div><div class="ctype">Silah kartı · Kartalpençe</div></div>
+        <div class="card"><span class="cost">4</span><div class="art"><svg><use href="#i-flame"/></svg></div><div class="cname">Savaş Çığlığı</div><div class="ctext">Rakip birimlerin saldırısı −2.</div><div class="ctype">Saldırı</div></div>
+        <div class="card"><span class="cost">1</span><div class="art"><svg><use href="#i-wind"/></svg></div><div class="cname">Hız Adımı</div><div class="ctext">Bir kart çek.</div><div class="ctype">Saldırı</div></div>
+      </div>
+
+      <div class="endturn"><button>TURU BİTİR</button><div class="timer"><i></i></div><small>25 sn · Banka 30 sn</small></div>
+
+      <div class="log">
+        <p><span class="s">[Şehir]</span> aga party pls 18 savaşçı</p>
+        <p><span class="a">[Ulus]</span> ++++ buff lazım</p>
+        <p><span class="k">[Duyuru]</span> Demirkol, Kartalpençe'yi <b>+9</b>'a geçirdi!</p>
+      </div>
+      <div class="deck">11</div>
+      <div class="vignette"></div>
+    </div>
+  </div>
+
+  <!-- ================= ALT PANELLER ================= -->
+  <div class="row">
+    <section class="panel" aria-label="Item tooltip">
+      <h3>İncele</h3>
+      <div class="tt-name"><span class="plus">+8</span>Kartalpençe</div>
+      <div class="tt-sub">Nadir · Tek Elli Kılıç · Kahraman</div>
+      <dl class="tt-lines">
+        <dt>Saldırı</dt><dd>5 <span class="up">(+2)</span></dd>
+        <dt>Dayanıklılık (savaşta)</dt><dd>2</dd>
+        <dt>Ateş Hasarı</dt><dd class="fire">+80</dd>
+        <dt>Güç (STR)</dt><dd class="up">+6</dd>
+        <dt>Kılıç Savunması</dt><dd>+12</dd>
+      </dl>
+      <div class="tt-cards">Desteye kattığı kartlar: <b>Yarma ×2</b></div>
+      <div class="dura">Aşınma 87 / 100<div class="bar"><i style="width:87%"></i></div></div>
+      <div class="req">Gereken: Lv 15 · STR 60</div>
+    </section>
+
+    <section class="panel" aria-label="Örs paneli">
+      <h3>Örs</h3>
+      <div class="anvil-top">
+        <div class="anvil-step"><span>+8</span><span class="arrow">→</span>+9</div>
+        <div class="chance">%30<small>taban %25 + ısınma %5</small></div>
+      </div>
+      <div class="heat"><span>Örs Isısı</span><span>%60 · %100'de garanti</span></div>
+      <div class="heatbar"><i></i></div>
+      <div class="costs"><span>5 × Kadim Parşömen</span><span>1.250 Altın</span></div>
+      <div class="warn">Başarısızlıkta item +7'ye düşer. Örs Isısı korunur.</div>
+      <button class="strike">ÖRSE VUR</button>
+    </section>
+
+    <section class="panel" aria-label="Kart yakın görünümü">
+      <h3>Kart</h3>
+      <div class="bigcard-wrap">
+        <div class="card"><span class="cost">3</span><div class="art"><svg><use href="#i-sword"/></svg></div><div class="cname">Yarma</div><div class="ctext">6 hasar ver. Silahın +7 veya üstüyse 1 Öfke kazan.</div><div class="ctype">Silah kartı · Kartalpençe</div><span class="gem" style="background:var(--g-rare)"></span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= NOTLAR ================= -->
+  <div class="notes" data-note="klasik">
+    <div class="note"><h4>Ruh</h4>Knight'a en sadık yön. Bronz-çelik paneller, köşelerde altın süsler, parlak kırmızı-mavi HP/MP barları, taş döşemeli zemin.</div>
+    <div class="note"><h4>Güçlü yanı</h4>Eski oyuncu ilk bakışta "bu bizim oyun" der. Item ismi renkleri ve + parıltısı doğal olarak öne çıkar.</div>
+    <div class="note"><h4>Riski</h4>Fazla süslü olursa mobilde kalabalık ve eski görünebilir. Modernlik için süsleme disiplinli tutulmalı.</div>
+    <div class="note"><h4>Referans</h4>2000'lerin Kore MMO arayüzleri, modern bir temizlikle.</div>
+  </div>
+  <div class="notes" data-note="resimsel">
+    <div class="note"><h4>Ruh</h4>Diablo IV çizgisi. Neredeyse siyah, düşük doygunluk, kan kırmızısı vurgular, kor parçacıkları, keskin köşeler ve ince serif yazı.</div>
+    <div class="note"><h4>Güçlü yanı</h4>En "premium" ve olgun görünen yön. Fragman ve mağaza görsellerinde çok etkili.</div>
+    <div class="note"><h4>Riski</h4>Küçük ekranda okunabilirlik düşer: ince barlar, koyu üstüne koyu. Knight'ın renkli item kültüründen uzaklaşır.</div>
+    <div class="note"><h4>Referans</h4>Diablo IV, Grim Dawn, karanlık resimsel illüstrasyon.</div>
+  </div>
+  <div class="notes" data-note="stilize">
+    <div class="note"><h4>Ruh</h4>Hearthstone / Warcraft çizgisi. Sıcak ve doygun renkler, tombul yuvarlak çerçeveler, kalın konturlu rakamlar, ahşap meyhane masası.</div>
+    <div class="note"><h4>Güçlü yanı</h4>Mobilde en okunaklı yön. Geniş kitleye hitap eder, kart oyunu oyuncusu hemen ısınır.</div>
+    <div class="note"><h4>Riski</h4>Knight'ın sertliğini ve karanlığını kaybeder. "Hearthstone kopyası" algısı oluşabilir.</div>
+    <div class="note"><h4>Referans</h4>Hearthstone, Warcraft Rumble, Clash Royale.</div>
+  </div>
+  <div class="notes" data-note="harman">
+    <div class="note blend"><h4>Klasik'ten</h4><ul><li>Metal çerçeve ve köşe süsleri</li><li>Parlak kırmızı-mavi KO barları</li><li>Taş zemin ve renkli item isimleri</li></ul></div>
+    <div class="note blend"><h4>Resimsel'den</h4><ul><li>Koyu zemin, vinyet ve kor</li><li>Ulus renginde portre ışığı</li><li>Gren dokusu ve dramatik ışık</li></ul></div>
+    <div class="note blend"><h4>Stilize'den</h4><ul><li>Kalın konturlu, büyük rakamlar</li><li>Geniş dokunma alanları</li><li>Net silüetler, sade kart metni</li></ul></div>
+    <div class="note"><h4>Sonuç</h4>Knight'ın kimliği, modern bir oyunun atmosferi ve mobil okunabilirlik. Önerim bu yön; ama kararı sen ver.</div>
+  </div>
+
+  <footer>KOIdLe · görsel yön mockup'ı · 2026-10-05 · Görseller yer tutucudur; nihai sanat stil rehberine göre üretilecek.</footer>
+</div>
+
+<script>
+  // Sekme geçişi
+  const root=document.documentElement;
+  document.querySelectorAll('.tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      root.dataset.yon=b.dataset.t;
+      document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
+      try{localStorage.setItem('koidle-tema',b.dataset.t)}catch(e){}
+    });
+  });
+  try{const t=localStorage.getItem('koidle-tema');if(t){const b=document.querySelector(`.tabs button[data-t="${t}"]`);b&&b.click()}}catch(e){}
+  // Kor parçacıkları
+  const em=document.getElementById('embers');
+  for(let i=0;i<22;i++){const s=document.createElement('i');s.style.left=(Math.random()*100)+'%';
+    s.style.animationDuration=(6+Math.random()*8)+'s';s.style.animationDelay=(-Math.random()*12)+'s';
+    s.style.transform=`scale(${.5+Math.random()})`;em.appendChild(s)}
+</script>
