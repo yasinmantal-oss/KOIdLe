@@ -1,7 +1,7 @@
 # KOIdLe — Devam Notu (oturum devri)
 
 > Son güncelleme: 2026-10-05 · Bir sonraki oturum buradan başlar.
-> **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.1.md`. Araştırma raporlarıyla (01–05) çelişen her noktada spec geçerlidir.
+> **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor). Araştırma raporlarıyla (01–05) çelişen her noktada spec geçerlidir.
 > GitHub: https://github.com/yasinmantal-oss/KOIdLe
 
 ## Proje tek cümlede
@@ -9,7 +9,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## Durum
 - Sadeleştirme turu **tamamlandı** (Yasin ile, spec v0.1).
-- Spec self-review edildi. Açık sorular Yasin'e soruldu (aşağıda). **Onay gelince writing-plans skill'ine geçilecek.**
+- Spec self-review edildi, Yasin'in kararlarıyla **v0.2** yazıldı: Faz 5'te hafif backend + bot oyuncular · saldıran da CZ'de olmalı, slot içi seçim + "Savaş Ara" · baskın kalkanı + saldıranın riski · tüm job kartları baştan açık · item desteye kart eklemez · taşıma kapasitesi · EXP risk dışı.
+- **Yasin'in v0.2 onayı bekleniyor. Onay gelince writing-plans skill'ine geçilecek.**
 - **Henüz kod yazılmadı.**
 
 ## Kesinleşen kararlar (özet; ayrıntı spec'te)
@@ -32,7 +33,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## Sıradaki adımlar
-1. Self-review sorularına Yasin'in cevapları → spec v0.2 olarak güncelle.
+1. Yasin v0.2'yi onaylasın.
 2. writing-plans skill'i ile Faz 0–1 uygulama planı (P0.2 test değerleri tablosu, P1.1 monorepo, P1.2 rules, P1.3 Warrior, P1.4 AI, P1.5 savaş UI). İlk hedef **GATE 1**: Hero-vs-Hero savaşı tek başına eğlenceli mi?
 
 ## Çalışma düzeni
@@ -40,6 +41,6 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Vault (yalnız yerel makinede): `C:/Users/muham/.gemini/antigravity/scratch/100-Projeler/KOIdLe/KOIdLe_Proje_Karti.md`. Cloud oturumunda vault yok, kayıtlar bu dosyada tutulur.
 
 ## Dosyalar
-- `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.1.md`: geçerli spec
+- `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md`: geçerli spec (v0.1: tarihçe)
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
