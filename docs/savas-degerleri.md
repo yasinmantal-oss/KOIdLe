@@ -28,8 +28,8 @@
 | Arena Kalkanı yok sayar | `arenaCollapse.ignoresShield` | evet |  |
 | Statü yığılması | `statuses.stacking` | maxAmountRefreshOnGte | K7. Gelen değer ≥ mevcut: değer güncellenir, süre yenilenir. Küçükse yok sayılır |
 | Statü sayacı | `statuses.tickOn` | ownerTurnEnd | Süre, etkilenen kahramanın kendi tur sonunda 1 düşer |
-| Güç süresi | `statuses.strength.duration` | 2 | Kendine verilince: o tur dahil |
-| Zayıflık süresi | `statuses.weak.duration` | 2 | Rakibe verilince: rakibin sonraki turları |
+| Güç süresi | `statuses.strength.duration` | 2 | Kendine verilince: verildiği tur dahil 2 kendi turu |
+| Zayıflık süresi | `statuses.weak.duration` | 2 | Rakibe verilince: rakibin sonraki 2 turu |
 | Güvenlik tavanı | `roundCap` | 20 | Bu raunt biterse berabere. Normalde tetiklenmemeli |
 
 **Raunt:** iki oyuncunun da birer tur oynaması. Raunt, ilk oyuncunun turu başlarken artar.

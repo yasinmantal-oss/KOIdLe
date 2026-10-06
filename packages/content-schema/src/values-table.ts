@@ -92,13 +92,13 @@ function rows(c: BattleConfig): Row[] {
       'Güç süresi',
       'statuses.strength.duration',
       c.statuses.strength.duration,
-      'Kendine verilince: o tur dahil',
+      `Kendine verilince: verildiği tur dahil ${c.statuses.strength.duration} kendi turu`,
     ],
     [
       'Zayıflık süresi',
       'statuses.weak.duration',
       c.statuses.weak.duration,
-      'Rakibe verilince: rakibin sonraki turları',
+      `Rakibe verilince: rakibin sonraki ${c.statuses.weak.duration} turu`,
     ],
     [
       'Güvenlik tavanı',
