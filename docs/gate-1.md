@@ -4,7 +4,12 @@
 > **Kural:** Gate 1 geçilmeden Faz 2'ye geçilmez. Kalırsa yalnız savaş düzeltilir.
 > Değerler: `docs/savas-degerleri.md` (üretilir; tek kaynak `content/` JSON'ları).
 
-## Nasıl oynanır (yerel makinede)
+## Nasıl oynanır
+
+**Bilgisayar olmadan (telefon/tarayıcı):** https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT
+Maç sonu formu bu sayfanın kayıt deposuna (`gate1` koleksiyonu) yazılır; Claude oradan okur. İçerik değişirse sayfa `pnpm --filter @koidle/client artifact` ile yeniden üretilip aynı adrese yayınlanır.
+
+**Yerel makinede:**
 
 1. Node 22+ ve pnpm 10 kurulu olsun (`corepack enable` pnpm'i açar).
 2. Repo kökünde: `pnpm install`

@@ -2,7 +2,7 @@ import type { AiProfile } from '@koidle/ai';
 import type { BattleEvent, BattleState } from '@koidle/rules';
 import { useState } from 'react';
 import { HUMAN } from '../format';
-import { contentHash, downloadBackup, type Gate1Answers, saveRecord } from '../gate1';
+import { contentHash, downloadBackup, type Gate1Answers, inArtifact, saveRecord } from '../gate1';
 import { Gate1Form } from './Gate1Form';
 
 interface Props {
@@ -64,9 +64,11 @@ export function ResultPanel({ state, log, seed, profile, durationSec, onRestart,
         <button type="button" onClick={onNew}>
           Yeni savaş
         </button>
-        <button type="button" className="link" onClick={downloadBackup}>
-          Kayıtları JSON indir
-        </button>
+        {!inArtifact() && (
+          <button type="button" className="link" onClick={downloadBackup}>
+            Kayıtları JSON indir
+          </button>
+        )}
       </div>
     </div>
   );

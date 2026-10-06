@@ -46,14 +46,45 @@ export function readBackup(): Gate1Record[] {
   }
 }
 
-/** Önce yerel yedek, sonra dev sunucusu üzerinden docs/gate-1/oturumlar.jsonl. */
-export async function saveRecord(
-  record: Gate1Record,
-): Promise<'dosyaya yazıldı' | 'yalnız tarayıcıda'> {
+export type SaveTarget = 'artifact kaydına yazıldı' | 'dosyaya yazıldı' | 'yalnız tarayıcıda';
+
+interface ArtifactDb {
+  collection(path: string): { add(data: Record<string, unknown>): Promise<unknown> };
+}
+interface ClaudeRuntime {
+  use(name: string): Promise<unknown>;
+}
+
+/** claude.ai Artifact içinde açıldıysa sayfanın db'si; değilse null. */
+export const inArtifact = (): boolean => typeof window !== 'undefined' && 'claude' in window;
+
+async function artifactDb(): Promise<ArtifactDb | null> {
+  const claude = (window as unknown as { claude?: ClaudeRuntime }).claude;
+  if (!claude) return null;
+  return ((await claude.use('db')) as ArtifactDb | null) ?? null;
+}
+
+/**
+ * Önce yerel yedek. Sonra: Artifact içindeysek sayfanın db'sine (Claude okuyabilir),
+ * değilse dev sunucusu üzerinden docs/gate-1/oturumlar.jsonl dosyasına.
+ */
+export async function saveRecord(record: Gate1Record): Promise<SaveTarget> {
   try {
     localStorage.setItem(BACKUP_KEY, JSON.stringify([...readBackup(), record]));
   } catch {
     // yedek olmadan da devam
+  }
+  if (inArtifact()) {
+    try {
+      const db = await artifactDb();
+      if (db) {
+        await db.collection('gate1').add({ ...record });
+        return 'artifact kaydına yazıldı';
+      }
+    } catch {
+      // aşağıya düş
+    }
+    return 'yalnız tarayıcıda';
   }
   try {
     const res = await fetch('/__gate1', { method: 'POST', body: JSON.stringify(record) });

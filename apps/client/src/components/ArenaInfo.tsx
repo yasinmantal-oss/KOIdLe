@@ -20,7 +20,9 @@ export function ArenaInfo({ state, seed }: { state: BattleState; seed: number })
         <button
           type="button"
           className="link"
-          onClick={() => navigator.clipboard?.writeText(String(seed))}
+          onClick={() => {
+            navigator.clipboard?.writeText(String(seed)).catch(() => undefined);
+          }}
         >
           kopyala
         </button>
