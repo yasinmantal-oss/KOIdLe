@@ -1,11 +1,16 @@
 [
   {
-    "id": "hizli-vurus",
-    "name": "Hızlı Vuruş",
+    "id": "quick-strike",
+    "name": "Quick Strike",
     "job": "common",
     "type": "attack",
     "cost": 1,
-    "effects": [{ "kind": "damage", "amount": 3 }],
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 3
+      }
+    ],
     "text": "3 hasar ver."
   },
   {
@@ -13,9 +18,14 @@
     "name": "Sprint",
     "job": "common",
     "type": "skill",
-    "cost": 1,
-    "effects": [{ "kind": "draw", "count": 1 }],
-    "text": "1 kart çek."
+    "cost": 0,
+    "effects": [
+      {
+        "kind": "gainMp",
+        "amount": 1
+      }
+    ],
+    "text": "Bu tur 1 MP kazan."
   },
   {
     "id": "absoluteness",
@@ -23,16 +33,28 @@
     "job": "common",
     "type": "defense",
     "cost": 1,
-    "effects": [{ "kind": "shield", "amount": 4 }],
+    "effects": [
+      {
+        "kind": "shield",
+        "amount": 4
+      }
+    ],
     "text": "4 Kalkan kazan."
   },
   {
-    "id": "gozdagi",
-    "name": "Gözdağı",
+    "id": "intimidate",
+    "name": "Intimidate",
     "job": "common",
     "type": "debuff",
     "cost": 1,
-    "effects": [{ "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }],
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 2
+      }
+    ],
     "text": "Rakibe Zayıflık 2 ver."
   },
   {
@@ -42,17 +64,31 @@
     "type": "heal",
     "cost": 2,
     "effects": [
-      { "kind": "heal", "amount": 4, "bonus": { "if": { "selfHpAtMost": 15 }, "amount": 4 } }
+      {
+        "kind": "heal",
+        "amount": 4,
+        "bonus": {
+          "if": {
+            "selfHpAtMost": 15
+          },
+          "amount": 4
+        }
+      }
     ],
-    "text": "4 HP iyileş. HP'n 15 veya altındaysa 8."
+    "text": "4 HP iyileş. HP'n 15 veya altındaysa 8 HP iyileş."
   },
   {
-    "id": "guclu-vurus",
-    "name": "Güçlü Vuruş",
+    "id": "power-strike",
+    "name": "Power Strike",
     "job": "common",
     "type": "attack",
     "cost": 3,
-    "effects": [{ "kind": "damage", "amount": 7 }],
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 7
+      }
+    ],
     "text": "7 hasar ver."
   }
 ]

@@ -9,9 +9,6 @@ export function conditionMet(state: BattleState, source: PlayerIndex, cond: Cond
   if ('enemyHas' in cond) return statusAmount(state.players[other(source)], cond.enemyHas) > 0;
   if ('enemyHpAtMost' in cond) return state.players[other(source)].hp <= cond.enemyHpAtMost;
   if ('selfHpAtMost' in cond) return state.players[source].hp <= cond.selfHpAtMost;
-  if ('cardsPlayedAtLeast' in cond) {
-    return state.players[source].cardsPlayedThisTurn >= cond.cardsPlayedAtLeast;
-  }
   return assertNever(cond);
 }
 
@@ -24,7 +21,7 @@ export function bonusValue(
   return bonus && conditionMet(state, source, bonus.if) ? bonus.amount : 0;
 }
 
-/** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık/Lanet hariç). */
+/** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık/Kritik hariç). */
 export function baseDamage(
   state: BattleState,
   source: PlayerIndex,
@@ -42,29 +39,75 @@ export function healAmount(
   return effect.amount + bonusValue(state, source, effect.bonus);
 }
 
-/** Kart hasarı = max(0, değer + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef)). */
-export function cardDamage(state: BattleState, source: PlayerIndex, base: number): number {
-  const pl = state.players[source];
-  const target = state.players[other(source)];
-  return Math.max(
-    0,
-    base + statusAmount(pl, 'strength') - statusAmount(pl, 'weak') + statusAmount(target, 'curse'),
-  );
+export interface HitPlan {
+  /** Her vuruşun Kalkan emmeden önceki hasarı (Kaçınma ilk vuruşu 0'lar). */
+  hits: number[];
+  /** Harcanacak Güç (çarpansız), 0 = yok. */
+  strengthSpent: number;
+  strengthMultiplier: number;
+  crit: boolean;
+  evaded: boolean;
 }
 
-/** Zincir bonusu sağlanıyorsa "ZİNCİR ×N" olayı yazar (N = bu kartla birlikte oynanan sayısı). */
-function noteChain(
+/**
+ * Bir hasar efektinin vuruşlarını hesaplar (motor ve önizleme aynı fonksiyonu kullanır).
+ * Vuruş = max(0, taban + [yalnız ilk vuruşta Güç × çarpan] − Zayıflık) × (Kritik ? 2 : 1);
+ * rakibin Kaçınması varsa ilk vuruş 0 olur.
+ */
+export function planHits(
   state: BattleState,
   source: PlayerIndex,
-  bonus: Bonus | undefined,
+  base: number,
+  hitCount: number,
+  strengthMultiplier = 1,
+): HitPlan {
+  const me = state.players[source];
+  const foe = state.players[other(source)];
+  const strengthSpent = statusAmount(me, 'strength');
+  const weak = statusAmount(me, 'weak');
+  const crit = statusAmount(me, 'critical') > 0;
+  const evaded = statusAmount(foe, 'evade') > 0;
+  const hits: number[] = [];
+  for (let i = 0; i < hitCount; i++) {
+    const strength = i === 0 ? strengthSpent * strengthMultiplier : 0;
+    let dmg = Math.max(0, base + strength - weak) * (crit ? 2 : 1);
+    if (i === 0 && evaded) dmg = 0;
+    hits.push(dmg);
+  }
+  return { hits, strengthSpent, strengthMultiplier, crit, evaded };
+}
+
+/** Planı uygular: Güç/Kritik/Kaçınma tüketilir, vuruşlar sırayla vurur. */
+function strike(
+  state: BattleState,
+  source: PlayerIndex,
+  plan: HitPlan,
+  ignoreShield: boolean,
   events: BattleEvent[],
 ): void {
-  if (bonus && 'cardsPlayedAtLeast' in bonus.if && conditionMet(state, source, bonus.if)) {
+  const me = state.players[source];
+  const enemy = other(source);
+  if (plan.strengthSpent > 0) {
+    removeStatus(me, 'strength');
     events.push({
-      type: 'CHAIN_TRIGGERED',
+      type: 'STRENGTH_USED',
       player: source,
-      chain: state.players[source].cardsPlayedThisTurn + 1,
+      amount: plan.strengthSpent * plan.strengthMultiplier,
+      multiplier: plan.strengthMultiplier,
     });
+  }
+  if (plan.crit) {
+    removeStatus(me, 'critical');
+    events.push({ type: 'CRIT_USED', player: source });
+  }
+  if (plan.evaded) {
+    removeStatus(state.players[enemy], 'evade');
+    events.push({ type: 'EVADED', player: enemy, attacker: source });
+  }
+  for (const [i, dmg] of plan.hits.entries()) {
+    if (i === 0 && plan.evaded) continue;
+    dealDamage(state, source, enemy, dmg, ignoreShield, events);
+    if (state.result) return;
   }
 }
 
@@ -78,36 +121,26 @@ export function resolveEffect(
   const enemy = other(source);
   switch (effect.kind) {
     case 'damage': {
-      const base = baseDamage(state, source, effect);
-      noteChain(state, source, effect.bonus, events);
-      // Çoklu vuruş: her vuruş ayrı hesaplanır. Gizli yalnız ilk vuruşa girer ve Kalkanı yok sayar.
-      for (let i = 0; i < (effect.hits ?? 1); i++) {
-        const stealth = statusAmount(me, 'stealth');
-        if (stealth > 0) {
-          removeStatus(me, 'stealth');
-          events.push({ type: 'STEALTH_USED', player: source, amount: stealth });
-        }
-        dealDamage(
-          state,
-          source,
-          enemy,
-          cardDamage(state, source, base + stealth),
-          stealth > 0 || (effect.ignoreShield ?? false),
-          events,
-        );
-        if (state.result) return;
-      }
+      const plan = planHits(
+        state,
+        source,
+        baseDamage(state, source, effect),
+        effect.hits ?? 1,
+        effect.strengthMultiplier ?? 1,
+      );
+      strike(state, source, plan, effect.ignoreShield ?? false, events);
       return;
     }
     case 'damageFromShieldGainedThisTurn':
-      dealDamage(
-        state,
-        source,
-        enemy,
-        cardDamage(state, source, me.shieldGainedThisTurn),
-        false,
-        events,
-      );
+      strike(state, source, planHits(state, source, me.shieldGainedThisTurn, 1), false, events);
+      return;
+    case 'selfDamage':
+      // Kendine hasar Kalkanı yok sayar.
+      dealDamage(state, source, source, effect.amount, true, events);
+      return;
+    case 'gainMp':
+      me.mp += effect.amount;
+      events.push({ type: 'MP_GAINED', player: source, amount: effect.amount });
       return;
     case 'shield':
       me.shield += effect.amount;
@@ -115,7 +148,6 @@ export function resolveEffect(
       events.push({ type: 'SHIELD_GAINED', player: source, amount: effect.amount });
       return;
     case 'heal': {
-      noteChain(state, source, effect.bonus, events);
       const amount = Math.min(healAmount(state, source, effect), me.maxHp - me.hp);
       me.hp += amount;
       events.push({ type: 'HEALED', player: source, amount });

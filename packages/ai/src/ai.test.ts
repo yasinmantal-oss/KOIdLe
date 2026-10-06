@@ -63,10 +63,10 @@ function midBattle(seed: number, steps: number[]): BattleState {
 
 describe('chooseAction', () => {
   it('takes a winning move', () => {
-    const { state, me } = withHand(1, ['absoluteness', 'hizli-vurus'], 3);
+    const { state, me } = withHand(1, ['absoluteness', 'quick-strike'], 3);
     state.players[me === 0 ? 1 : 0].hp = 3;
     for (const p of ['aggressive', 'balanced', 'defensive'] as const) {
-      expect(cardOf(state, me, chooseAction(state, me, profiles[p]))).toBe('hizli-vurus');
+      expect(cardOf(state, me, chooseAction(state, me, profiles[p]))).toBe('quick-strike');
     }
   });
 
@@ -81,8 +81,8 @@ describe('chooseAction', () => {
   });
 
   it('profiles differ: aggressive attacks, defensive blocks', () => {
-    const { state, me } = withHand(1, ['hizli-vurus', 'absoluteness'], 2);
-    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('hizli-vurus');
+    const { state, me } = withHand(1, ['quick-strike', 'absoluteness'], 2);
+    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('quick-strike');
     expect(cardOf(state, me, chooseAction(state, me, profiles.defensive))).toBe('absoluteness');
   });
 
@@ -113,13 +113,22 @@ describe('hidden information (C6)', () => {
 
   it('a scorer that would peek at the deck cannot (structural guard)', () => {
     const decide = (topCard: string) => {
-      const { state, me } = withHand(1, ['sprint'], 2);
+      const { state, me } = withHand(1, ['peek'], 2);
+      state.cards.peek = {
+        id: 'peek',
+        name: 'Peek',
+        job: 'warrior',
+        type: 'skill',
+        cost: 1,
+        effects: [{ kind: 'draw', count: 1 }],
+        text: '',
+      };
       state.players[me].deck = state.players[me].deck.map((c, i) =>
         i === 0 ? { ...c, cardId: topCard } : c,
       );
       return chooseAction(state, me, profiles.balanced, { scorer: cheater });
     };
-    expect(decide('hell-blade')).toEqual(decide('hizli-vurus'));
+    expect(decide('hell-blade')).toEqual(decide('quick-strike'));
   });
 
   it('redaction hides opponent hand and both decks, keeps counts', () => {
@@ -199,19 +208,19 @@ describe('turn planner (F2-11)', () => {
     return { state, me };
   }
 
-  it('finds the Stab → Thrust → Spike kill that greedy misses', () => {
-    const { state, me } = assassinFight(1, ['stab', 'thrust', 'spike'], 6, 19);
-    expect(cardOf(state, me, chooseAction(state, me, profiles.balanced))).toBe('spike');
+  it('finds the Stab + Thrust kill that greedy misses (greedy wastes the MP on Power Strike)', () => {
+    const { state, me } = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 8);
+    expect(cardOf(state, me, chooseAction(state, me, profiles.balanced))).toBe('power-strike');
     expect(
       cardOf(state, me, chooseAction(state, me, profiles.balanced, { planner: PLANNER })),
-    ).toBe('stab');
+    ).not.toBe('power-strike');
   });
 
   it('executing the plan action by action wins the battle', () => {
-    const fight = assassinFight(1, ['stab', 'thrust', 'spike'], 6, 19);
+    const fight = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 8);
     const me = fight.me;
     let state = fight.state;
-    for (let i = 0; i < 3 && !state.result; i++) {
+    for (let i = 0; i < 2 && !state.result; i++) {
       const a = chooseAction(state, me, profiles.balanced, { planner: PLANNER });
       expect(a.type).toBe('PLAY_CARD');
       state = apply(state, a).state;
@@ -219,21 +228,24 @@ describe('turn planner (F2-11)', () => {
     expect(state.result).toEqual({ winner: me, reason: 'normalDamage' });
   });
 
-  it('evaluate likes my Stealth and the foe Poison/Curse, dislikes the reverse', () => {
+  it('evaluate likes my Strength/Crit/Evade and the foe Weak/Poison, dislikes the reverse', () => {
     const tweak = (fn: (s: BattleState) => void) => {
       const s = JSON.parse(JSON.stringify(battle(1))) as BattleState;
       fn(s);
       return evaluate(s, 0, profiles.balanced);
     };
     const add = (s: BattleState, p: PlayerIndex, id: StatusId, amount: number) => {
-      s.players[p].statuses.push({ id, amount, turnsLeft: 2 });
+      s.players[p].statuses.push({ id, amount, turnsLeft: id === 'weak' ? 2 : null });
     };
     const base = tweak(() => {});
-    expect(tweak((s) => add(s, 0, 'stealth', 3))).toBeGreaterThan(base);
-    expect(tweak((s) => add(s, 1, 'poison', 4))).toBeGreaterThan(base);
-    expect(tweak((s) => add(s, 1, 'curse', 2))).toBeGreaterThan(base);
-    expect(tweak((s) => add(s, 0, 'poison', 4))).toBeLessThan(base);
-    expect(tweak((s) => add(s, 1, 'stealth', 3))).toBeLessThan(base);
+    for (const id of ['strength', 'critical', 'evade'] as const) {
+      expect(tweak((s) => add(s, 0, id, 2))).toBeGreaterThan(base);
+      expect(tweak((s) => add(s, 1, id, 2))).toBeLessThan(base);
+    }
+    for (const id of ['weak', 'poison'] as const) {
+      expect(tweak((s) => add(s, 1, id, 4))).toBeGreaterThan(base);
+      expect(tweak((s) => add(s, 0, id, 4))).toBeLessThan(base);
+    }
   });
 
   it('always returns a legal action', () => {

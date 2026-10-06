@@ -10,6 +10,8 @@ export interface Weights {
   enemyShield: number;
   status: number;
   hand: number;
+  criticalValue: number;
+  evadeValue: number;
 }
 
 export const AI_PROFILES: readonly AiProfile[] = ['aggressive', 'balanced', 'defensive'];

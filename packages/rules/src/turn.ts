@@ -1,10 +1,10 @@
 import { drawCard } from './draw';
 import { dealDamage, endBattle, other } from './outcome';
-import { statusAmount, tickStatuses } from './status';
+import { removeStatus, statusAmount, tickStatuses } from './status';
 import type { BattleEvent, BattleState, PlayerIndex } from './types';
 
 /**
- * Tur başı (N3): tur başlar → Kalkan sıfırlanır → MP → Zehir → Arena hasarı → kart çekme.
+ * Tur başı (N3): tur başlar → Kaçınma düşer → Kalkan sıfırlanır → MP → Zehir → Arena hasarı → kart çekme.
  * Her sistem hasarından sonra savaş bitti mi bakılır (C1).
  */
 export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEvent[]): void {
@@ -15,6 +15,12 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
   pl.maxMp = Math.min(mp.start + (pl.turnsTaken - 1) * mp.perTurn, mp.max);
   events.push({ type: 'TURN_STARTED', player: p, round: state.round, maxMp: pl.maxMp });
 
+  // Kaçınma: kullanılmadıysa sahibinin sonraki turunun başında düşer.
+  if (statusAmount(pl, 'evade') > 0) {
+    removeStatus(pl, 'evade');
+    events.push({ type: 'STATUS_EXPIRED', player: p, status: 'evade' });
+  }
+
   if (shield.persistence === 'resetOnOwnTurnStart' && pl.shield > 0) {
     events.push({ type: 'SHIELD_EXPIRED', player: p, amount: pl.shield });
     pl.shield = 0;
@@ -23,11 +29,19 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
   pl.cardsPlayedThisTurn = 0;
   pl.mp = pl.maxMp;
 
-  // Zehir: sahibinin tur başında, Arena'dan önce. Lanet Zehir'e eklenmez (yalnız kart hasarı).
+  // Zehir: sahibinin tur başında, Arena'dan önce; Kalkanı yok sayar. Sonra `decay` kadar azalır.
   const poison = statusAmount(pl, 'poison');
   if (poison > 0) {
-    dealDamage(state, 'poison', p, poison, false, events);
+    dealDamage(state, 'poison', p, poison, true, events);
     if (state.result) return;
+    const left = poison - state.config.statuses.poison.decay;
+    if (left > 0) {
+      const st = pl.statuses.find((x) => x.id === 'poison');
+      if (st) st.amount = left;
+    } else {
+      removeStatus(pl, 'poison');
+      events.push({ type: 'STATUS_EXPIRED', player: p, status: 'poison' });
+    }
   }
 
   if (state.round >= arenaCollapse.startRound) {

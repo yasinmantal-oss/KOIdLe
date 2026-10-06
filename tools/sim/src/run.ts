@@ -45,10 +45,10 @@ export interface MatchRecord {
   cardsPlayed: [number, number];
   /** Oyuncunun ilk 2 turunda, tur başında oynanabilir kart yoktu (yalnız END_TURN yasal). */
   deadOpening: [boolean, boolean];
-  /** Zincir bonusu tetiklenme sayısı (koltuk başına). */
-  chains: [number, number];
-  /** Gizli'nin harcanma sayısı (koltuk başına). */
-  stealthUses: [number, number];
+  /** Kritik'in harcanma sayısı (koltuk başına). */
+  crits: [number, number];
+  /** Kaçınma'nın bir vuruşu sıfırlama sayısı (koltuk başına, kaçınan koltuk). */
+  evades: [number, number];
   /** Koltuğun Zehir'inin rakibe verdiği toplam hasar. */
   poisonDamage: [number, number];
   /** kart id → [P0 kaç kez oynadı, P1 kaç kez oynadı]; yalnız oynanan kartlar yazılır. */
@@ -92,8 +92,8 @@ export function playMatch(
     turns: [0, 0],
     cardsPlayed: [0, 0],
     deadOpening: [false, false],
-    chains: [0, 0],
-    stealthUses: [0, 0],
+    crits: [0, 0],
+    evades: [0, 0],
     poisonDamage: [0, 0],
     plays: {},
   };
@@ -108,8 +108,8 @@ export function playMatch(
         rec.poisonDamage[e.target === 0 ? 1 : 0] += e.amount;
       }
       if (e.type === 'DECK_RESHUFFLED') rec.reshuffleSeen = true;
-      if (e.type === 'CHAIN_TRIGGERED') rec.chains[e.player] += 1;
-      if (e.type === 'STEALTH_USED') rec.stealthUses[e.player] += 1;
+      if (e.type === 'CRIT_USED') rec.crits[e.player] += 1;
+      if (e.type === 'EVADED') rec.evades[e.player] += 1;
       if (e.type === 'TURN_ENDED') {
         rec.unusedMp[e.player] += e.unusedMp;
         rec.turns[e.player] += 1;

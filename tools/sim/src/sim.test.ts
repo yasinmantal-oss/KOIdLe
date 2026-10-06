@@ -37,8 +37,8 @@ describe('simulation smoke (job matrix 3×3 × 1 seed, profile matrix 3×(3×3) 
   it('records the new per-seat metrics', () => {
     for (const r of job) {
       expect(r.deadOpening).toHaveLength(2);
-      expect(r.chains.every((n) => n >= 0)).toBe(true);
-      expect(r.stealthUses.every((n) => n >= 0)).toBe(true);
+      expect(r.crits.every((n) => n >= 0)).toBe(true);
+      expect(r.evades.every((n) => n >= 0)).toBe(true);
       expect(r.poisonDamage.every((n) => n >= 0)).toBe(true);
     }
   });

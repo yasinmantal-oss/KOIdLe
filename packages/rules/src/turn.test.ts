@@ -88,19 +88,14 @@ describe('shield (K1)', () => {
 });
 
 describe('statuses (K7)', () => {
-  it('self strength lasts this turn and the next own turn', () => {
+  it('self strength has no duration and survives turn ends until used', () => {
     const { state } = newBattle(1);
     const me = state.active;
     setHand(state, me, ['rally']);
     let s = apply(state, { type: 'PLAY_CARD', player: me, iid: `t${me}-0` }).state;
-    expect(s.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: 2 }]);
-    s = endTurn(s).state;
-    expect(s.players[me].statuses[0]?.turnsLeft).toBe(1);
-    s = endTurn(s).state;
-    expect(s.players[me].statuses).toHaveLength(1);
-    const r = endTurn(s);
-    expect(r.state.players[me].statuses).toEqual([]);
-    expect(r.events).toContainEqual({ type: 'STATUS_EXPIRED', player: me, status: 'strength' });
+    expect(s.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: null }]);
+    s = endTurns(s, 6).state;
+    expect(s.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: null }]);
   });
 
   it('weak on the enemy lasts the enemy next two turns', () => {
@@ -115,30 +110,46 @@ describe('statuses (K7)', () => {
     expect(s.players[foe].statuses).toEqual([]);
   });
 
-  it('ignores smaller, refreshes equal, upgrades larger', () => {
+  it('weak ignores smaller, refreshes equal, upgrades larger', () => {
     const { state } = newBattle(1);
     const me = state.active;
-    state.players[me].statuses = [{ id: 'strength', amount: 2, turnsLeft: 1 }];
+    state.players[me].statuses = [{ id: 'weak', amount: 2, turnsLeft: 1 }];
     addCard(state, 'small', 1, [
-      { kind: 'applyStatus', target: 'self', status: 'strength', amount: 1 },
+      { kind: 'applyStatus', target: 'self', status: 'weak', amount: 1 },
     ]);
-    addCard(state, 'big', 1, [
-      { kind: 'applyStatus', target: 'self', status: 'strength', amount: 3 },
-    ]);
-    setHand(state, me, ['small', 'rally', 'big']);
+    addCard(state, 'same', 1, [{ kind: 'applyStatus', target: 'self', status: 'weak', amount: 2 }]);
+    addCard(state, 'big', 1, [{ kind: 'applyStatus', target: 'self', status: 'weak', amount: 3 }]);
+    setHand(state, me, ['small', 'same', 'big']);
     let r = apply(state, { type: 'PLAY_CARD', player: me, iid: `t${me}-0` });
-    expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: 1 }]);
+    expect(r.state.players[me].statuses).toEqual([{ id: 'weak', amount: 2, turnsLeft: 1 }]);
     expect(r.events).toContainEqual({
       type: 'STATUS_IGNORED',
       player: me,
-      status: 'strength',
+      status: 'weak',
       amount: 1,
     });
     r = apply(r.state, { type: 'PLAY_CARD', player: me, iid: `t${me}-1` });
-    expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: 2 }]);
-    setStatus(r.state, me, 'strength', 2, 1);
+    expect(r.state.players[me].statuses).toEqual([{ id: 'weak', amount: 2, turnsLeft: 2 }]);
+    setStatus(r.state, me, 'weak', 2, 1);
     r = apply(r.state, { type: 'PLAY_CARD', player: me, iid: `t${me}-2` });
-    expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 3, turnsLeft: 2 }]);
+    expect(r.state.players[me].statuses).toEqual([{ id: 'weak', amount: 3, turnsLeft: 2 }]);
+  });
+
+  it('strength and poison stack additively up to their caps', () => {
+    const { state } = newBattle(1);
+    const me = state.active;
+    addCard(state, 's3', 0, [
+      { kind: 'applyStatus', target: 'self', status: 'strength', amount: 3 },
+    ]);
+    addCard(state, 'p4', 0, [{ kind: 'applyStatus', target: 'self', status: 'poison', amount: 4 }]);
+    setHand(state, me, ['s3', 's3', 'p4', 'p4']);
+    let s = state;
+    for (let i = 0; i < 4; i++)
+      s = apply(s, { type: 'PLAY_CARD', player: me, iid: `t${me}-${i}` }).state;
+    expect(s.players[me].statuses).toEqual([
+      { id: 'strength', amount: 5, turnsLeft: null },
+      { id: 'poison', amount: 6, turnsLeft: null },
+    ]);
   });
 });
 

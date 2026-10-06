@@ -6,9 +6,12 @@
     "type": "attack",
     "cost": 1,
     "effects": [
-      { "kind": "damage", "amount": 3, "bonus": { "if": { "selfHas": "strength" }, "amount": 2 } }
+      {
+        "kind": "damage",
+        "amount": 3
+      }
     ],
-    "text": "3 hasar ver. Güç'ün varsa +2."
+    "text": "3 hasar ver."
   },
   {
     "id": "gain",
@@ -16,8 +19,15 @@
     "job": "warrior",
     "type": "buff",
     "cost": 1,
-    "effects": [{ "kind": "applyStatus", "target": "self", "status": "strength", "amount": 2 }],
-    "text": "Kendine Güç 2 ver."
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "self",
+        "status": "strength",
+        "amount": 2
+      }
+    ],
+    "text": "2 Güç kazan."
   },
   {
     "id": "leg-cutting",
@@ -26,8 +36,16 @@
     "type": "debuff",
     "cost": 2,
     "effects": [
-      { "kind": "damage", "amount": 2 },
-      { "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }
+      {
+        "kind": "damage",
+        "amount": 2
+      },
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 2
+      }
     ],
     "text": "2 hasar ver. Rakibe Zayıflık 2 ver."
   },
@@ -38,10 +56,18 @@
     "type": "buff",
     "cost": 2,
     "effects": [
-      { "kind": "applyStatus", "target": "self", "status": "strength", "amount": 3 },
-      { "kind": "applyStatus", "target": "self", "status": "curse", "amount": 2 }
+      {
+        "kind": "applyStatus",
+        "target": "self",
+        "status": "strength",
+        "amount": 3
+      },
+      {
+        "kind": "selfDamage",
+        "amount": 2
+      }
     ],
-    "text": "Kendine Güç 3 ve Lanet 2 ver."
+    "text": "3 Güç kazan. Kendine 2 hasar ver (Kalkanını yok sayar)."
   },
   {
     "id": "iron-skin",
@@ -49,8 +75,13 @@
     "job": "warrior",
     "type": "defense",
     "cost": 2,
-    "effects": [{ "kind": "shield", "amount": 6 }],
-    "text": "6 Kalkan kazan."
+    "effects": [
+      {
+        "kind": "shield",
+        "amount": 5
+      }
+    ],
+    "text": "5 Kalkan kazan."
   },
   {
     "id": "cleave",
@@ -59,9 +90,12 @@
     "type": "attack",
     "cost": 3,
     "effects": [
-      { "kind": "damage", "amount": 7, "bonus": { "if": { "selfHas": "strength" }, "amount": 3 } }
+      {
+        "kind": "damage",
+        "amount": 6
+      }
     ],
-    "text": "7 hasar ver. Güç'ün varsa +3."
+    "text": "6 hasar ver."
   },
   {
     "id": "howling-sword",
@@ -73,11 +107,10 @@
       {
         "kind": "damage",
         "amount": 6,
-        "ignoreShield": true,
-        "bonus": { "if": { "enemyHas": "weak" }, "amount": 3 }
+        "ignoreShield": true
       }
     ],
-    "text": "Kalkanı yok sayarak 6 hasar ver. Rakip Zayıfsa +3."
+    "text": "6 hasar ver. Kalkanı deler."
   },
   {
     "id": "wall-of-iron",
@@ -86,8 +119,13 @@
     "tags": ["heavy"],
     "type": "defense",
     "cost": 3,
-    "effects": [{ "kind": "shield", "amount": 12 }],
-    "text": "12 Kalkan kazan."
+    "effects": [
+      {
+        "kind": "shield",
+        "amount": 10
+      }
+    ],
+    "text": "10 Kalkan kazan."
   },
   {
     "id": "sword-dancing",
@@ -96,8 +134,17 @@
     "tags": ["heavy"],
     "type": "attack",
     "cost": 4,
-    "effects": [{ "kind": "damage", "amount": 6 }, { "kind": "heal", "amount": 5 }],
-    "text": "6 hasar ver. 5 HP iyileş."
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 5
+      },
+      {
+        "kind": "heal",
+        "amount": 4
+      }
+    ],
+    "text": "5 hasar ver. 4 HP iyileş."
   },
   {
     "id": "hell-blade",
@@ -107,8 +154,12 @@
     "type": "attack",
     "cost": 5,
     "effects": [
-      { "kind": "damage", "amount": 9, "bonus": { "if": { "selfHas": "strength" }, "amount": 4 } }
+      {
+        "kind": "damage",
+        "amount": 9,
+        "strengthMultiplier": 2
+      }
     ],
-    "text": "9 hasar ver. Güç'ün varsa +4."
+    "text": "9 hasar ver. Güç'ün iki kat sayılır."
   }
 ]

@@ -17,13 +17,9 @@ export const testConfig: BattleConfig = {
   shield: { persistence: 'resetOnOwnTurnStart' },
   arenaCollapse: { startRound: 8, start: 1, step: 1, ignoresShield: true },
   statuses: {
-    stacking: 'maxAmountRefreshOnGte',
-    tickOn: 'ownerTurnEnd',
-    strength: { duration: 2 },
     weak: { duration: 2 },
-    curse: { duration: 2 },
-    poison: { duration: 2 },
-    stealth: { duration: 2 },
+    strength: { max: 5 },
+    poison: { max: 6, decay: 2 },
   },
   deckBuilding: { maxHeavy: 2, minOpeners: 3 },
   roundCap: 20,
@@ -65,9 +61,14 @@ export const testCards: CardDef[] = [
   ]),
   card('pierce', 'attack', 4, [{ kind: 'damage', amount: 6, ignoreShield: true }]),
   card('ruin', 'attack', 6, [{ kind: 'damage', amount: 14 }]),
+  card('sprint', 'skill', 0, [{ kind: 'gainMp', amount: 1 }]),
+  card('sting', 'attack', 1, [
+    { kind: 'damage', amount: 1 },
+    { kind: 'selfDamage', amount: 1 },
+  ]),
 ];
 
-export const testDeck = testCards.map((c) => c.id);
+export const testDeck = testCards.slice(0, 12).map((c) => c.id);
 
 export function newBattle(seed = 1, config: BattleConfig = testConfig) {
   return createBattle({
@@ -103,7 +104,7 @@ export function setStatus(
   p: PlayerIndex,
   id: StatusId,
   amount: number,
-  turnsLeft = 2,
+  turnsLeft: number | null = id === 'weak' ? 2 : null,
 ): void {
   state.players[p].statuses = [
     ...state.players[p].statuses.filter((s) => s.id !== id),

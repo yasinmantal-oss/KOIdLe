@@ -24,26 +24,21 @@ export const BattleConfigSchema = z.strictObject({
     ignoresShield: z.boolean(),
   }),
   statuses: z.strictObject({
-    stacking: z.literal('maxAmountRefreshOnGte'),
-    tickOn: z.literal('ownerTurnEnd'),
-    strength: z.strictObject({ duration: positive() }),
     weak: z.strictObject({ duration: positive() }),
-    curse: z.strictObject({ duration: positive() }),
-    poison: z.strictObject({ duration: positive() }),
-    stealth: z.strictObject({ duration: positive() }),
+    strength: z.strictObject({ max: positive() }),
+    poison: z.strictObject({ max: positive(), decay: positive() }),
   }),
   deckBuilding: z.strictObject({ maxHeavy: int(), minOpeners: int() }),
   roundCap: positive(),
 }) satisfies z.ZodType<BattleConfig>;
 
-const StatusIdSchema = z.enum(['strength', 'weak', 'curse', 'poison', 'stealth']);
+const StatusIdSchema = z.enum(['strength', 'weak', 'poison', 'critical', 'evade']);
 
 export const ConditionSchema = z.union([
   z.strictObject({ selfHas: StatusIdSchema }),
   z.strictObject({ enemyHas: StatusIdSchema }),
   z.strictObject({ enemyHpAtMost: positive() }),
   z.strictObject({ selfHpAtMost: positive() }),
-  z.strictObject({ cardsPlayedAtLeast: positive() }),
 ]);
 
 const BonusSchema = z.strictObject({ if: ConditionSchema, amount: positive() });
@@ -55,7 +50,10 @@ export const EffectSchema = z.discriminatedUnion('kind', [
     ignoreShield: z.boolean().exactOptional(),
     hits: z.int().min(2).exactOptional(),
     bonus: BonusSchema.exactOptional(),
+    strengthMultiplier: z.int().min(2).exactOptional(),
   }),
+  z.strictObject({ kind: z.literal('selfDamage'), amount: positive() }),
+  z.strictObject({ kind: z.literal('gainMp'), amount: positive() }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),
   z.strictObject({ kind: z.literal('shield'), amount: positive() }),
   z.strictObject({
@@ -96,6 +94,10 @@ export const AiWeightsSchema = z.strictObject({
   enemyShield: z.number().min(0),
   status: z.number().min(0),
   hand: z.number().min(0),
+  /** Kritik'in AI için değeri (sabit puan). */
+  criticalValue: z.number().min(0),
+  /** Kaçınma'nın AI için değeri (sabit puan). */
+  evadeValue: z.number().min(0),
 });
 
 export const AiProfilesSchema = z.strictObject({

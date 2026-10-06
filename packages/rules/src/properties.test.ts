@@ -9,12 +9,15 @@ function checkInvariants(s: BattleState): void {
   const iids: string[] = [];
   for (const p of s.players) {
     expect(p.mp).toBeGreaterThanOrEqual(0);
-    expect(p.mp).toBeLessThanOrEqual(p.maxMp);
+    // gainMp kartları (en çok +2) MP'yi bu tur için maxMp'nin üstüne çıkarabilir.
+    expect(p.mp).toBeLessThanOrEqual(p.maxMp + 2 * p.cardsPlayedThisTurn);
     expect(p.maxMp).toBeLessThanOrEqual(mp.max);
     expect(p.hp).toBeGreaterThanOrEqual(0);
     expect(p.hp).toBeLessThanOrEqual(p.maxHp);
     expect(p.shield).toBeGreaterThanOrEqual(0);
-    for (const st of p.statuses) expect(st.turnsLeft).toBeGreaterThan(0);
+    for (const st of p.statuses) {
+      if (st.turnsLeft !== null) expect(st.turnsLeft).toBeGreaterThan(0);
+    }
     expect(p.deck.length + p.hand.length + p.discard.length).toBe(deck.size);
     expect(p.hand.length).toBeLessThanOrEqual(s.config.hand.limit);
     iids.push(...[...p.deck, ...p.hand, ...p.discard].map((c) => c.iid));
@@ -34,6 +37,9 @@ function checkInvariants(s: BattleState): void {
   expect(s.round).toBeLessThanOrEqual(s.config.roundCap);
 }
 
+// Kaçınma/Kendine hasar/MP kazanımı dahil olsun diye iki kartı değiştirilmiş deste.
+const propDeck = [...testDeck.slice(0, 10), 'sprint', 'sting'];
+
 describe('random legal play keeps every invariant', () => {
   it('holds for random seeds and choices', () => {
     fc.assert(
@@ -44,7 +50,7 @@ describe('random legal play keeps every invariant', () => {
           let { state } = createBattle({
             config: testConfig,
             cards: testCards,
-            decks: [testDeck, testDeck],
+            decks: [propDeck, propDeck],
             names: ['A', 'B'],
             seed,
           });

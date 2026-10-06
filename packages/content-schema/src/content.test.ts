@@ -75,7 +75,7 @@ describe('real content', () => {
     expect(Object.keys(loadPresetDecks()).sort()).toEqual(['archer', 'assassin', 'warrior']);
   });
 
-  it('Stab → Thrust → Spike deals 19 in one turn (real content)', () => {
+  it('Stab → Thrust → Spike deals 16 in one turn (real content)', () => {
     const deck = loadPresetDeck('assassin');
     const { state } = createBattle({
       config,
@@ -92,7 +92,7 @@ describe('real content', () => {
     pl.maxMp = 6;
     let s = state;
     for (let i = 0; i < 3; i++) s = apply(s, { type: 'PLAY_CARD', player: me, iid: `c${i}` }).state;
-    expect(s.players[foe].hp).toBe(config.hero.hp - 19);
+    expect(s.players[foe].hp).toBe(config.hero.hp - 16);
   });
 
   it('docs/savas-degerleri.md is generated from content (C2, N7)', () => {
@@ -126,7 +126,7 @@ describe('validateDeck', () => {
   });
 
   it('3 heavy cards', () => {
-    const deck = warrior.map((id) => (id === 'sprint' ? 'wall-of-iron' : id));
+    const deck = warrior.map((id) => (id === 'absoluteness' ? 'wall-of-iron' : id));
     expect(issues(deck, 'warrior').join('\n')).toMatch(/Ağır kart en fazla 2/);
   });
 
@@ -138,12 +138,12 @@ describe('validateDeck', () => {
       'cleave',
       'howling-sword',
       'valor',
-      'guclu-vurus',
+      'power-strike',
       'wall-of-iron',
       'sword-dancing',
       'hell-blade',
-      'gozdagi',
-      'sprint',
+      'intimidate',
+      'quick-strike',
     ];
     expect(deckStats(deck, cards, config)).toEqual({ size: 12, heavy: 3, openers: 2 });
     expect(issues(deck, 'warrior').join('\n')).toMatch(/MP'lik kart gerekli/);

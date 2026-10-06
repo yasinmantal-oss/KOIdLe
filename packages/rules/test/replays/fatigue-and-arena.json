@@ -37,22 +37,15 @@
         "ignoresShield": true
       },
       "statuses": {
-        "stacking": "maxAmountRefreshOnGte",
-        "tickOn": "ownerTurnEnd",
-        "strength": {
-          "duration": 2
-        },
         "weak": {
           "duration": 2
         },
-        "curse": {
-          "duration": 2
+        "strength": {
+          "max": 5
         },
         "poison": {
-          "duration": 2
-        },
-        "stealth": {
-          "duration": 2
+          "max": 6,
+          "decay": 2
         }
       },
       "deckBuilding": {
@@ -241,6 +234,38 @@
           }
         ],
         "text": "ruin"
+      },
+      {
+        "id": "sprint",
+        "name": "sprint",
+        "job": "warrior",
+        "type": "skill",
+        "cost": 0,
+        "effects": [
+          {
+            "kind": "gainMp",
+            "amount": 1
+          }
+        ],
+        "text": "sprint"
+      },
+      {
+        "id": "sting",
+        "name": "sting",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 1,
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 1
+          },
+          {
+            "kind": "selfDamage",
+            "amount": 1
+          }
+        ],
+        "text": "sting"
       }
     ],
     "decks": [
@@ -1065,22 +1090,15 @@
           "ignoresShield": true
         },
         "statuses": {
-          "stacking": "maxAmountRefreshOnGte",
-          "tickOn": "ownerTurnEnd",
-          "strength": {
-            "duration": 2
-          },
           "weak": {
             "duration": 2
           },
-          "curse": {
-            "duration": 2
+          "strength": {
+            "max": 5
           },
           "poison": {
-            "duration": 2
-          },
-          "stealth": {
-            "duration": 2
+            "max": 6,
+            "decay": 2
           }
         },
         "deckBuilding": {
@@ -1088,6 +1106,150 @@
           "minOpeners": 3
         },
         "roundCap": 20
+      },
+      "rng": 1575801032,
+      "round": 14,
+      "active": 1,
+      "firstPlayer": 0,
+      "players": [
+        {
+          "name": "A",
+          "hp": 1,
+          "maxHp": 30,
+          "mp": 8,
+          "maxMp": 8,
+          "shield": 0,
+          "shieldGainedThisTurn": 0,
+          "cardsPlayedThisTurn": 0,
+          "statuses": [],
+          "deck": [],
+          "hand": [
+            {
+              "iid": "p0-7",
+              "cardId": "mend"
+            },
+            {
+              "iid": "p0-11",
+              "cardId": "ruin"
+            },
+            {
+              "iid": "p0-6",
+              "cardId": "wall"
+            },
+            {
+              "iid": "p0-8",
+              "cardId": "heavy"
+            },
+            {
+              "iid": "p0-10",
+              "cardId": "pierce"
+            },
+            {
+              "iid": "p0-5",
+              "cardId": "rally"
+            },
+            {
+              "iid": "p0-1",
+              "cardId": "guard"
+            },
+            {
+              "iid": "p0-4",
+              "cardId": "bash"
+            }
+          ],
+          "discard": [
+            {
+              "iid": "p0-0",
+              "cardId": "hit"
+            },
+            {
+              "iid": "p0-2",
+              "cardId": "taunt"
+            },
+            {
+              "iid": "p0-9",
+              "cardId": "surge"
+            },
+            {
+              "iid": "p0-3",
+              "cardId": "study"
+            }
+          ],
+          "turnsTaken": 14,
+          "reshufflesLeft": 0,
+          "fatigueCount": 1
+        },
+        {
+          "name": "B",
+          "hp": 0,
+          "maxHp": 30,
+          "mp": 8,
+          "maxMp": 8,
+          "shield": 0,
+          "shieldGainedThisTurn": 0,
+          "cardsPlayedThisTurn": 0,
+          "statuses": [],
+          "deck": [],
+          "hand": [
+            {
+              "iid": "p1-4",
+              "cardId": "bash"
+            },
+            {
+              "iid": "p1-3",
+              "cardId": "study"
+            },
+            {
+              "iid": "p1-7",
+              "cardId": "mend"
+            },
+            {
+              "iid": "p1-0",
+              "cardId": "hit"
+            },
+            {
+              "iid": "p1-8",
+              "cardId": "heavy"
+            },
+            {
+              "iid": "p1-11",
+              "cardId": "ruin"
+            },
+            {
+              "iid": "p1-2",
+              "cardId": "taunt"
+            },
+            {
+              "iid": "p1-6",
+              "cardId": "wall"
+            }
+          ],
+          "discard": [
+            {
+              "iid": "p1-9",
+              "cardId": "surge"
+            },
+            {
+              "iid": "p1-1",
+              "cardId": "guard"
+            },
+            {
+              "iid": "p1-5",
+              "cardId": "rally"
+            },
+            {
+              "iid": "p1-10",
+              "cardId": "pierce"
+            }
+          ],
+          "turnsTaken": 14,
+          "reshufflesLeft": 0,
+          "fatigueCount": 2
+        }
+      ],
+      "result": {
+        "winner": 0,
+        "reason": "fatigue"
       },
       "cards": {
         "hit": {
@@ -1269,151 +1431,39 @@
             }
           ],
           "text": "ruin"
-        }
-      },
-      "rng": 1575801032,
-      "round": 14,
-      "active": 1,
-      "firstPlayer": 0,
-      "players": [
-        {
-          "name": "A",
-          "hp": 1,
-          "maxHp": 30,
-          "mp": 8,
-          "maxMp": 8,
-          "shield": 0,
-          "shieldGainedThisTurn": 0,
-          "cardsPlayedThisTurn": 0,
-          "statuses": [],
-          "deck": [],
-          "hand": [
-            {
-              "iid": "p0-7",
-              "cardId": "mend"
-            },
-            {
-              "iid": "p0-11",
-              "cardId": "ruin"
-            },
-            {
-              "iid": "p0-6",
-              "cardId": "wall"
-            },
-            {
-              "iid": "p0-8",
-              "cardId": "heavy"
-            },
-            {
-              "iid": "p0-10",
-              "cardId": "pierce"
-            },
-            {
-              "iid": "p0-5",
-              "cardId": "rally"
-            },
-            {
-              "iid": "p0-1",
-              "cardId": "guard"
-            },
-            {
-              "iid": "p0-4",
-              "cardId": "bash"
-            }
-          ],
-          "discard": [
-            {
-              "iid": "p0-0",
-              "cardId": "hit"
-            },
-            {
-              "iid": "p0-2",
-              "cardId": "taunt"
-            },
-            {
-              "iid": "p0-9",
-              "cardId": "surge"
-            },
-            {
-              "iid": "p0-3",
-              "cardId": "study"
-            }
-          ],
-          "turnsTaken": 14,
-          "reshufflesLeft": 0,
-          "fatigueCount": 1
         },
-        {
-          "name": "B",
-          "hp": 0,
-          "maxHp": 30,
-          "mp": 8,
-          "maxMp": 8,
-          "shield": 0,
-          "shieldGainedThisTurn": 0,
-          "cardsPlayedThisTurn": 0,
-          "statuses": [],
-          "deck": [],
-          "hand": [
+        "sprint": {
+          "id": "sprint",
+          "name": "sprint",
+          "job": "warrior",
+          "type": "skill",
+          "cost": 0,
+          "effects": [
             {
-              "iid": "p1-4",
-              "cardId": "bash"
-            },
-            {
-              "iid": "p1-3",
-              "cardId": "study"
-            },
-            {
-              "iid": "p1-7",
-              "cardId": "mend"
-            },
-            {
-              "iid": "p1-0",
-              "cardId": "hit"
-            },
-            {
-              "iid": "p1-8",
-              "cardId": "heavy"
-            },
-            {
-              "iid": "p1-11",
-              "cardId": "ruin"
-            },
-            {
-              "iid": "p1-2",
-              "cardId": "taunt"
-            },
-            {
-              "iid": "p1-6",
-              "cardId": "wall"
+              "kind": "gainMp",
+              "amount": 1
             }
           ],
-          "discard": [
+          "text": "sprint"
+        },
+        "sting": {
+          "id": "sting",
+          "name": "sting",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 1,
+          "effects": [
             {
-              "iid": "p1-9",
-              "cardId": "surge"
+              "kind": "damage",
+              "amount": 1
             },
             {
-              "iid": "p1-1",
-              "cardId": "guard"
-            },
-            {
-              "iid": "p1-5",
-              "cardId": "rally"
-            },
-            {
-              "iid": "p1-10",
-              "cardId": "pierce"
+              "kind": "selfDamage",
+              "amount": 1
             }
           ],
-          "turnsTaken": 14,
-          "reshufflesLeft": 0,
-          "fatigueCount": 2
+          "text": "sting"
         }
-      ],
-      "result": {
-        "winner": 0,
-        "reason": "fatigue"
       }
     }
   }

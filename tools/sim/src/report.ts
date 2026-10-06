@@ -43,8 +43,8 @@ export interface CardStat {
 
 export interface ComboStat {
   /** Oyuncu-maç başına ortalama. */
-  chains: number;
-  stealthUses: number;
+  crits: number;
+  evades: number;
   poisonDamage: number;
 }
 
@@ -139,16 +139,16 @@ export function summarize(records: MatchRecord[], input: SummaryInput): SimSumma
 
   const seatsBy = perArchetype(() => 0);
   const deadBy = perArchetype(() => 0);
-  const chainsBy = perArchetype(() => 0);
-  const stealthBy = perArchetype(() => 0);
+  const critsBy = perArchetype(() => 0);
+  const evadesBy = perArchetype(() => 0);
   const poisonBy = perArchetype(() => 0);
   for (const r of job) {
     for (const seat of SEATS) {
       const a = seatArchetype(r, seat);
       seatsBy[a] += 1;
       if (r.deadOpening[seat]) deadBy[a] += 1;
-      chainsBy[a] += r.chains[seat];
-      stealthBy[a] += r.stealthUses[seat];
+      critsBy[a] += r.crits[seat];
+      evadesBy[a] += r.evades[seat];
       poisonBy[a] += r.poisonDamage[seat];
     }
   }
@@ -156,8 +156,8 @@ export function summarize(records: MatchRecord[], input: SummaryInput): SimSumma
     ARCHETYPE_IDS.map((a) => [
       a,
       {
-        chains: rate(chainsBy[a], seatsBy[a]),
-        stealthUses: rate(stealthBy[a], seatsBy[a]),
+        crits: rate(critsBy[a], seatsBy[a]),
+        evades: rate(evadesBy[a], seatsBy[a]),
         poisonDamage: rate(poisonBy[a], seatsBy[a]),
       },
     ]),
@@ -320,12 +320,12 @@ export function renderMarkdown(s: SimSummary, config: BattleConfig, meta: Report
   o.push('');
   o.push('## Kombo tetiklenmeleri (oyuncu-maç başına ortalama)');
   o.push('');
-  o.push('| Job | Zincir | Gizli kullanımı | Zehir hasarı |');
+  o.push('| Job | Kritik kullanımı | Kaçınma tetiklenmesi | Zehir hasarı |');
   o.push('|---|---|---|---|');
   for (const a of ARCHETYPE_IDS) {
     const c = s.combos[a];
     o.push(
-      `| ${ARCHETYPES[a].name} | ${num(c.chains)} | ${num(c.stealthUses)} | ${num(c.poisonDamage)} |`,
+      `| ${ARCHETYPES[a].name} | ${num(c.crits)} | ${num(c.evades)} | ${num(c.poisonDamage)} |`,
     );
   }
   o.push('');
@@ -400,10 +400,10 @@ const CSV_HEADER = [
   'cardsPlayedP1',
   'deadOpeningP0',
   'deadOpeningP1',
-  'chainsP0',
-  'chainsP1',
-  'stealthUsesP0',
-  'stealthUsesP1',
+  'critsP0',
+  'critsP1',
+  'evadesP0',
+  'evadesP1',
   'poisonDamageP0',
   'poisonDamageP1',
 ];
@@ -432,10 +432,10 @@ export function renderCsv(records: MatchRecord[]): string {
       r.cardsPlayed[1],
       r.deadOpening[0],
       r.deadOpening[1],
-      r.chains[0],
-      r.chains[1],
-      r.stealthUses[0],
-      r.stealthUses[1],
+      r.crits[0],
+      r.crits[1],
+      r.evades[0],
+      r.evades[1],
       r.poisonDamage[0],
       r.poisonDamage[1],
     ].join(','),

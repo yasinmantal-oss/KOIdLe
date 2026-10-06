@@ -13,13 +13,9 @@
   "shield": { "persistence": "resetOnOwnTurnStart" },
   "arenaCollapse": { "startRound": 8, "start": 1, "step": 1, "ignoresShield": true },
   "statuses": {
-    "stacking": "maxAmountRefreshOnGte",
-    "tickOn": "ownerTurnEnd",
-    "strength": { "duration": 2 },
     "weak": { "duration": 2 },
-    "curse": { "duration": 2 },
-    "poison": { "duration": 2 },
-    "stealth": { "duration": 2 }
+    "strength": { "max": 5 },
+    "poison": { "max": 6, "decay": 2 }
   },
   "deckBuilding": { "maxHeavy": 2, "minOpeners": 3 },
   "roundCap": 20

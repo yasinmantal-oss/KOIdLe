@@ -5,7 +5,9 @@
     "shield": 0.5,
     "enemyShield": 1,
     "status": 1.5,
-    "hand": 0.5
+    "hand": 0.5,
+    "criticalValue": 6,
+    "evadeValue": 3
   },
   "balanced": {
     "enemyDamage": 2,
@@ -13,7 +15,9 @@
     "shield": 1,
     "enemyShield": 1,
     "status": 1,
-    "hand": 0.5
+    "hand": 0.5,
+    "criticalValue": 5,
+    "evadeValue": 3
   },
   "defensive": {
     "enemyDamage": 1.5,
@@ -21,6 +25,8 @@
     "shield": 1.5,
     "enemyShield": 0.5,
     "status": 1,
-    "hand": 0.5
+    "hand": 0.5,
+    "criticalValue": 4,
+    "evadeValue": 4
   }
 }

@@ -102,46 +102,28 @@ function rows(c: BattleConfig): Row[] {
     ],
     ['Arena Kalkanı yok sayar', 'arenaCollapse.ignoresShield', a.ignoresShield, ''],
     [
-      'Statü yığılması',
-      'statuses.stacking',
-      c.statuses.stacking,
-      'K7. Gelen değer ≥ mevcut: değer güncellenir, süre yenilenir. Küçükse yok sayılır',
-    ],
-    [
-      'Statü sayacı',
-      'statuses.tickOn',
-      c.statuses.tickOn,
-      'Süre, etkilenen kahramanın kendi tur sonunda 1 düşer',
-    ],
-    [
-      'Güç süresi',
-      'statuses.strength.duration',
-      c.statuses.strength.duration,
-      `Kendine verilince: verildiği tur dahil ${c.statuses.strength.duration} kendi turu`,
-    ],
-    [
       'Zayıflık süresi',
       'statuses.weak.duration',
       c.statuses.weak.duration,
-      `Rakibe verilince: rakibin sonraki ${c.statuses.weak.duration} turu`,
+      `Rakibe verilince: rakibin sonraki ${c.statuses.weak.duration} turu. K7: gelen değer ≥ mevcut ise yenilenir, küçükse yok sayılır; süre sahibinin tur sonunda 1 düşer`,
     ],
     [
-      'Lanet süresi',
-      'statuses.curse.duration',
-      c.statuses.curse.duration,
-      'Hedefin aldığı kart hasarına +değer. Rakibe ya da (Berserker bedeli) kendine verilir',
+      'Güç üst sınırı',
+      'statuses.strength.max',
+      c.statuses.strength.max,
+      'Toplanır, bu değerde kesilir. Süresi yok; ilk hasar veren kartın ilk vuruşunda tamamı harcanır',
     ],
     [
-      'Zehir süresi',
-      'statuses.poison.duration',
-      c.statuses.poison.duration,
-      `Sahibinin tur başında değer kadar hasar; ${c.statuses.poison.duration} tur başı boyunca`,
+      'Zehir üst sınırı',
+      'statuses.poison.max',
+      c.statuses.poison.max,
+      'Toplanır, bu değerde kesilir',
     ],
     [
-      'Gizli süresi',
-      'statuses.stealth.duration',
-      c.statuses.stealth.duration,
-      'Sonraki hasar kartının ilk vuruşuna +değer ve Kalkanı yok sayma; kullanılınca düşer',
+      'Zehir azalması',
+      'statuses.poison.decay',
+      c.statuses.poison.decay,
+      'Sahibinin tur başında değer kadar hasar (Kalkanı yok sayar), sonra değer bu kadar azalır; ≤ 0 olunca kalkar',
     ],
     [
       'Güvenlik tavanı',
@@ -207,7 +189,7 @@ export function renderValuesTable(
   );
   out.push('');
   out.push(
-    '**Tur başı sırası (N3, C1):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Zehir hasarı → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Zehir ya da Arena öldürürse çekme olmaz.',
+    '**Tur başı sırası (N3, C1):** tur başlar → Kaçınma düşer → Kalkan sıfırlanır → maks MP ve MP → Zehir hasarı → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Zehir ya da Arena öldürürse çekme olmaz.',
   );
   out.push('');
   out.push('### Formüller (hepsi tamsayı)');
@@ -218,13 +200,19 @@ export function renderValuesTable(
   out.push('- Arena hasarı (raunt R ≥ startRound) = `start + (R − startRound) × step`');
   out.push('- Yorgunluk (oyuncunun k. yorgunluğu) = `start + (k − 1) × step`');
   out.push(
-    "- Kart hasarı = `max(0, kart değeri + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef))`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç). Zehir hasarı Lanet'ten etkilenmez.",
+    "- Vuruş hasarı = `max(0, kart değeri + Güç × çarpan (yalnız kartın ilk vuruşunda) − Zayıflık) × (Kritik ? 2 : 1)`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç). Zayıflık her vuruşa uygulanır.",
   );
   out.push(
-    '- Gizli: bir sonraki hasar veren kartın **ilk vuruşuna** +değer ekler ve o vuruş Kalkanı yok sayar; sonra düşer. Çoklu vuruşta Güç/Zayıflık/Lanet her vuruşa uygulanır.',
+    "- Güç: sonraki hasar veren kartın **ilk vuruşuna** eklenir, sonra tamamı harcanır. Hell Blade Güç'ü iki kat sayar.",
   );
   out.push(
-    '- Zincir N: bu tur, bu karttan **önce** en az N kart oynandıysa bonus. Sayaç kart çözüldükten sonra artar.',
+    '- Kritik: sonraki hasar veren kartın **her vuruşu** iki katı (Güç/Zayıflık sonrası, Kalkandan önce); sonra harcanır. Yalnız Critical Point verir.',
+  );
+  out.push(
+    '- Kaçınma: rakibin sonraki hasar veren kartının **ilk vuruşu** 0 hasar verir ve harcanır; kullanılmazsa sahibinin sonraki turunun başında düşer. Zehir, Arena ve Yorgunluğu durdurmaz.',
+  );
+  out.push(
+    "- MP kazanma: bu tur MP'yi (gerekirse maks MP'nin üstüne) artırır. Kendine hasar Kalkanı yok sayar.",
   );
   out.push("- İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.");
   out.push('');
@@ -254,7 +242,7 @@ export function renderValuesTable(
   out.push(`Kart türleri: ${countBy(cards, (c) => TYPE_TR[c.type])}.`);
   out.push('');
   out.push(
-    'Gözlem listesi: Stab → Thrust → Spike (19 hasar, 6 MP), Berserker → Hell Blade (16), Viper + Power Shot. Sim ve Yasin testinde izlenir; şimdilik değer değişikliği yok.',
+    "Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-10-07). Gözlem listesi: Gain/Berserker → Hell Blade, Critical Point + büyük kart, Viper + Poison Arrow. Sim ve Yasin testinde izlenir.",
   );
   out.push('');
   out.push('## 3. Hazır desteler (önerilen deste = AI destesi)');
@@ -274,13 +262,15 @@ export function renderValuesTable(
   out.push('');
   out.push('Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, deste sırası).');
   out.push('');
-  out.push('| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El |');
-  out.push('|---|---|---|---|---|---|---|');
+  out.push(
+    '| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri |',
+  );
+  out.push('|---|---|---|---|---|---|---|---|---|');
   const names = { aggressive: 'saldırgan', balanced: 'dengeli', defensive: 'savunmacı' } as const;
   for (const key of ['aggressive', 'balanced', 'defensive'] as const) {
     const w = ai[key];
     out.push(
-      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} |`,
+      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} | ${w.criticalValue} | ${w.evadeValue} |`,
     );
   }
   out.push('');

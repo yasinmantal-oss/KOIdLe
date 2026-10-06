@@ -3,15 +3,14 @@ export type Job = 'warrior' | 'rogue';
 export type Branch = 'assassin' | 'archer';
 export type CardTag = 'heavy';
 export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuff';
-export type StatusId = 'strength' | 'weak' | 'curse' | 'poison' | 'stealth';
+export type StatusId = 'strength' | 'weak' | 'poison' | 'critical' | 'evade';
 
 /** Combat v0.2: kartın koşullu bonusu. Koşul kart oynandığı an değerlendirilir. */
 export type Condition =
   | { selfHas: StatusId }
   | { enemyHas: StatusId }
   | { enemyHpAtMost: number }
-  | { selfHpAtMost: number }
-  | { cardsPlayedAtLeast: number };
+  | { selfHpAtMost: number };
 
 export interface Bonus {
   if: Condition;
@@ -19,7 +18,17 @@ export interface Bonus {
 }
 
 export type Effect =
-  | { kind: 'damage'; amount: number; ignoreShield?: boolean; hits?: number; bonus?: Bonus }
+  | {
+      kind: 'damage';
+      amount: number;
+      ignoreShield?: boolean;
+      hits?: number;
+      bonus?: Bonus;
+      /** Güç bu kartta kaç kat sayılır (varsayılan 1; Hell Blade 2). */
+      strengthMultiplier?: number;
+    }
+  | { kind: 'selfDamage'; amount: number }
+  | { kind: 'gainMp'; amount: number }
   | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number; bonus?: Bonus }
@@ -55,9 +64,13 @@ export interface BattleConfig {
   shield: { persistence: 'resetOnOwnTurnStart' | 'persistent' };
   arenaCollapse: { startRound: number; start: number; step: number; ignoresShield: boolean };
   statuses: {
-    stacking: 'maxAmountRefreshOnGte';
-    tickOn: 'ownerTurnEnd';
-  } & Record<StatusId, { duration: number }>;
+    /** Zayıflık: K7 (büyük/eşit değer yeniler); sahibinin tur sonunda süre düşer. */
+    weak: { duration: number };
+    /** Güç: toplanır, üst sınırı var; ilk hasar veren kartta tamamı harcanır. */
+    strength: { max: number };
+    /** Zehir: toplanır, üst sınırı var; sahibinin tur başında vurur, sonra `decay` azalır. */
+    poison: { max: number; decay: number };
+  };
   /** Deste kurma sınırları. Motor yok sayar; deste kurma ekranı, hazır desteler ve sim doğrular. */
   deckBuilding: { maxHeavy: number; minOpeners: number };
   roundCap: number;
@@ -71,7 +84,8 @@ export interface CardInstance {
 export interface Status {
   id: StatusId;
   amount: number;
-  turnsLeft: number;
+  /** null = süresi yok (kullanılana kadar; Kaçınma sahibinin sonraki turunun başında düşer). */
+  turnsLeft: number | null;
 }
 
 export interface PlayerState {
@@ -83,7 +97,7 @@ export interface PlayerState {
   shield: number;
   /** Bu tur kazanılan Kalkan; sahibinin tur başında 0 olur (Kalkan Darbesi bunu okur). */
   shieldGainedThisTurn: number;
-  /** Bu tur oynanan kart sayısı (Zincir). Sahibinin tur başında 0 olur; kart çözüldükten sonra artar. */
+  /** Bu tur oynanan kart sayısı (yalnız gösterim). Sahibinin tur başında 0 olur; kart çözüldükten sonra artar. */
   cardsPlayedThisTurn: number;
   statuses: Status[];
   deck: CardInstance[];
@@ -141,12 +155,15 @@ export type BattleEvent =
       player: PlayerIndex;
       status: StatusId;
       amount: number;
-      duration: number;
+      duration: number | null;
     }
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number }
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
-  | { type: 'CHAIN_TRIGGERED'; player: PlayerIndex; chain: number }
-  | { type: 'STEALTH_USED'; player: PlayerIndex; amount: number }
+  | { type: 'MP_GAINED'; player: PlayerIndex; amount: number }
+  /** Güç harcandı: `amount` toplam eklenen değer (çarpan dahil); çarpan > 1 ise Hell Blade kombosu. */
+  | { type: 'STRENGTH_USED'; player: PlayerIndex; amount: number; multiplier: number }
+  | { type: 'CRIT_USED'; player: PlayerIndex }
+  | { type: 'EVADED'; player: PlayerIndex; attacker: PlayerIndex }
   | { type: 'TURN_ENDED'; player: PlayerIndex; unusedMp: number }
   | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number; reason: EndReason };
 
