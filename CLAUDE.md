@@ -8,3 +8,7 @@ Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. �
 - Sadelik önceliklidir. Bu bir kart oyunu; Knight'taki her sistem buraya taşınmaz.
 - Üçlü çalışma düzeni: Claude uygular, Copilot (Yasin üzerinden) inceler, Yasin karar verir. Her önemli adımın sonunda DURUM RAPORU yazılır (şablon: Faz 0–1 planı §1).
 - Savaş kural değerleri tek yerde: `docs/savas-degerleri.md` (kaynak `content/` JSON'ları).
+
+## Komutlar
+- `pnpm install` · `pnpm test` · `pnpm typecheck` · `pnpm lint` (`pnpm format` düzeltir)
+- `packages/rules` saftır: DOM, Node API, `Math.random`, `Date.now` yasak; bağımlılığı yok. Kural değerleri yalnız `content/` JSON'larında.
