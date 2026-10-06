@@ -1,4 +1,5 @@
 import type { AiProfile } from '@koidle/ai';
+import type { ArchetypeId } from '@koidle/content-schema';
 import type { BattleConfig, CardDef, EndReason } from '@koidle/rules';
 
 export interface Gate1Answers {
@@ -6,7 +7,10 @@ export interface Gate1Answers {
   kararVermekZorundaKaldim: number; // 1–5
   gerekendenUzun: boolean;
   iseYaramayanKartSinirlendirdi: boolean;
+  /** Faz 2 sorusu: "Sonucu değiştiren bir kombomu/kararımı hatırlıyor muyum?" */
   sonucuDegistirenKarariHatirliyorum: boolean;
+  /** Faz 2 sorusu: "Bu job farklı hissettirdi mi?" */
+  farkliHissettirdi: boolean;
   not: string;
 }
 
@@ -14,6 +18,10 @@ export interface Gate1Record {
   zaman: string;
   seed: number;
   aiProfili: AiProfile;
+  oyuncuJob: ArchetypeId;
+  aiJob: ArchetypeId;
+  /** Oynanan destenin kart id'leri. */
+  deste: string[];
   ilkOynayan: 'sen' | 'rakip';
   sonuc: 'kazandın' | 'kaybettin' | 'berabere';
   bitisNedeni: EndReason;
@@ -36,11 +44,11 @@ export function contentHash(config: BattleConfig, cards: CardDef[]): string {
   return h.toString(16).padStart(8, '0');
 }
 
-const BACKUP_KEY = 'koidle.gate1';
+export const FAZ2_BACKUP_KEY = 'koidle.faz2';
 
 export function readBackup(): Gate1Record[] {
   try {
-    return JSON.parse(localStorage.getItem(BACKUP_KEY) ?? '[]') as Gate1Record[];
+    return JSON.parse(localStorage.getItem(FAZ2_BACKUP_KEY) ?? '[]') as Gate1Record[];
   } catch {
     return [];
   }
@@ -66,11 +74,11 @@ async function artifactDb(): Promise<ArtifactDb | null> {
 
 /**
  * Önce yerel yedek. Sonra: Artifact içindeysek sayfanın db'sine (Claude okuyabilir),
- * değilse dev sunucusu üzerinden docs/gate-1/oturumlar.jsonl dosyasına.
+ * değilse dev sunucusu üzerinden docs/faz-2/oturumlar.jsonl dosyasına.
  */
 export async function saveRecord(record: Gate1Record): Promise<SaveTarget> {
   try {
-    localStorage.setItem(BACKUP_KEY, JSON.stringify([...readBackup(), record]));
+    localStorage.setItem(FAZ2_BACKUP_KEY, JSON.stringify([...readBackup(), record]));
   } catch {
     // yedek olmadan da devam
   }
@@ -78,7 +86,7 @@ export async function saveRecord(record: Gate1Record): Promise<SaveTarget> {
     try {
       const db = await artifactDb();
       if (db) {
-        await db.collection('gate1').add({ ...record });
+        await db.collection('faz2').add({ ...record });
         return 'artifact kaydına yazıldı';
       }
     } catch {
@@ -87,7 +95,7 @@ export async function saveRecord(record: Gate1Record): Promise<SaveTarget> {
     return 'yalnız tarayıcıda';
   }
   try {
-    const res = await fetch('/__gate1', { method: 'POST', body: JSON.stringify(record) });
+    const res = await fetch('/__faz2', { method: 'POST', body: JSON.stringify(record) });
     return res.ok ? 'dosyaya yazıldı' : 'yalnız tarayıcıda';
   } catch {
     return 'yalnız tarayıcıda';
@@ -101,7 +109,7 @@ export function downloadBackup(): void {
   const url = URL.createObjectURL(new Blob([`${lines}\n`], { type: 'application/json' }));
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'gate-1-oturumlar.jsonl';
+  a.download = 'faz-2-oturumlar.jsonl';
   a.click();
   URL.revokeObjectURL(url);
 }

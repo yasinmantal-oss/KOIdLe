@@ -1,17 +1,17 @@
-// Yalnız `pnpm dev` sırasında çalışır (N6): Gate 1 formunu docs/gate-1/oturumlar.jsonl dosyasına ekler.
+// Yalnız `pnpm dev` sırasında çalışır (N6): Faz 2 maç formunu docs/faz-2/oturumlar.jsonl dosyasına ekler.
 // Backend değildir; production build'e girmez.
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import type { Plugin } from 'vite';
 
-export const GATE1_LOG = join(import.meta.dirname, '..', '..', 'docs', 'gate-1', 'oturumlar.jsonl');
+export const FAZ2_LOG = join(import.meta.dirname, '..', '..', 'docs', 'faz-2', 'oturumlar.jsonl');
 
 export function gate1Plugin(): Plugin {
   return {
-    name: 'koidle-gate1',
+    name: 'koidle-faz2',
     apply: 'serve',
     configureServer(server) {
-      server.middlewares.use('/__gate1', (req, res) => {
+      server.middlewares.use('/__faz2', (req, res) => {
         if (req.method !== 'POST') {
           res.statusCode = 405;
           res.end();
@@ -24,8 +24,8 @@ export function gate1Plugin(): Plugin {
         req.on('end', () => {
           try {
             const record = JSON.parse(body) as unknown;
-            mkdirSync(dirname(GATE1_LOG), { recursive: true });
-            appendFileSync(GATE1_LOG, `${JSON.stringify(record)}\n`);
+            mkdirSync(dirname(FAZ2_LOG), { recursive: true });
+            appendFileSync(FAZ2_LOG, `${JSON.stringify(record)}\n`);
             res.statusCode = 204;
           } catch {
             res.statusCode = 400;

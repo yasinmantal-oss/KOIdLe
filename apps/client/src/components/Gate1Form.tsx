@@ -7,6 +7,7 @@ const initial: Gate1Answers = {
   gerekendenUzun: false,
   iseYaramayanKartSinirlendirdi: false,
   sonucuDegistirenKarariHatirliyorum: false,
+  farkliHissettirdi: false,
   not: '',
 };
 
@@ -21,7 +22,7 @@ export function Gate1Form({ onSubmit }: { onSubmit: (a: Gate1Answers) => void })
         if (ready) onSubmit(a);
       }}
     >
-      <h3>Gate 1 formu</h3>
+      <h3>Maç formu (Faz 2)</h3>
       <Scale label="1. Eğlence" value={a.eglence} onChange={(v) => setA({ ...a, eglence: v })} />
       <Scale
         label="2. Karar vermek zorunda kaldım mı?"
@@ -39,12 +40,17 @@ export function Gate1Form({ onSubmit }: { onSubmit: (a: Gate1Answers) => void })
         onChange={(v) => setA({ ...a, iseYaramayanKartSinirlendirdi: v })}
       />
       <YesNo
-        label="5. Sonucu değiştiren bir kararımı hatırlıyor muyum?"
+        label="5. Sonucu değiştiren bir kombomu/kararımı hatırlıyor muyum?"
         value={a.sonucuDegistirenKarariHatirliyorum}
         onChange={(v) => setA({ ...a, sonucuDegistirenKarariHatirliyorum: v })}
       />
+      <YesNo
+        label="6. Bu job farklı hissettirdi mi?"
+        value={a.farkliHissettirdi}
+        onChange={(v) => setA({ ...a, farkliHissettirdi: v })}
+      />
       <label className="gate1__note">
-        6. Tek cümle not
+        7. Tek cümle not
         <input
           value={a.not}
           onChange={(e) => setA({ ...a, not: e.target.value })}

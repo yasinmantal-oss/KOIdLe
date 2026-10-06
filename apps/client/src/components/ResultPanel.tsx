@@ -1,4 +1,5 @@
 import type { AiProfile } from '@koidle/ai';
+import type { ArchetypeId } from '@koidle/content-schema';
 import type { BattleEvent, BattleState } from '@koidle/rules';
 import { useState } from 'react';
 import { HUMAN } from '../format';
@@ -10,6 +11,9 @@ interface Props {
   log: BattleEvent[];
   seed: number;
   profile: AiProfile;
+  mine: ArchetypeId;
+  ai: ArchetypeId;
+  deck: string[];
   durationSec: number;
   onRestart: () => void;
   onNew: () => void;
@@ -22,7 +26,18 @@ const END_TR = {
   roundCap: 'raunt tavanı',
 } as const;
 
-export function ResultPanel({ state, log, seed, profile, durationSec, onRestart, onNew }: Props) {
+export function ResultPanel({
+  state,
+  log,
+  seed,
+  profile,
+  mine,
+  ai,
+  deck,
+  durationSec,
+  onRestart,
+  onNew,
+}: Props) {
   const [saved, setSaved] = useState<string | null>(null);
   const result = state.result;
   if (!result) return null;
@@ -34,6 +49,9 @@ export function ResultPanel({ state, log, seed, profile, durationSec, onRestart,
       zaman: new Date().toISOString(),
       seed,
       aiProfili: profile,
+      oyuncuJob: mine,
+      aiJob: ai,
+      deste: deck,
       ilkOynayan: state.firstPlayer === HUMAN ? 'sen' : 'rakip',
       sonuc,
       bitisNedeni: result?.reason ?? 'roundCap',

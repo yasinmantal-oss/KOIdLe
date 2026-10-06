@@ -109,6 +109,9 @@ export function BattleScreen({ content, setup, deck, onNew }: Props) {
           log={log}
           seed={seed}
           profile={profile}
+          mine={mine}
+          ai={ai}
+          deck={deck}
           durationSec={Math.round(((endedAt ?? startedAt) - startedAt) / 1000)}
           onRestart={restart}
           onNew={onNew}
