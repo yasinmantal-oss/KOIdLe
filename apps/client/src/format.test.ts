@@ -18,6 +18,12 @@ const cards: Record<string, CardDef> = {
 };
 
 describe('formatEvent', () => {
+  it('describes stealth', () => {
+    expect(formatEvent({ type: 'STEALTH_USED', player: 0, amount: 3 }, cards)).toBe(
+      'Gizli: +3 hasar, Kalkanı yok sayar.',
+    );
+  });
+
   it('names poison damage', () => {
     expect(
       formatEvent(

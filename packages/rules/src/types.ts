@@ -12,7 +12,7 @@ export interface DamageBonus {
 }
 
 export type Effect =
-  | { kind: 'damage'; amount: number; ignoreShield?: boolean; bonus?: DamageBonus }
+  | { kind: 'damage'; amount: number; ignoreShield?: boolean; hits?: number; bonus?: DamageBonus }
   | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number }
@@ -129,6 +129,7 @@ export type BattleEvent =
     }
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number }
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
+  | { type: 'STEALTH_USED'; player: PlayerIndex; amount: number }
   | { type: 'TURN_ENDED'; player: PlayerIndex; unusedMp: number }
   | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number; reason: EndReason };
 

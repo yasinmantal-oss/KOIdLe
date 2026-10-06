@@ -1,6 +1,6 @@
 import { drawCard } from './draw';
 import { dealDamage, other } from './outcome';
-import { applyStatus, statusAmount } from './status';
+import { applyStatus, removeStatus, statusAmount } from './status';
 import type { BattleEvent, BattleState, Condition, Effect, PlayerIndex } from './types';
 
 export function conditionMet(state: BattleState, source: PlayerIndex, cond: Condition): boolean {
@@ -39,16 +39,27 @@ export function resolveEffect(
   const me = state.players[source];
   const enemy = other(source);
   switch (effect.kind) {
-    case 'damage':
-      dealDamage(
-        state,
-        source,
-        enemy,
-        cardDamage(state, source, baseDamage(state, source, effect)),
-        effect.ignoreShield ?? false,
-        events,
-      );
+    case 'damage': {
+      const base = baseDamage(state, source, effect);
+      // Çoklu vuruş: her vuruş ayrı hesaplanır. Gizli yalnız ilk vuruşa girer ve Kalkanı yok sayar.
+      for (let i = 0; i < (effect.hits ?? 1); i++) {
+        const stealth = statusAmount(me, 'stealth');
+        if (stealth > 0) {
+          removeStatus(me, 'stealth');
+          events.push({ type: 'STEALTH_USED', player: source, amount: stealth });
+        }
+        dealDamage(
+          state,
+          source,
+          enemy,
+          cardDamage(state, source, base + stealth),
+          stealth > 0 || (effect.ignoreShield ?? false),
+          events,
+        );
+        if (state.result) return;
+      }
       return;
+    }
     case 'damageFromShieldGainedThisTurn':
       dealDamage(
         state,

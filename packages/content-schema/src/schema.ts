@@ -47,6 +47,7 @@ export const EffectSchema = z.discriminatedUnion('kind', [
     kind: z.literal('damage'),
     amount: int(),
     ignoreShield: z.boolean().exactOptional(),
+    hits: z.int().min(2).exactOptional(),
     bonus: z.strictObject({ if: ConditionSchema, amount: positive() }).exactOptional(),
   }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),

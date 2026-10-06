@@ -1,4 +1,5 @@
 import { baseDamage, cardDamage, conditionMet } from './effects';
+import { statusAmount } from './status';
 import type { BattleState, PlayerIndex } from './types';
 
 export interface CardPreview {
@@ -16,9 +17,15 @@ export function previewCard(state: BattleState, p: PlayerIndex, cardId: string):
   let bonusActive: boolean | null = null;
   // Efektler sırayla çözülür: kartın önce verdiği Kalkan, sonraki Kalkan hasarına sayılır.
   let shieldGained = state.players[p].shieldGainedThisTurn;
+  // Gizli yalnız kartın ilk vuruşuna girer (motorla aynı sıra).
+  let stealth = statusAmount(state.players[p], 'stealth');
   for (const e of def.effects) {
     if (e.kind === 'damage') {
-      damage = (damage ?? 0) + cardDamage(state, p, baseDamage(state, p, e));
+      const base = baseDamage(state, p, e);
+      for (let i = 0; i < (e.hits ?? 1); i++) {
+        damage = (damage ?? 0) + cardDamage(state, p, base + stealth);
+        stealth = 0;
+      }
       if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
     } else if (e.kind === 'damageFromShieldGainedThisTurn') {
       damage = (damage ?? 0) + cardDamage(state, p, shieldGained);

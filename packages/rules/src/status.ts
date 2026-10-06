@@ -40,3 +40,8 @@ export function tickStatuses(state: BattleState, p: PlayerIndex, events: BattleE
   }
   pl.statuses = pl.statuses.filter((s) => s.turnsLeft > 0);
 }
+
+/** Statüyü hemen kaldırır (Gizli kullanılınca düşer). */
+export function removeStatus(pl: PlayerState, id: StatusId): void {
+  pl.statuses = pl.statuses.filter((s) => s.id !== id);
+}
