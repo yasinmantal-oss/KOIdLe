@@ -76,7 +76,7 @@
 | `berserker` | Berserker | Buff | 2 | 3 Güç kazan. Kendine 2 hasar ver (Kalkanını yok sayar). |
 | `iron-skin` | Iron Skin | Defense | 2 | 5 Kalkan kazan. |
 | `cleave` | Cleave | Attack | 3 | 6 hasar ver. |
-| `howling-sword` | Howling Sword | Attack | 4 | 6 hasar ver. Kalkanı deler. |
+| `howling-sword` | Howling Sword | Attack | 4 | 7 hasar ver. Kalkanı deler. |
 | `wall-of-iron` | ★ Wall of Iron | Defense | 3 | 10 Kalkan kazan. |
 | `sword-dancing` | ★ Sword Dancing | Attack | 4 | 5 hasar ver. 4 HP iyileş. |
 | `hell-blade` | ★ Hell Blade | Attack | 5 | 9 hasar ver. Güç'ün iki kat sayılır. |
@@ -107,13 +107,13 @@
 |---|---|---|---|---|
 | `poison-arrow` | Poison Arrow | Debuff | 1 | 1 hasar ver. Rakibe 2 Zehir ver. |
 | `perfect-arrow` | Perfect Arrow | Attack | 1 | 2 hasar ver. Kalkanı deler. |
-| `multiple-shot` | Multiple Shot | Attack | 2 | 3 kez 2 hasar ver. |
-| `viper` | Viper | Debuff | 2 | Rakibe 4 Zehir ver. |
+| `multiple-shot` | Multiple Shot | Attack | 3 | 3 kez 2 hasar ver. |
+| `viper` | Viper | Debuff | 2 | Rakibe 3 Zehir ver. |
 | `blinding-strafe` | Blinding Strafe | Debuff | 2 | 2 hasar ver. Rakibe Zayıflık 2 ver. |
-| `arrow-shower` | ★ Arrow Shower | Attack | 4 | 4 kez 2 hasar ver. |
-| `power-shot` | ★ Power Shot | Attack | 4 | 6 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +4. |
+| `arrow-shower` | ★ Arrow Shower | Attack | 4 | 3 kez 2 hasar ver. |
+| `power-shot` | ★ Power Shot | Attack | 4 | 5 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3. |
 
-Maliyet dağılımı: 0 MP ×2 · 1 MP ×10 · 2 MP ×10 · 3 MP ×5 · 4 MP ×5 · 5 MP ×1.
+Maliyet dağılımı: 0 MP ×2 · 1 MP ×10 · 2 MP ×9 · 3 MP ×6 · 4 MP ×5 · 5 MP ×1.
 Kart türleri: Attack ×15 · Skill ×4 · Defense ×4 · Debuff ×6 · Heal ×2 · Buff ×2.
 
 Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-10-07). Gözlem listesi: Gain/Berserker → Hell Blade, Critical Point + büyük kart, Viper + Poison Arrow. Sim ve Yasin testinde izlenir.

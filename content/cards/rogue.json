@@ -208,7 +208,7 @@
     "job": "rogue",
     "branch": "archer",
     "type": "attack",
-    "cost": 2,
+    "cost": 3,
     "effects": [
       {
         "kind": "damage",
@@ -230,10 +230,10 @@
         "kind": "applyStatus",
         "target": "enemy",
         "status": "poison",
-        "amount": 4
+        "amount": 3
       }
     ],
-    "text": "Rakibe 4 Zehir ver."
+    "text": "Rakibe 3 Zehir ver."
   },
   {
     "id": "blinding-strafe",
@@ -268,10 +268,10 @@
       {
         "kind": "damage",
         "amount": 2,
-        "hits": 4
+        "hits": 3
       }
     ],
-    "text": "4 kez 2 hasar ver."
+    "text": "3 kez 2 hasar ver."
   },
   {
     "id": "power-shot",
@@ -284,16 +284,16 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 6,
+        "amount": 5,
         "ignoreShield": true,
         "bonus": {
           "if": {
             "enemyHpAtMost": 12
           },
-          "amount": 4
+          "amount": 3
         }
       }
     ],
-    "text": "6 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +4."
+    "text": "5 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3."
   }
 ]

@@ -309,3 +309,13 @@ Tur başına toplam efekt süresi ~1 saniyeyi geçmez.
 - `sim`: job matrisi ve yeni metrikler.
 - `client`: job seçimi, deste kurma, coşku, Gate formu alanları.
 - Golden replay'ler yalnız bilinçli motor değişikliklerinde yenilenir (`UPDATE_REPLAYS=1`). `docs/savas-degerleri.md` her içerik değişikliğinde `pnpm values` ile üretilir.
+
+### Denge turu 1 (2026-10-07)
+
+Yalnız sayı değişti (mekanik, ad ve AI aynı). Başlangıç: Okçu, Warrior'a %70, Asas'a %68 kazanıyordu. Sonuç: tüm eşleşmeler %40–60 içinde.
+
+- Multiple Shot: ÖNCE 2 MP → SONRA 3 MP
+- Arrow Shower: ÖNCE 4 kez 2 hasar → SONRA 3 kez 2 hasar
+- Power Shot: ÖNCE 6 hasar, HP ≤12 ise +4 → SONRA 5 hasar, HP ≤12 ise +3
+- Viper: ÖNCE 4 Zehir → SONRA 3 Zehir
+- Howling Sword: ÖNCE 6 hasar → SONRA 7 hasar

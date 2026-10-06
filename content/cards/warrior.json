@@ -106,11 +106,11 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 6,
+        "amount": 7,
         "ignoreShield": true
       }
     ],
-    "text": "6 hasar ver. Kalkanı deler."
+    "text": "7 hasar ver. Kalkanı deler."
   },
   {
     "id": "wall-of-iron",
