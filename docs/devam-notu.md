@@ -12,7 +12,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Sadeleştirme turu **tamamlandı** (Yasin ile, spec v0.1).
 - Spec self-review edildi, Yasin'in kararlarıyla **v0.2** yazıldı: Faz 5'te hafif backend + bot oyuncular · saldıran da CZ'de olmalı, slot içi seçim + "Savaş Ara" · baskın kalkanı + saldıranın riski · tüm job kartları baştan açık · item desteye kart eklemez · taşıma kapasitesi · EXP risk dışı.
 - **Yasin v0.2'yi onayladı (2026-10-06).**
-- **Faz 0–1 uygulama planı yazıldı** (12 görev, hedef GATE 1). Planın §0'ında Yasin onayı bekleyen 7 küçük karar var (K1–K7: Kalkan kalıcı mı, deste bitince ne olur, ilk oyuncu telafisi, Faz 1 UI'ı DOM, Warrior aynası, kahraman gücü yok, iki statü).
+- **Faz 0–1 planı rev. 2** (Yasin + Copilot kararları): K1 Kalkan tur başında sıfırlanır, K2 tek karıştırma + Yorgunluk, K3–K7 onaylı, tek config dosyası, AI gizli bilgi görmez, `tools/sim` raporu, Gate 1 maç formu. Claude'un küçük kararları N1–N7 onay bekliyor (plan §0.2).
+- **Görev 1 (P0.2) bitti:** `docs/savas-degerleri.md` (tek savaş değer tablosu), `docs/test-degerleri.md` (savaş dışı değerler).
 - **Henüz kod yazılmadı.**
 
 ## Kesinleşen kararlar (özet; ayrıntı spec'te)
@@ -35,16 +36,19 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## Sıradaki adımlar
-1. Yasin plan §0'daki K1–K7 kararlarını onaylasın ya da değiştirsin.
-2. Planı Görev 1'den başlayarak uygula (Görev 1: `docs/test-degerleri.md`, Görev 2: monorepo iskeleti …).
-3. Görev 12 sonunda GATE 1: Yasin `docs/gate-1.md` protokolüyle en az 10 maç oynar.
+1. Copilot incelemesi: plan §0, `docs/savas-degerleri.md`. N1–N7 için Yasin onayı.
+2. Görev 2: monorepo iskeleti. Sonra Görev 3–13 sırayla. Gate 1 geçilmeden Faz 2 yok.
 
 ## Çalışma düzeni
-- Claude ana ajan. Mekanik işler yerel Qwen'e (qwen3:8b) ve Gemini'ye verilebilir. Yaratıcı isimlendirme ve kod devredilmez.
+- **Claude:** tek uygulayıcı (kod, test, commit, push). **Copilot:** bağımsız inceleyici, repo'yu göremez, yalnız Yasin'in ilettiğini okur. **Yasin:** karar veren ve köprü.
+- Copilot önerisi repo'daki gerçek durumla çelişirse Claude uygulamadan önce yazar ve Yasin'e sorar. Copilot önerisi emir değildir.
+- Her önemli adımın sonunda **DURUM RAPORU** (şablon: plan §1). Önemli dosyalar ve ham test/sim çıktıları rapora eklenir.
+- Kural değerleri tek yerde ve tablo halinde: `docs/savas-degerleri.md`.
 - Vault (yalnız yerel makinede): `C:/Users/muham/.gemini/antigravity/scratch/100-Projeler/KOIdLe/KOIdLe_Proje_Karti.md`. Cloud oturumunda vault yok, kayıtlar bu dosyada tutulur.
 
 ## Dosyalar
 - `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md`: geçerli spec (v0.1: tarihçe)
-- `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md`: Faz 0–1 uygulama planı
+- `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md`: Faz 0–1 uygulama planı (rev. 2)
+- `docs/savas-degerleri.md`: tek savaş değer tablosu · `docs/test-degerleri.md`: savaş dışı P0.2 değerleri
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)

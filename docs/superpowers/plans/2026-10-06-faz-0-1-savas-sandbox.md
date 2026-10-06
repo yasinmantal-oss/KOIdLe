@@ -1,248 +1,219 @@
-# KOIdLe — Faz 0–1 Uygulama Planı: Savaş Sandbox'ı
+# KOIdLe — Faz 0–1 Uygulama Planı: Savaş Sandbox'ı (rev. 2)
 
 > **Tarih:** 2026-10-06 · **Dayanak:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (onaylandı)
-> **Hedef:** GATE 1 — *Hero-vs-Hero kart savaşı tek başına eğlenceli mi?*
+> **Hedef:** GATE 1 — *Warrior vs Warrior, Hero-vs-Hero kart savaşı tek başına eğlenceli mi?*
 > **Kapsam:** P0.2 (test değerleri) + P1.1–P1.5. Karakter, item, farm, upgrade, backend **yok**.
+> **rev. 2 (2026-10-06):** Yasin + Copilot kararları işlendi: K1 Kalkan tur başında sıfırlanır, K2 tek karıştırma + Yorgunluk, K7 süre kuralları, tek config dosyası, AI gizli bilgi görmez, `tools/sim` raporu, Gate 1 maç formu, çalışma düzeni ve durum raporu.
 
-> **Claude için talimat:** Görevleri sırayla uygula. Her görev: önce test (kırmızı) → en küçük kod (yeşil) → `pnpm test && pnpm typecheck && pnpm lint` → commit. Bir görev bitmeden sonrakine geçme. Spec'teki ÇIKSIN listesinden hiçbir şey ekleme. Değerler `content/` altındaki JSON'dan okunur, koda gömülmez.
+> **Claude için talimat:** Görevleri sırayla uygula. Her görev: önce test (kırmızı) → en küçük kod (yeşil) → `pnpm test && pnpm typecheck && pnpm lint` → commit → push. Bir görev bitmeden sonrakine geçme. Spec'teki ÇIKSIN listesinden ve §2'deki "Faz 1'de ekleme" listesinden hiçbir şey ekleme. Kural değerleri yalnız `content/battle-config.json` ve `content/cards/warrior.json` içinde durur; kodda sihirli sayı olmaz.
 
 ---
 
-## 0. Bu planda alınan kararlar (Yasin onayı istenir)
+## 0. Kararlar
 
-Spec'in açık bıraktığı, Faz 1'i başlatmak için seçmek zorunda olduğum noktalar. Hepsi config ya da tek dosyalık değişiklik; GATE 1'de değiştirilebilir.
+### 0.1 Yasin'in kararları (K1–K7)
 
-| # | Konu | Seçim | Alternatif |
+| # | Konu | Karar | Durum |
 |---|---|---|---|
-| K1 | Kalkan | **Kalıcı** (Hearthstone zırhı gibi birikir). Arena Çöküşü Kalkanı yok sayar. | Kendi tur başında sıfırlanır (Slay the Spire bloku) |
-| K2 | Deste bitince | Atılan kartlar karıştırılıp yeni deste olur. Ayrı yorgunluk sistemi yok, bitirici Arena Çöküşü. | Yorgunluk hasarı |
-| K3 | İlk oyuncu avantajı | İkisi de 4 kartla başlar; **ilk oyuncu 1. turunda kart çekmez.** | İkinci oyuncuya +1 MP'lik tek seferlik kart |
-| K4 | Faz 1 UI | **React + DOM**, Pixi yok. Harman görünümü ve Pixi Faz 9'da. | Pixi ile başlamak (Gate 1 için gereksiz yük) |
-| K5 | Faz 1 maçı | Warrior vs Warrior (ayna), rakip AI üç profilden biri. | — (diğer job'lar Faz 2) |
-| K6 | Kahraman gücü (temel yetenek) | **Yok.** Spec'te yok; Gate 1 sıkıcı çıkarsa ilk denenecek kollardan biri. | 2 MP'lik job yeteneği |
-| K7 | Statüler | Yalnız **Güç** (+hasar) ve **Zayıflık** (−hasar). Aynı statü tekrar gelirse büyük değer ve uzun süre geçerli, üst üste binmez. | Daha fazla statü (Faz 2'de Mage/Priest ile) |
+| K1 | Kalkan | Hasarı HP'den önce emer. Kullanılmayan Kalkan **sahibinin bir sonraki tur başında sıfırlanır.** Aynı turdaki Kalkan etkileri toplanır. Kalkan HP değildir, iyileştirme sayılmaz. Config: `shield.persistence = "resetOnOwnTurnStart" \| "persistent"`. | Değişti (rev. 2) |
+| K2 | Deste bitince | İlk bitişte ıskarta karıştırılıp yeni deste olur, **savaş başına 1 kez**. Sonra boş desteden çekmeye çalışmak artan **Yorgunluk** hasarı verir: 1, 2, 3… Arena Çöküşü ayrıca sürer. Config: `deck.reshuffles`, `fatigue.start`, `fatigue.step`. | Değişti (rev. 2) |
+| K3 | İlk oyuncu | İki taraf 4 kartla başlar, ilk oyuncu kendi ilk turunda kart çekmez. Telafi yok. İlk oyuncu kazanma oranı simülasyonda ölçülür. | Onaylandı |
+| K4 | Ekran | Sade React web arayüzü. Pixi, Harman görünümü ve animasyon yok. Savaşın tüm durumu okunur (bkz. Görev 12). | Onaylandı |
+| K5 | Eşleşme | Gate 1 yalnız Warrior vs Warrior. | Onaylandı |
+| K6 | Kahraman gücü | Yok. Gate 1 başarısız olursa denenecek kollardan biri; kendiliğinden eklenmez. | Onaylandı |
+| K7 | Statüler | Yalnız Güç ve Zayıflık. Üst üste binmez: gelen değer **büyük veya eşitse** değer onunla değişir ve süre yenilenir; küçükse hiçbir şey olmaz. Süre config'de, sayaç etkilenen kahramanın **kendi tur sonunda** düşer. | Onaylandı |
+
+### 0.2 Claude'un bu revizyonda verdiği küçük kararlar (Yasin/Copilot onayı istenir)
+
+| # | Konu | Karar | Gerekçe |
+|---|---|---|---|
+| N1 | Yorgunluk ve Kalkan | Yorgunluk, Arena Çöküşü gibi **Kalkanı yok sayar** (config: `fatigue.ignoresShield`). | Kural hasarı oyuncu kararıyla engellenmemeli; bitirici işlevini korur. |
+| N2 | Statü süresi nerede | Süre kartta değil, config'de statü başına (`statuses.strength.duration`). Kart yalnız değeri verir. | "Tüm kural değerleri tek config dosyasında" şartı. |
+| N3 | Tur başı sırası | `TURN_STARTED` → Kalkan sıfırlanır → maks MP ve MP → Arena Çöküşü hasarı → kart çekme (gerekirse karıştırma/Yorgunluk). | Kayıtta okunaklı sıra; Arena ve Yorgunluk zaten Kalkanı yok saydığı için sonuç değişmez. |
+| N4 | Boş ıskartada karıştırma | Deste boş, ıskarta da boşsa karıştırma hakkı **harcanmaz**, doğrudan Yorgunluk uygulanır. | Hakkın boşa gitmesi sürpriz bir ceza olurdu. |
+| N5 | Simülasyon yeri | `tools/sim` paketi Faz 1'de açılır (spec bunu P2.2'de anıyordu). | Copilot'un istediği 900 maçlık rapor Gate 1 için şimdi lazım. Boş paket değil, bu fazın ihtiyacı. |
+| N6 | Gate 1 formu nereye yazılır | `pnpm dev` sırasında yalnız geliştirme ortamında çalışan küçük bir Vite eklentisi formu `docs/gate-1/oturumlar.jsonl` dosyasına ekler. Ayrıca tarayıcıda yedek tutulur ve "JSON indir" düğmesi var. | Sonuçlar seed ile repo'da metin olarak durur; backend yok. |
+| N7 | Okunabilir değer tablosu | `docs/savas-degerleri.md`, `pnpm values` komutuyla `content/` JSON'larından **üretilir**. Dosya JSON'la uyuşmazsa test kırılır. | Tek kaynak JSON, tek okunabilir tablo; ikisi asla ayrışmaz. |
+
+### 0.3 Kart etkisi notu (K1 sonrası)
+Kalkan tur başında sıfırlandığı için **Kalkan Darbesi** yalnız o tur içinde (ya da rakibin turundan artakalan değil, kendi turunda kazanılmış) Kalkanı sayar. Siper + Kalkan Darbesi = 4 MP'ye 7 Kalkan + 7 hasar. Bu kombinasyon simülasyonda izlenecek.
 
 ---
 
-## 1. Hedef dosya yapısı (Faz 1 sonu)
+## 1. Çalışma düzeni
+
+- **Claude:** tek uygulayıcı. Kod, test, commit, push.
+- **Copilot:** bağımsız inceleyici. Yalnız Yasin'in ilettiği içeriği görür.
+- **Yasin:** karar veren ve köprü.
+- Copilot önerisi repo'daki gerçek durumla çelişirse Claude uygulamadan önce bunu yazar ve Yasin'e sorar.
+- **DURUM RAPORU** (aşağıdaki şablon) şu noktalarda yazılır: Görev 1, Görev 8 (rules bitti), Görev 11 (sim raporu), Görev 13 (Gate 1'e hazır). Ham test/sim çıktıları raporun sonuna eklenir.
+
+```
+---------------- KOIdLe DURUM RAPORU ----------------
+BRANCH:
+SON COMMIT (hash + mesaj):
+TAMAMLANAN GÖREVLER:
+DEĞİŞEN/EKLENEN DOSYALAR (yol + 1 cümle açıklama):
+ÇALIŞTIRILAN TESTLER VE SONUÇLARI:
+SPEC/PLAN'DAN SAPMALAR (yoksa "Yok"):
+VERDİĞİN YENİ KARARLAR (gerekçesiyle):
+AÇIK SORULAR / RİSKLER:
+COPILOT'UN İNCELEMESİ GEREKEN DOSYALAR:
+SIRADAKİ GÖREV:
+-----------------------------------------------------
+```
+
+---
+
+## 2. Faz 1 kapsam disiplini
+
+**Tek soru:** Warrior vs Warrior, Hero-vs-Hero kart savaşı eğlenceli mi?
+
+**Faz 1'de ekleme:** item/ekipman, upgrade/örs, CZ, farm, merchant, diğer 3 job, hesap/auth, PostgreSQL, Colyseus, mobil, Electron, Pixi, premium, animasyon, ses, minion/çağırma, yeni savaş kaynağı, kahraman gücü, yeni statü.
+
+Monorepo'da yalnız bu fazın kullandığı paketler açılır. "İleride lazım olur" klasörü yok.
+
+---
+
+## 3. Hedef dosya yapısı (Faz 1 sonu)
 
 ```
 KOIdLe/
-├─ package.json               # root scriptler: test, typecheck, lint, dev
-├─ pnpm-workspace.yaml        # packages/*, apps/*, content
+├─ package.json               # root scriptler: test, typecheck, lint, dev, sim, values
+├─ pnpm-workspace.yaml        # packages/*, apps/*, tools/*, content
 ├─ turbo.json
 ├─ tsconfig.base.json         # strict ayarlar
 ├─ biome.json
-├─ content/                   # @koidle/content — yalnız JSON
-│  ├─ package.json
+├─ content/                   # @koidle/content — yalnız JSON (tek kural kaynağı)
 │  ├─ battle-config.json
 │  └─ cards/warrior.json
 ├─ packages/
 │  ├─ rules/                  # @koidle/rules — saf, deterministik, bağımlılıksız
-│  │  └─ src/{rng,clone,types,draw,status,effects,turn,battle,engine,index}.ts (+ *.test.ts)
-│  ├─ content-schema/         # @koidle/content-schema — Zod + content yükleyici
-│  └─ ai/                     # @koidle/ai — skor tabanlı AI (yalnız rules'a bağlı)
+│  │  ├─ src/                 # rng, clone, types, draw, status, effects, turn, battle, engine, legal
+│  │  └─ test/replays/*.json  # golden replay dosyaları (metin)
+│  ├─ content-schema/         # @koidle/content-schema — Zod, yükleyici, değer tablosu üretici
+│  └─ ai/                     # @koidle/ai — skor tabanlı AI, gizli bilgiyi görmez
+├─ tools/
+│  └─ sim/                    # @koidle/sim — AI-vs-AI toplu simülasyon + rapor
 ├─ apps/
-│  └─ client/                 # Vite + React savaş sandbox'ı
+│  └─ client/                 # Vite + React savaş sandbox'ı + Gate 1 formu
+├─ reports/sim/               # latest.md, latest.json, latest.csv
 └─ docs/
-   ├─ test-degerleri.md       # P0.2
-   └─ gate-1.md               # Gate 1 protokolü ve sonuç kaydı
+   ├─ test-degerleri.md       # P0.2 (savaş dışı değerler + savaş tablosuna bağlantı)
+   ├─ savas-degerleri.md      # TEK okunabilir savaş değer tablosu (üretilir)
+   ├─ gate-1.md               # Gate 1 protokolü ve sonuç
+   └─ gate-1/oturumlar.jsonl  # maç başı form kayıtları
 ```
 
-**Bağımlılık yönü:** `rules` ← `content-schema` (yalnız tip) ← `ai` (yalnız `rules`) ← `apps/client`. `rules` hiçbir pakete bağımlı değildir.
+**Bağımlılık yönü:** `rules` (hiçbir şeye bağımlı değil) ← `content-schema` (+ zod) ← `ai` (yalnız `rules`) ← `tools/sim`, `apps/client`.
+**React ekranı silinse bile** `rules`, `content`, replay testleri, `ai` ve `tools/sim` aynen çalışır.
 
-**Paketler build edilmez.** İç paketler `exports: "./src/index.ts"` ile TS kaynağı olarak tüketilir (Turborepo "just-in-time package" deseni). Vite ve Vitest TS'i doğrudan çözer; `typecheck` her pakette `tsc --noEmit`.
+**Paketler build edilmez.** İç paketler `exports: "./src/index.ts"` ile TS kaynağı olarak tüketilir. Vite ve Vitest TS'i doğrudan çözer; `tools/sim` CLI'ı `tsx` ile çalışır; `typecheck` her pakette `tsc --noEmit`.
 
 ---
 
-## Görev 1 — P0.2 Test değerleri tablosu
+## 4. Savaş config şekli (`content/battle-config.json`)
 
-**Dosya:** `docs/test-degerleri.md` (yeni)
+```json
+{
+  "hero":          { "hp": 30 },
+  "mp":            { "start": 1, "perTurn": 1, "max": 8 },
+  "hand":          { "starting": 4, "limit": 8, "drawPerTurn": 1, "firstPlayerSkipsFirstDraw": true },
+  "deck":          { "size": 12, "reshuffles": 1 },
+  "fatigue":       { "start": 1, "step": 1, "ignoresShield": true },
+  "shield":        { "persistence": "resetOnOwnTurnStart" },
+  "arenaCollapse": { "startRound": 8, "start": 1, "step": 1, "ignoresShield": true },
+  "statuses": {
+    "stacking": "maxAmountRefreshOnGte",
+    "tickOn": "ownerTurnEnd",
+    "strength": { "duration": 2 },
+    "weak":     { "duration": 2 }
+  },
+  "roundCap": 20
+}
+```
 
-Doğru denge değil, başlangıç değerleri. Faz 1'de yalnızca **Savaş** bölümü koda (`content/battle-config.json`, `content/cards/warrior.json`) girer; diğer bölümler kendi fazında `content/` altına taşınır ve bu tablo kaynak olarak kalır.
+Formüller (hepsi tamsayı):
+- Maks MP (kendi N. turu) = `min(mp.start + (N − 1) × mp.perTurn, mp.max)`
+- Arena hasarı (raunt R ≥ startRound) = `start + (R − startRound) × step`
+- Yorgunluk (oyuncunun k. yorgunluğu) = `start + (k − 1) × step`
+- Kart hasarı = `max(0, kart değeri + Güç − Zayıflık)`
+- `roundCap` raundu biterse berabere (güvenlik tavanı; normalde tetiklenmemeli).
 
-**Adımlar**
-1. Dosyayı aşağıdaki içerikle oluştur.
-2. Commit: `docs: add P0.2 starting test values`
+---
 
-**İçerik**
+## Görev 1 — P0.2 Test değerleri
 
-### 1.1 Savaş (Faz 1)
-| Parametre | Değer | Not |
-|---|---|---|
-| Kahraman HP | 30 | Kalkan başlangıcı 0 |
-| MP eğrisi | Kendi N. turunda maks MP = min(N, 8); tur başında dolar; devretmez | |
-| Deste | 12 kart (Faz 1: 12 Warrior kartından birer tane) | Kopya kuralı Gate 1 sonrası |
-| Başlangıç eli | 4 (iki oyuncu); ilk oyuncu 1. turunda çekmez | K3 |
-| Tur başı çekiş | 1 kart | |
-| El sınırı | 8; fazlası doğrudan atılır ("yandı") | |
-| Deste bitince | Atılanlar karıştırılır | K2 |
-| Arena Çöküşü | 8. raunttan itibaren, her oyuncu kendi tur başında `raunt − 7` hasar alır (1, 2, 3…), Kalkanı yok sayar | Raunt = iki oyuncunun da bir tur oynaması |
-| Güvenlik tavanı | 20. raunt biterse berabere | Normalde hiç tetiklenmemeli |
-| Hedef maç | 7–11 raunt, 4–7 dk | Gate 1'de ölçülür |
+**Dosyalar (yeni):** `docs/savas-degerleri.md`, `docs/test-degerleri.md`
 
-### 1.2 Warrior kartları (Faz 1)
-| id | Ad | Tür | MP | Etki |
-|---|---|---|---|---|
-| `yarma` | Yarma | Attack | 1 | 3 hasar |
-| `kalkan-kaldir` | Kalkan Kaldır | Defense | 1 | 4 Kalkan |
-| `gozdagi` | Gözdağı | Debuff | 1 | Rakibe Zayıflık 2 (2 tur) |
-| `hazirlik` | Hazırlık | Skill | 1 | 1 kart çek, 2 Kalkan |
-| `kalkan-darbesi` | Kalkan Darbesi | Attack | 2 | Kalkanın kadar hasar (Kalkan harcanmaz) |
-| `savas-narasi` | Savaş Narası | Buff | 2 | Güç 2 (2 tur) |
-| `siper` | Siper | Defense | 2 | 7 Kalkan |
-| `ikinci-nefes` | İkinci Nefes | Heal | 2 | 6 HP iyileş |
-| `agir-darbe` | Ağır Darbe | Attack | 3 | 7 hasar |
-| `savas-ritmi` | Savaş Ritmi | Skill | 3 | 2 kart çek, 3 hasar |
-| `yarip-gec` | Yarıp Geç | Attack | 4 | 6 hasar, Kalkanı yok sayar |
-| `yikim` | Yıkım | Attack | 6 | 14 hasar |
-
-Kurallar: hasar = kart değeri + Güç − Zayıflık (en az 0). "2 tur" = etkilenen kahramanın kendi 2 turu boyunca; süre o kahramanın tur sonunda azalır. İyileşme maks HP'yi geçmez.
-
-### 1.3 AI zorluğu
-| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El |
-|---|---|---|---|---|---|---|
-| aggressive | 3 | 1 | 0.5 | 1 | 1.5 | 0.5 |
-| balanced | 2 | 2 | 1 | 1 | 1 | 0.5 |
-| defensive | 1.5 | 3 | 1.5 | 0.5 | 1 | 0.5 |
-
-### 1.4 Level ve EXP (Faz 3/5)
-- Level 1–10. Sonraki level için gereken EXP = `100 × mevcut level` (toplam 4.500).
-- EXP kaynakları: farm (slot tablosu), PvE galibiyeti 40 / elit 100 / boss 300, PvP galibiyeti 60.
-
-### 1.5 Farm slotları (Faz 5)
-| Slot | Level şartı | Kapasite | EXP/saat | Altın/saat | Item şansı / 10 dk | Risk |
-|---|---|---|---|---|---|---|
-| 1 | 1 | 8 | 120 | 40 | 800 bps | Düşük |
-| 2 | 2 | 8 | 180 | 60 | 900 bps | Düşük |
-| 3 | 4 | 6 | 260 | 90 | 1000 bps | Orta |
-| 4 | 6 | 6 | 360 | 130 | 1100 bps | Orta |
-| 5 | 8 | 4 | 480 | 180 | 1300 bps | Yüksek |
-| 6 | 10 | 4 | 620 | 240 | 1500 bps | Yüksek |
-
-- Kapasite aşımı: fazla oyuncu başına verim −%10, taban %50. (Açık soru 3)
-- Party bonusu: aynı slottaki dost oyuncu başına +%5, en fazla +%15.
-- Taşıma kapasitesi: 10 item **veya** slotun 8 saatlik altın geliri; hangisi önce dolarsa farm durur. (Açık soru 8)
-
-### 1.6 Drop (Faz 5)
-- Rarity dağılımı (bps): Common 7000 · Magic 2200 · Rare 700 · Unique 100. Elit: Rare ×2, boss: Unique ×5 (kalan Common'dan düşülür).
-
-### 1.7 Upgrade (Faz 4) — `docs/research/04 §8.2`'nin +1..+8 kısmı, tek pity Örs Isısı
-| Hedef | Taban | Başarısızlıkta | Altın |
-|---|---|---|---|
-| +1 | 10000 | — | 20 |
-| +2 | 10000 | — | 20 |
-| +3 | 9500 | Kalır | 20 |
-| +4 | 8500 | Kalır | 40 |
-| +5 | 7500 | Kalır | 40 |
-| +6 | 6000 | −1 | 80 |
-| +7 | 4500 | −1 | 140 |
-| +8 | 3500 | −1 | 200 |
-- **Örs Isısı:** her başarısızlıkta efektif şansa `taban × 0,5` eklenir, tavan 10000; başarıda sıfırlanır; item bazında. (+8 için: 3500 → 5250 → 7000 → 8750 → 10000, en geç 5. deneme.)
-
-### 1.8 Baskın (Faz 6)
-| Parametre | Değer | Açık soru |
-|---|---|---|
-| Savunan kaybederse | Taşınan altının %30'u + taşınan item'lardan 1 tanesi (seed'li seçim) | 4 |
-| Saldıran kaybederse | Taşınan altının %20'si | 9 |
-| Baskın kalkanı | 30 dk | 7 |
-| Online savunana davet süresi | 30 sn | 10 |
+1. `docs/savas-degerleri.md`: §4 config'inin ve 12 Warrior kartının okunabilir tablosu. Görev 9'da bu dosya `pnpm values` ile üretilir hale gelir; o zamana kadar elle tutulur ve **tek okunabilir kaynaktır**.
+2. `docs/test-degerleri.md`: P0.2'nin savaş dışı kısımları (level/EXP, farm, drop, upgrade, baskın). Savaş için `savas-degerleri.md`'ye bağlantı verir, değerleri tekrar etmez. Bu değerler Faz 1'de koda girmez.
+3. Commit: `docs: P0.2 test values (battle table + later-phase values)` → **DURUM RAPORU**.
 
 ---
 
 ## Görev 2 — P1.1 Monorepo iskeleti
 
-**Dosyalar (yeni):** `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`, `biome.json`, `packages/rules/{package.json,tsconfig.json,vitest.config.ts,src/index.ts,src/index.test.ts}`
-**Dosyalar (güncelle):** `.gitignore` (`node_modules/`, `.turbo/`, `dist/`, `coverage/`), `CLAUDE.md` (komutlar bölümü)
+**Dosyalar (yeni):** `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `tsconfig.base.json`, `biome.json`, `packages/rules/{package.json,tsconfig.json,tsconfig.test.json,src/index.ts,src/index.test.ts}`
+**Dosyalar (güncelle):** `.gitignore` (`node_modules/`, `.turbo/`, `dist/`, `coverage/`), `CLAUDE.md` (komutlar)
 
-**Adımlar**
-1. Ortam: Node 22, pnpm 10 (oturumda kurulu olanlar). Kurulumdan önce `pnpm view turbo version`, `pnpm view vitest version`, `pnpm view @biomejs/biome version`, `pnpm view typescript version` ile güncel sürümleri doğrula; `package.json`'a `packageManager` alanını yaz.
-2. `pnpm-workspace.yaml`:
-   ```yaml
-   packages:
-     - packages/*
-     - apps/*
-     - content
-   ```
-3. `tsconfig.base.json`:
-   ```json
-   {
-     "compilerOptions": {
-       "target": "ES2022",
-       "module": "ESNext",
-       "moduleResolution": "Bundler",
-       "lib": ["ES2022"],
-       "strict": true,
-       "noUncheckedIndexedAccess": true,
-       "exactOptionalPropertyTypes": true,
-       "verbatimModuleSyntax": true,
-       "isolatedModules": true,
-       "resolveJsonModule": true,
-       "skipLibCheck": true,
-       "noEmit": true
-     }
-   }
-   ```
-4. `turbo.json`: `test`, `typecheck`, `lint` görevleri (`dependsOn: ["^typecheck"]` gerekmez, paketler build edilmiyor); `dev` için `cache: false, persistent: true`.
-5. Root `package.json` scriptleri: `"test": "turbo test"`, `"typecheck": "turbo typecheck"`, `"lint": "biome check ."`, `"format": "biome format --write ."`, `"dev": "pnpm --filter @koidle/client dev"`.
-6. `biome.json`: formatter (2 boşluk, tek tırnak), linter `recommended` + `noExplicitAny: error`.
-7. `packages/rules/package.json`: `"name": "@koidle/rules"`, `"type": "module"`, `"exports": "./src/index.ts"`, scriptler `test: vitest run`, `typecheck: tsc --noEmit`. **dependencies boş.** devDependencies: `vitest`, `typescript`, `fast-check`.
-8. `packages/rules/tsconfig.json`: base'i extend eder, `"types": []` (Node/DOM globalleri sızmasın).
-9. Kırmızı test `src/index.test.ts`: `expect(RULES_VERSION).toBe('0.1.0')` → `src/index.ts`: `export const RULES_VERSION = '0.1.0';` → yeşil.
-10. `pnpm install && pnpm test && pnpm typecheck && pnpm lint` → hepsi temiz.
-11. `CLAUDE.md`'ye ekle: "Komutlar: `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm dev`. `packages/rules` saftır: DOM/Node/`Math.random`/`Date.now` yasak."
-12. Commit: `chore: monorepo skeleton (pnpm, turbo, strict ts, vitest, biome)`
+1. Kurulumdan önce `pnpm view <paket> version` ile turbo, vitest, typescript, @biomejs/biome, fast-check güncel sürümlerini doğrula. `packageManager` alanını yaz.
+2. `tsconfig.base.json`: `target ES2022`, `module ESNext`, `moduleResolution Bundler`, `lib ["ES2022"]`, `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `isolatedModules`, `resolveJsonModule`, `skipLibCheck`, `noEmit`.
+3. `packages/rules/tsconfig.json`: yalnız `src/**/*.ts` (testler hariç), `"types": []` — Node/DOM globalleri sızmaz. `tsconfig.test.json`: testler, `"types": ["node"]`. `typecheck` ikisini de çalıştırır.
+4. `packages/rules/package.json`: `dependencies` **boş**; devDependencies `vitest`, `typescript`, `fast-check`, `@types/node`.
+5. Root scriptler: `test`, `typecheck` (turbo), `lint` (`biome check .`), `format`, `dev`.
+6. Kırmızı/yeşil: `RULES_VERSION` testi.
+7. `pnpm install && pnpm test && pnpm typecheck && pnpm lint` temiz.
+8. `CLAUDE.md`'ye komutlar ve "`packages/rules` saftır" kuralı.
+9. Commit: `chore: monorepo skeleton (pnpm, turbo, strict ts, vitest, biome)`
 
 ---
 
-## Görev 3 — Seed'li RNG, klonlama ve determinizm bekçisi
+## Görev 3 — Seed'li RNG, klonlama, determinizm bekçisi
 
-**Dosyalar:** `packages/rules/src/rng.ts`, `rng.test.ts`, `clone.ts`, `determinism.test.ts`
+**Dosyalar:** `packages/rules/src/{rng.ts,rng.test.ts,clone.ts,determinism.test.ts}`
 
-**Testler (önce yaz)**
-- Aynı seed → aynı `nextUint32` dizisi (ilk 5 değeri sabitle: golden).
-- `rollInt(holder, n)` her zaman `0 ≤ x < n`; 10.000 çekimde her kova görülür.
-- `shuffle` aynı seed ile aynı sırayı verir, girdiyi değiştirmez, eleman kümesini korur.
-- `clone` derin kopya üretir, sonuç orijinale `toEqual` ama `not.toBe`.
-- **Determinizm bekçisi:** `src/**/*.ts` (test dosyaları hariç) içinde `Math.random`, `Date.now`, `new Date(`, `performance.`, `process.`, `window.`, `document.`, `new Map(`, `new Set(` geçmez. Test dosyaları `node:fs` ile okur. Bu yüzden `tsconfig.json` yalnız `src/**/*.ts` (testler hariç) için `types: []` kullanır; `tsconfig.test.json` testleri `types: ["node"]` ile kontrol eder ve `typecheck` scripti ikisini de çalıştırır.
+**Testler (önce):**
+- Aynı seed → aynı `nextUint32` dizisi (ilk 5 değer golden).
+- `rollInt(h, n)` her zaman `0 ≤ x < n`; 10.000 çekimde her kova görülür.
+- `shuffle` aynı seed ile aynı sırayı verir, girdiyi değiştirmez, elemanları korur.
+- `clone` derin kopya.
+- **Bekçi:** `src/**/*.ts` (testler hariç) içinde `Math.random`, `Date.now`, `new Date(`, `performance.`, `process.`, `window.`, `document.`, `require(`, `new Map(`, `new Set(`, `parseFloat`, `toFixed` geçmez. Float yok kuralını ayrıca Görev 8'deki "tüm sayılar tamsayı" invariantı yakalar.
 
-**Kod**
+**Kod:**
 ```ts
 // rng.ts — mulberry32. Durum tek bir uint32; BattleState içinde saklanır.
 export interface RngHolder { rng: number }
 
-export function nextUint32(holder: RngHolder): number {
-  holder.rng = (holder.rng + 0x6d2b79f5) >>> 0;
-  let t = holder.rng;
+export function nextUint32(h: RngHolder): number {
+  h.rng = (h.rng + 0x6d2b79f5) >>> 0;
+  let t = h.rng;
   t = Math.imul(t ^ (t >>> 15), t | 1);
   t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
   return (t ^ (t >>> 14)) >>> 0;
 }
 
-export function rollInt(holder: RngHolder, maxExclusive: number): number {
-  return nextUint32(holder) % maxExclusive;
-}
+export const rollInt = (h: RngHolder, maxExclusive: number): number => nextUint32(h) % maxExclusive;
 
-export function shuffle<T>(holder: RngHolder, items: readonly T[]): T[] {
+export function shuffle<T>(h: RngHolder, items: readonly T[]): T[] {
   const out = items.slice();
   for (let i = out.length - 1; i > 0; i--) {
-    const j = rollInt(holder, i + 1);
+    const j = rollInt(h, i + 1);
     [out[i], out[j]] = [out[j] as T, out[i] as T];
   }
   return out;
 }
 
-// clone.ts — state saf JSON olmak zorunda; bu aynı zamanda serileştirilebilirliği garanti eder.
+// clone.ts — state saf JSON olmak zorunda; bu, serileştirilebilirliği de garanti eder.
 export const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 ```
-
 Commit: `feat(rules): seeded rng, shuffle, clone, determinism guard`
 
 ---
 
 ## Görev 4 — Tipler
 
-**Dosya:** `packages/rules/src/types.ts` (test yok; Görev 5–7 testleri kullanır)
+**Dosya:** `packages/rules/src/types.ts`
 
 ```ts
 export type PlayerIndex = 0 | 1;
@@ -256,15 +227,25 @@ export type Effect =
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number }
   | { kind: 'draw'; count: number }
-  | { kind: 'applyStatus'; target: 'self' | 'enemy'; status: StatusId; amount: number; duration: number };
+  | { kind: 'applyStatus'; target: 'self' | 'enemy'; status: StatusId; amount: number };
 
-export interface CardDef {
-  id: string; name: string; job: Job; type: CardType; cost: number; effects: Effect[]; text: string;
-}
+export interface CardDef { id: string; name: string; job: Job; type: CardType; cost: number; effects: Effect[]; text: string }
 
 export interface BattleConfig {
-  heroHp: number; startingHand: number; handLimit: number; maxMp: number;
-  arenaCollapseRound: number; roundCap: number; firstPlayerSkipsDraw: boolean;
+  hero: { hp: number };
+  mp: { start: number; perTurn: number; max: number };
+  hand: { starting: number; limit: number; drawPerTurn: number; firstPlayerSkipsFirstDraw: boolean };
+  deck: { size: number; reshuffles: number };
+  fatigue: { start: number; step: number; ignoresShield: boolean };
+  shield: { persistence: 'resetOnOwnTurnStart' | 'persistent' };
+  arenaCollapse: { startRound: number; start: number; step: number; ignoresShield: boolean };
+  statuses: {
+    stacking: 'maxAmountRefreshOnGte';
+    tickOn: 'ownerTurnEnd';
+    strength: { duration: number };
+    weak: { duration: number };
+  };
+  roundCap: number;
 }
 
 export interface CardInstance { iid: string; cardId: string }
@@ -273,7 +254,7 @@ export interface Status { id: StatusId; amount: number; turnsLeft: number }
 export interface PlayerState {
   name: string; hp: number; maxHp: number; mp: number; maxMp: number; shield: number;
   statuses: Status[]; deck: CardInstance[]; hand: CardInstance[]; discard: CardInstance[];
-  turnsTaken: number;
+  turnsTaken: number; reshufflesLeft: number; fatigueCount: number;
 }
 
 export interface BattleState {
@@ -284,255 +265,260 @@ export interface BattleState {
   active: PlayerIndex;
   firstPlayer: PlayerIndex;
   players: [PlayerState, PlayerState];
-  result: null | { winner: PlayerIndex | null }; // null winner = berabere
+  result: null | { winner: PlayerIndex | null }; // winner null = berabere
 }
 
 export type Action =
   | { type: 'PLAY_CARD'; player: PlayerIndex; iid: string }
   | { type: 'END_TURN'; player: PlayerIndex };
 
+export type DamageSource = PlayerIndex | 'arena' | 'fatigue';
+
 export type BattleEvent =
-  | { type: 'BATTLE_STARTED'; firstPlayer: PlayerIndex }
+  | { type: 'BATTLE_STARTED'; firstPlayer: PlayerIndex; seed: number }
   | { type: 'TURN_STARTED'; player: PlayerIndex; round: number; maxMp: number }
+  | { type: 'SHIELD_EXPIRED'; player: PlayerIndex; amount: number }
   | { type: 'CARD_DRAWN'; player: PlayerIndex; iid: string; cardId: string }
   | { type: 'CARD_BURNED'; player: PlayerIndex; iid: string; cardId: string }
-  | { type: 'DECK_RESHUFFLED'; player: PlayerIndex; count: number }
+  | { type: 'DECK_RESHUFFLED'; player: PlayerIndex; count: number; reshufflesLeft: number }
   | { type: 'CARD_PLAYED'; player: PlayerIndex; iid: string; cardId: string; cost: number }
-  | { type: 'DAMAGE_DEALT'; source: PlayerIndex | 'arena'; target: PlayerIndex; amount: number; absorbed: number }
+  | { type: 'DAMAGE_DEALT'; source: DamageSource; target: PlayerIndex; amount: number; absorbed: number }
   | { type: 'SHIELD_GAINED'; player: PlayerIndex; amount: number }
   | { type: 'HEALED'; player: PlayerIndex; amount: number }
   | { type: 'STATUS_APPLIED'; player: PlayerIndex; status: StatusId; amount: number; duration: number }
+  | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number } // K7: küçük değer
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
-  | { type: 'TURN_ENDED'; player: PlayerIndex }
-  | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null };
+  | { type: 'TURN_ENDED'; player: PlayerIndex; unusedMp: number }
+  | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number };
 
 export interface BattleSetup {
-  config: BattleConfig;
-  cards: CardDef[];
-  decks: [string[], string[]]; // kart id listeleri
-  names: [string, string];
-  seed: number;
+  config: BattleConfig; cards: CardDef[]; decks: [string[], string[]]; names: [string, string]; seed: number;
 }
 ```
-
-Not: `CARD_DRAWN` rakibin kart kimliğini de taşır. Faz 1'de UI bunu rakip için gizler; sunucu filtrelemesi Faz 8'de.
-
 Commit: `feat(rules): battle types`
 
 ---
 
 ## Görev 5 — Savaşı başlatma (`createBattle`)
 
-**Dosyalar:** `packages/rules/src/draw.ts`, `battle.ts`, `battle.test.ts`, `test-fixtures.ts` (testler için küçük kart seti ve config)
+**Dosyalar:** `packages/rules/src/{draw.ts,battle.ts,battle.test.ts,test-fixtures.ts}`
 
-**Testler**
-- Her oyuncu 30 HP, 0 Kalkan, el 4 kart, deste 8 kart.
-- İlk oyuncu seed'le seçilir; aynı seed → aynı ilk oyuncu ve aynı eller; farklı seed'lerden (0..99) iki oyuncu da en az bir kez ilk olur.
-- İlk oyuncunun turu başlamış: `active === firstPlayer`, `round === 1`, `maxMp === 1`, `mp === 1`, `turnsTaken === 1`; K3 nedeniyle eli hâlâ 4.
-- Olaylar sırası: `BATTLE_STARTED` → 8× `CARD_DRAWN` → `TURN_STARTED`.
+**Testler:**
+- Her oyuncu `hero.hp` HP, 0 Kalkan, el `hand.starting`, deste `deck.size − hand.starting`, `reshufflesLeft = deck.reshuffles`.
+- İlk oyuncu seed'le seçilir; aynı seed → aynı ilk oyuncu ve eller; seed 0..99 içinde iki taraf da en az bir kez ilk olur.
+- İlk oyuncunun turu başlamış: `round 1`, `maxMp = mp.start`, eli hâlâ 4 (K3).
+- Olay sırası: `BATTLE_STARTED` → 8× `CARD_DRAWN` → `TURN_STARTED`.
 - iid'ler benzersiz ve deterministik (`p0-0` … `p1-11`).
-- Bilinmeyen kart id'si → `Error('Unknown card: x')`.
+- Deste uzunluğu `deck.size`'a eşit değilse ya da bilinmeyen kart id'si varsa anlaşılır hata.
 
-**Kod ana hatları**
-- `draw.ts → drawCard(state, p, events)`: deste boşsa ve atılanlar doluysa `shuffle` ile desteye çevir (`DECK_RESHUFFLED`); ikisi de boşsa hiçbir şey yapma. Kartı al; el `handLimit`'teyse atılanlara koy (`CARD_BURNED`), değilse ele ekle (`CARD_DRAWN`).
-- `battle.ts → createBattle(setup): { state, events }`: `rng = seed >>> 0` → `firstPlayer = rollInt(2)` → instance'lar → desteleri karıştır → `startingHand` kadar çek → `startTurn(state, firstPlayer, events)` (Görev 6'da yazılır; bu görevde MP ayarı + `TURN_STARTED` yapan minimal sürüm yeterli, Görev 6 genişletir).
-
+**Kod:** `drawCard(state, p, events)` K2 + N4'e göre: deste doluysa çek; boşsa ve `reshufflesLeft > 0` ve ıskarta doluysa karıştır (`DECK_RESHUFFLED`) ve çek; aksi halde `fatigueCount++` ve Yorgunluk hasarı. Çekilen kart el limitindeyse yanar (`CARD_BURNED`).
 Commit: `feat(rules): createBattle with seeded shuffle and opening hands`
 
 ---
 
-## Görev 6 — Tur akışı, statü süresi, Arena Çöküşü
+## Görev 6 — Tur akışı, Kalkan sıfırlama, statü süresi, Arena Çöküşü, Yorgunluk
 
-**Dosyalar:** `packages/rules/src/turn.ts`, `status.ts`, `engine.ts`, `turn.test.ts`
+**Dosyalar:** `packages/rules/src/{turn.ts,status.ts,engine.ts,turn.test.ts}`
 
-**API**
+**API:**
 ```ts
-// engine.ts
-export class IllegalActionError extends Error {}
+export class IllegalActionError extends Error { constructor(readonly reason: IllegalReason) { super(reason) } }
 export type IllegalReason = 'BATTLE_OVER' | 'NOT_YOUR_TURN' | 'CARD_NOT_IN_HAND' | 'NOT_ENOUGH_MP';
 export function validateAction(state: BattleState, action: Action): IllegalReason | null;
 export function apply(state: BattleState, action: Action): { state: BattleState; events: BattleEvent[] };
-// apply: geçersizse IllegalActionError fırlatır; geçerliyse clone(state) üzerinde çalışır, girdi asla değişmez.
+// Geçersizse IllegalActionError; geçerliyse clone(state) üzerinde çalışır, girdi asla değişmez.
 ```
 
-**Testler (`END_TURN`)**
-- Sırası olmayan oyuncu `END_TURN` → `IllegalActionError('NOT_YOUR_TURN')`; girdi state değişmez.
-- `END_TURN` → `TURN_ENDED`, `active` değişir, yeni aktif oyuncu 1 kart çeker, `maxMp` kendi tur sayısına göre (ikinci oyuncunun ilk turu: 1).
-- Raunt yalnızca ilk oyuncunun turu başlarken artar.
-- MP her tur dolar, 8'de durur (16 tur ilerletip kontrol et).
-- Statü süresi: Güç 2 (2 tur) alan oyuncu → kendi 1. tur sonunda `turnsLeft 1`, 2. tur sonunda kalkar ve `STATUS_EXPIRED`.
-- Arena Çöküşü: `arenaCollapseRound` = 8 iken 7. rauntta hasar yok; 8. raunt tur başında 1, 9.'da 2; Kalkan 10 olsa bile HP düşer (`absorbed: 0`).
-- Arena Çöküşü HP'yi 0'a indirirse `BATTLE_ENDED` (kazanan rakip), o oyuncu kart çekmez; sonraki her aksiyon `BATTLE_OVER`.
-- `roundCap` aşılınca `BATTLE_ENDED { winner: null }`.
-- Deste + el + atılanlar toplamı her zaman 12.
+**Testler:**
+- Sırası olmayan `END_TURN` → `NOT_YOUR_TURN`; girdi değişmez.
+- `END_TURN` → `TURN_ENDED { unusedMp }`, sıra geçer, yeni aktif 1 kart çeker, maks MP formüle uyar ve `mp.max`'ta durur.
+- Raunt yalnız ilk oyuncunun turu başlarken artar.
+- **K1:** `resetOnOwnTurnStart` iken Kalkan rakibin turu boyunca durur, sahibinin tur başında 0 olur (`SHIELD_EXPIRED`); `persistent` iken kalır. Aynı turda 4 + 7 = 11.
+- **K7:** Güç 2 aktifken Güç 1 → değişmez (`STATUS_IGNORED`); Güç 2 → süre yenilenir; Güç 3 → değer 3, süre yenilenir. Kendine verilen 2 turluk Güç: verildiği tur + bir sonraki kendi turu; ikinci tur sonunda `STATUS_EXPIRED`. Rakibe verilen 2 turluk Zayıflık: rakibin sonraki iki turu.
+- **Arena:** `startRound − 1`'de hasar yok; `startRound`'da `start`, sonraki rauntta `start + step`; Kalkan 10 olsa da HP düşer.
+- **K2/N4:** deste bitince bir kez karıştırma; ikinci bitişte Yorgunluk 1, sonra 2; ıskarta boşken hak harcanmaz.
+- Arena ya da Yorgunluk HP'yi 0'a indirirse `BATTLE_ENDED` (kazanan rakip); sonraki her aksiyon `BATTLE_OVER`.
+- `roundCap` aşılınca berabere.
+- Oyuncu başına deste + el + ıskarta = `deck.size`.
 
-**Kod ana hatları**
-- `startTurn(state, p, events)`: `turnsTaken++` → `maxMp = min(turnsTaken, config.maxMp)`, `mp = maxMp` → `round ≥ arenaCollapseRound` ise `round − arenaCollapseRound + 1` hasar (Kalkansız) ve ölüm kontrolü → K3 istisnası değilse `drawCard` → `TURN_STARTED`.
-- `endTurn(state, events)`: aktif oyuncunun statülerini `tickStatuses` ile azalt → `TURN_ENDED` → `active` değiş → yeni aktif `firstPlayer` ise `round++` → `round > roundCap` ise berabere → değilse `startTurn`.
-- `status.ts`: `applyStatus` (K7: büyük amount, büyük süre), `tickStatuses`, `statusAmount(p, id)`.
-
-Commit: `feat(rules): turn flow, status duration, arena collapse`
+Commit: `feat(rules): turn flow, shield reset, statuses, arena collapse, fatigue`
 
 ---
 
 ## Görev 7 — Kart oynama ve efektler
 
-**Dosyalar:** `packages/rules/src/effects.ts`, `effects.test.ts`, `engine.ts` (PLAY_CARD dalı)
+**Dosyalar:** `packages/rules/src/{effects.ts,effects.test.ts}`, `engine.ts` (`PLAY_CARD`)
 
-Her efekt tek bir küçük fonksiyon: `resolveEffect(state, source, effect, events)`. Efektler sırayla çözülür; biri savaşı bitirirse kalanlar çözülmez.
+Her efekt tek küçük fonksiyon. Efektler sırayla çözülür; biri savaşı bitirirse kalanlar çözülmez.
 
-**Testler** (her biri `test-fixtures.ts` ile kurulmuş elle hazırlanmış state üzerinde)
+**Testler:**
 - `NOT_ENOUGH_MP`, `CARD_NOT_IN_HAND`, `NOT_YOUR_TURN` reddedilir.
-- Oynanan kart elden çıkar, atılanlara gider, MP düşer; `CARD_PLAYED` ilk olaydır.
+- Oynanan kart elden ıskartaya, MP düşer; `CARD_PLAYED` ilk olay.
 - `damage 3`, rakip Kalkan 2 → `absorbed 2`, HP −1, Kalkan 0.
-- `damage` + Güç 2 → 5; + Zayıflık 2 → 1; Zayıflık 5 ile `damage 3` → 0 (negatif değil).
+- Güç 2 → 5; Zayıflık 2 → 1; Zayıflık 5 + `damage 3` → 0.
 - `ignoreShield` → Kalkan yerinde, HP tam düşer.
-- `damageFromShield` → kendi Kalkanın kadar hasar (Güç/Zayıflık uygulanır), kendi Kalkanın değişmez; Kalkan 0 ise hasar 0.
-- `shield` birikir (4 + 7 = 11) — K1.
-- `heal` maks HP'yi geçmez, olaydaki `amount` gerçek iyileşmedir.
-- `draw` deste boşken atılanları karıştırır; el 8'de ise kart yanar.
-- `applyStatus` `target: 'enemy'` rakibe gider.
-- Ölümcül hasar → `BATTLE_ENDED { winner: kaynak }`, kartın kalan efektleri çözülmez.
+- `damageFromShield` → kendi Kalkanın kadar hasar (Güç/Zayıflık uygulanır), kendi Kalkan değişmez.
+- `heal` maks HP'yi geçmez, olaydaki `amount` gerçek iyileşme; Kalkanı etkilemez.
+- `draw` K2 kurallarıyla çeker; el doluysa yanar; boş destede Yorgunluk verir.
+- `applyStatus` süreyi config'den alır, `target: 'enemy'` rakibe gider.
+- Ölümcül hasar → `BATTLE_ENDED { winner: kaynak }`, kalan efektler çözülmez.
 
 Commit: `feat(rules): play card and effect resolution`
 
 ---
 
-## Görev 8 — Replay ve özellik (property) testleri
+## Görev 8 — Golden replay, property testleri, `legalActions`
 
-**Dosyalar:** `packages/rules/src/replay.test.ts`, `properties.test.ts`, `index.ts` (genel API dışa aktarımı)
+**Dosyalar:** `packages/rules/src/{legal.ts,replay.test.ts,properties.test.ts,index.ts}`, `packages/rules/test/replays/{fixture-seed42.json, fatigue-and-arena.json}`
 
-- **Golden replay:** seed 42 + sabit desteler + elle yazılmış ~20 aksiyon → `expect(events).toMatchSnapshot()`. Kural değişince snapshot bilerek güncellenir; kazara değişim yakalanır.
-- **Determinizm:** aynı `createBattle` + aynı aksiyon listesi iki kez çalıştırılır → `JSON.stringify` eşit.
-- **fast-check:** rastgele seed + rastgele yasal aksiyon seçimi (her adımda yasal aksiyonlar listelenir, `fc.nat()` ile biri seçilir) ile oyun sonuna kadar oyna. Her adımda invariantlar:
-  - `0 ≤ mp ≤ maxMp ≤ config.maxMp`, `hp ≤ maxHp`, `shield ≥ 0`, statü `turnsLeft > 0`
-  - oyuncu başına toplam kart 12, iid'ler benzersiz
-  - girdi state `apply` sonrası değişmemiş (önce/sonra `JSON.stringify` karşılaştırması)
-  - oyun `roundCap` içinde biter; bittikten sonra her aksiyon `BATTLE_OVER`
-- `index.ts` yalnız şunları dışa açar: tipler, `createBattle`, `apply`, `validateAction`, `IllegalActionError`, `legalActions(state)` (yasal aksiyon listesi; AI ve property testi ortak kullanır, sıra deterministik: el sırası, sonra `END_TURN`).
+- **Replay dosyası (metin, repo'da):** `{ setup, actions, expected: { events, finalState } }`. Test, `setup` + `actions`'ı çalıştırır ve `expected` ile birebir karşılaştırır. Kural bilerek değişince `UPDATE_REPLAYS=1 pnpm test` dosyayı yeniden yazar ve diff commit'te görünür.
+  - `fixture-seed42.json`: ~20 aksiyonluk normal maç.
+  - `fatigue-and-arena.json`: tek karıştırma, Yorgunluk ve Arena Çöküşü'nün göründüğü uzun maç.
+- **Determinizm:** aynı setup + aksiyonlar iki kez → `JSON.stringify(state)` ve olay listesi eşit.
+- **fast-check:** rastgele seed + her adımda `legalActions`'tan rastgele seçim, oyun sonuna kadar. Her adımda invariantlar: `0 ≤ mp ≤ maxMp ≤ mp.max`, `0 ≤ hp ≤ maxHp`, `shield ≥ 0`, statü `turnsLeft > 0`, kart toplamı `deck.size`, iid'ler benzersiz, tüm sayılar tamsayı (`Number.isInteger`), girdi state değişmemiş, oyun `roundCap` içinde biter, bittikten sonra her aksiyon `BATTLE_OVER`.
+- `legalActions(state)`: aktif oyuncunun oynayabileceği kartlar (el sırası) + `END_TURN`. AI, sim ve UI aynı listeyi kullanır.
+- `index.ts` dışa açar: tipler, `createBattle`, `apply`, `validateAction`, `legalActions`, `IllegalActionError`.
 
-Commit: `test(rules): golden replay and property-based invariants`
+Commit: `test(rules): golden replays and property-based invariants` → **DURUM RAPORU**
 
 ---
 
-## Görev 9 — İçerik: Zod şeması + Warrior JSON
+## Görev 9 — İçerik: Zod şeması, Warrior JSON, değer tablosu üretici
 
 **Dosyalar:**
-- `content/package.json` (`@koidle/content`, `exports: { "./*": "./*" }`), `content/battle-config.json`, `content/cards/warrior.json`
-- `packages/content-schema/{package.json,tsconfig.json,src/schema.ts,src/load.ts,src/index.ts,src/content.test.ts}`
+- `content/{package.json,battle-config.json,cards/warrior.json}`
+- `packages/content-schema/src/{schema.ts,load.ts,values-table.ts,index.ts,content.test.ts}`, `packages/content-schema/scripts/values.ts`
 
-**Adımlar**
-1. JSON'ları Görev 1 tablolarından yaz (`battle-config.json`: `heroHp 30, startingHand 4, handLimit 8, maxMp 8, arenaCollapseRound 8, roundCap 20, firstPlayerSkipsDraw true`).
-2. `schema.ts`: `EffectSchema` (discriminated union, `kind`), `CardSchema`, `BattleConfigSchema` (tam sayı, pozitif, `maxMp ≤ 10` gibi sınırlar). Tipler `@koidle/rules`'tan gelir; `satisfies z.ZodType<CardDef>` ile şema ve tip senkron tutulur.
-3. `load.ts`: `loadBattleConfig()`, `loadCards(job)`, `defaultDeck(job)` (Faz 1: her karttan bir tane).
-4. **Testler:** tüm JSON şemadan geçer · kart id'leri benzersiz ve kebab-case · Warrior havuzu tam 12 kart · `defaultDeck` 12 kart · tüm 6 kart türü en az bir kez var · bozuk örnek (negatif maliyet, bilinmeyen `kind`) reddedilir · tam içerikle `createBattle` çalışır.
-5. Commit: `feat(content): zod schemas and warrior card pool`
+1. JSON'lar `docs/savas-degerleri.md`'den yazılır.
+2. `schema.ts`: `BattleConfigSchema`, `EffectSchema` (`kind` ile discriminated union), `CardSchema`; tamsayı ve pozitiflik sınırları. `satisfies z.ZodType<BattleConfig>` / `<CardDef>` ile `rules` tipleriyle senkron.
+3. `load.ts`: `loadBattleConfig()`, `loadCards('warrior')`, `defaultDeck('warrior')`. Geçersiz içerikte `ContentError` fırlatır; mesaj dosya yolu + alan yolu + sorunu içerir: `content/cards/warrior.json → [3].effects[0].kind: beklenen 'damage' | 'shield' | …, gelen 'hasar'`.
+4. `values-table.ts`: config + kartlardan `docs/savas-degerleri.md` metnini üreten saf fonksiyon. `pnpm values` dosyayı yazar.
+5. **Testler:** tüm içerik geçerli · kart id'leri benzersiz, kebab-case · havuz 12 kart, deste `deck.size` · 6 kart türü de var · bozuk örnekler (negatif maliyet, bilinmeyen `kind`, ondalık sayı, eksik alan) okunur bir mesajla reddedilir · `docs/savas-degerleri.md` üreticinin çıktısıyla aynı (değilse: "pnpm values çalıştır") · tam içerikle `createBattle` çalışır.
+
+Commit: `feat(content): zod schemas, warrior pool, generated values table`
 
 ---
 
 ## Görev 10 — P1.4 Skor tabanlı AI
 
-**Dosyalar:** `packages/ai/{package.json,tsconfig.json,src/profiles.ts,src/evaluate.ts,src/choose.ts,src/index.ts,src/*.test.ts,src/sim.test.ts}`
-**Bağımlılık:** yalnız `@koidle/rules` (+ testlerde `@koidle/content-schema`).
+**Dosyalar:** `packages/ai/src/{profiles.ts,redact.ts,evaluate.ts,choose.ts,index.ts,*.test.ts}`
+**Bağımlılık:** yalnız `@koidle/rules`. AI ağırlıkları kural değeri değil, AI ayarıdır: `packages/ai/src/profiles.ts`'te tablo olarak durur ve `savas-degerleri.md`'ye ayrı bölüm olarak üretilir.
 
-**Kod**
+**Gizli bilgi kuralı:** AI karar vermeden önce `redactForAi(state, me)` çağrılır: rakibin elindeki kartlar ve **her iki destenin** içeriği, maliyeti 99 ve etkisi olmayan `__hidden__` kartlarla değiştirilir; sayılar korunur. AI simülasyonu bu kopya üzerinde çalışır. Kendi eli ve iki tarafın ıskartası açık bilgidir.
+
 ```ts
 export type AiProfile = 'aggressive' | 'balanced' | 'defensive';
 export interface Weights { enemyDamage: number; selfDamage: number; shield: number; enemyShield: number; status: number; hand: number }
-export const PROFILES: Record<AiProfile, Weights>; // Görev 1 §1.3
-
-// Statü değeri: Güç amount × turnsLeft, Zayıflık −amount × turnsLeft
-export function evaluate(state: BattleState, me: PlayerIndex, w: Weights): number {
-  // w.enemyDamage × (rakip maxHp − hp) − w.selfDamage × (benim maxHp − hp)
-  // + w.shield × benim Kalkan − w.enemyShield × rakip Kalkan
-  // + w.status × (statü(ben) − statü(rakip)) + w.hand × el boyum
-  // savaş bittiyse: kazandım +1e6, kaybettim −1e6
-}
-
-// Açgözlü tek adım: her yasal kartı simüle et, en iyi skor mevcut skordan yüksekse onu oyna, yoksa END_TURN.
+export const PROFILES: Record<AiProfile, Weights>;
+export function evaluate(state: BattleState, me: PlayerIndex, w: Weights): number;
+// enemyDamage×(rakip eksik HP) − selfDamage×(kendi eksik HP) + shield×Kalkan − enemyShield×rakip Kalkan
+// + status×(statü(ben) − statü(rakip)) + hand×el boyu; statü = Güç değer×süre − Zayıflık değer×süre
+// bitti: kazandım +1e6, kaybettim −1e6
 export function chooseAction(state: BattleState, me: PlayerIndex, profile: AiProfile): Action;
+// Açgözlü tek adım: legalActions'taki her kartı redakte kopyada simüle et; en iyi skor mevcuttan yüksekse oyna, yoksa END_TURN.
 ```
-Eşitlikte `legalActions` sırası kazanır (deterministik). AI çekilecek kartı simülasyonda "görür" ama değerlendirme yalnız el **sayısına** baktığı için bu bilgiyi kullanmaz; Faz 1 için kabul.
+Eşitlikte `legalActions` sırası kazanır (deterministik). AI skoru float olabilir: AI kural değil, karar verir; `rules` içine girmez.
 
-**Testler**
-- Kazandıran hamle varsa onu seçer (rakip 3 HP, elde Yarma).
-- MP yetmiyorsa ya da hiçbir kart skoru artırmıyorsa `END_TURN`.
-- Aynı state için iki MP'de: `aggressive` → Yarma, `defensive` → Siper.
-- Dönen aksiyon her zaman `validateAction === null` (fast-check, rastgele savaş anları).
-- **Duman simülasyonu (`sim.test.ts`):** 3×3 profil eşleşmesi × 100 seed = 900 maç, hepsi `roundCap` öncesi biter, hiçbir aksiyon reddedilmez. Konsola özet basar (test bunları **doğrulamaz**, Gate 1 için rapor eder): ortalama raunt, ilk oyuncu kazanma oranı, berabere oranı, profil eşleşmesi kazanma tablosu, kart başına oynanma sayısı. 1 sn'den uzun sürerse seed sayısını düşür.
+**Testler:**
+- Kazandıran hamle varsa seçer.
+- MP yetmiyor ya da hiçbir kart skoru artırmıyorsa `END_TURN`.
+- Aynı durumda 2 MP ile `aggressive` → Yarma, `defensive` → Siper.
+- Dönen aksiyon her zaman `validateAction === null` (fast-check).
+- **Gizli bilgi testi (fast-check):** rakibin elindeki kartları ve iki destenin sırasını/içeriğini değiştir → AI'ın seçimi değişmez.
 
-Commit: `feat(ai): score-based ai with three profiles and smoke sim`
-
----
-
-## Görev 11 — P1.5 Placeholder savaş UI
-
-**Dosyalar:** `apps/client/{package.json,tsconfig.json,vite.config.ts,index.html,src/main.tsx,src/App.tsx,src/useBattle.ts,src/format.ts,src/format.test.ts,src/components/{SetupScreen,HeroPanel,Hand,CardView,BattleLog,ResultOverlay}.tsx,src/styles.css}`
-**Bağımlılık:** `react`, `react-dom`, `vite`, `@vitejs/plugin-react`, `@koidle/rules`, `@koidle/ai`, `@koidle/content-schema`. Pixi yok (K4).
-
-**Ekran (tek sayfa, yukarıdan aşağı)**
-1. **Rakip paneli:** ad, HP çubuğu, Kalkan, statü rozetleri (Güç 2 · 1 tur), elindeki kart **sayısı**, deste sayısı.
-2. **Savaş kaydı:** son 12 olay Türkçe cümle olarak; rakibin çektiği kartın adı gizli ("Rakip bir kart çekti").
-3. **Oyuncu paneli:** HP, MP (`3/5` + noktalar), Kalkan, statüler, deste/atılan sayısı, raunt, Arena Çöküşü uyarısı (raunt ≥ 7 ise "Gelecek raunt arena çöker").
-4. **El:** kart = ad, MP, tür, metin. Sıra değilse ya da MP yetmiyorsa soluk ve tıklanamaz. Tıkla → oyna.
-5. **Turu Bitir** düğmesi.
-6. **Kurulum ekranı:** AI profili seçimi, seed alanı (boşsa UI rastgele üretir — `Math.random` yalnız UI'da serbest), "Savaşa Başla". Seed savaş ekranında görünür ve "seed'i kopyala" var (hata raporu için).
-7. **Sonuç katmanı:** Kazandın / Kaybettin / Berabere, raunt sayısı, süre, "Tekrar (aynı seed)" ve "Yeni savaş".
-
-**Davranış**
-- `useBattle`: `{ state, log }` tutar; `dispatch(action)` → `apply` → olaylar log'a eklenir. UI hiçbir kural kararı vermez; kartın oynanabilirliği bile `validateAction` ile sorulur.
-- Sıra AI'daysa `useEffect` 700 ms aralıkla `chooseAction` → `apply`; AI `END_TURN` diyene kadar devam.
-- İçerik JSON'u Vite HMR ile yüklenir: `content/` altındaki bir değeri değiştirip kaydetmek, yeni savaşta hemen etkili olur (Gate 1 ayarı kod gerektirmez).
-
-**Testler**
-- `format.test.ts`: her `BattleEvent` türü için Türkçe metin; rakip `CARD_DRAWN` gizlenir; `DAMAGE_DEALT` emilen kısmı gösterir ("5 hasar (2'si Kalkan'a)"); `source: 'arena'` → "Arena çöküyor: 2 hasar".
-- Elle doğrulama: `pnpm dev` → her AI profiliyle bir maç baştan sona oynanır; konsolda hata yok. Ekran görüntüsü alınır (Playwright, `/opt/pw-browsers/chromium`) ve Yasin'e gösterilir.
-
-Commit: `feat(client): placeholder battle sandbox ui`
+Commit: `feat(ai): score-based ai, three profiles, hidden-info redaction`
 
 ---
 
-## Görev 12 — GATE 1 protokolü
+## Görev 11 — `tools/sim`: 900 maçlık simülasyon raporu
 
-**Dosyalar:** `docs/gate-1.md` (yeni), `docs/devam-notu.md` (güncelle)
+**Dosyalar:** `tools/sim/src/{run.ts,stats.ts,report.ts,cli.ts,sim.test.ts}`, `reports/sim/{latest.md,latest.json,latest.csv}`
 
-`docs/gate-1.md` içeriği:
+- `run.ts` (saf): profil eşleşmesi × seed listesi → maç kayıtları. 3×3 eşleşme × 100 seed = **900 maç**. Her maç `legalActions` + `chooseAction` + `apply` ile, gerçek içerikle.
+- Maç kaydı (CSV satırı): `seed, p0Profile, p1Profile, firstPlayer, winner, rounds, arenaSeen, fatigueSeen, reshuffleSeen, unusedMpP0, unusedMpP1, turnsP0, turnsP1, cardsPlayedP0, cardsPlayedP1`.
+- `report.ts` → `latest.md` (okunabilir tablolar) ve `latest.json` (tüm toplamlar + config/kart özeti):
+  - raunt: ortalama / medyan / min / maks
+  - ilk oyuncunun kazanma oranı, berabere oranı
+  - Arena Çöküşü görülen maç oranı, Yorgunluk görülen maç oranı, karıştırma görülen maç oranı
+  - 3×3 profil kazanma tablosu
+  - kart başına: oynandığı maç oranı, maç başı ortalama oynanma, oynayan oyuncunun o maçlarda kazanma oranı (hiç oynanmayan / her maç oynanan kartlar işaretlenir)
+  - tur başına ortalama kullanılmadan kalan MP (toplam ve profil başına)
+- `pnpm sim` → üç dosyayı yazar. Rapor commit'lenir.
+- **Test:** küçük koşu (3×3×10) — her maç `roundCap` öncesi biter, hiç `IllegalActionError` yok, aynı seed listesi aynı raporu üretir. Sim "eğlenceli mi?" kararı vermez, yalnız bariz hata ve anlamsız davranış yakalar.
 
-**A. Otomatik ölçüm (Görev 10 sim çıktısından kopyalanır)**
-| Ölçüt | Hedef | Sonuç |
-|---|---|---|
-| Ortalama raunt | 7–11 | |
-| İlk oyuncu kazanma | %45–55 | |
-| Berabere | < %2 | |
-| Hiç oynanmayan kart (AI istatistiği) | 0 | |
+Commit: `feat(sim): ai-vs-ai simulation with md/json/csv report` → **DURUM RAPORU** (ham `latest.md` + `latest.csv` başı eklenir)
 
-**B. Yasin'in oyun testi:** en az 10 maç (her profile en az 3). Her maçtan sonra 1–5 puan:
-1. Turlarımda gerçek bir karar verdim.
-2. Maç uzunluğu iyiydi (ne çabuk ne uzun).
-3. Bir maç daha oynamak istedim.
-4. Not: en sıkıcı an / en iyi an.
+---
 
-**C. Karar**
-- **Geçti:** 3. sorunun medyanı ≥ 4 ve A tablosu hedeflerde → Faz 2.
-- **Kaldı:** yalnızca savaş düzeltilir (spec kuralı). Sırayla denenecek kollar, her biri tek değişiklik + yeniden test:
-  1. Değerler (HP, kart sayıları, Arena Çöküşü raundu) — yalnız JSON.
-  2. K1 Kalkan sıfırlanır modeli.
-  3. K6 job temel yeteneği (2 MP).
+## Görev 12 — P1.5 Savaş ekranı (React)
+
+**Dosyalar:** `apps/client/{package.json,vite.config.ts,gate1-plugin.ts,index.html,src/main.tsx,src/App.tsx,src/useBattle.ts,src/format.ts,src/format.test.ts,src/components/*.tsx,src/styles.css}`
+**Bağımlılık:** `react`, `react-dom`, `vite`, `@vitejs/plugin-react`, `@koidle/rules`, `@koidle/ai`, `@koidle/content-schema`. Pixi, animasyon, ses yok.
+
+**Ekranda okunanlar (K4):**
+- İki taraf için: HP / maks HP, MP / maks MP, Kalkan, Güç ve Zayıflık (değer + kalan tur), destede kalan, ıskarta sayısı, kalan karıştırma hakkı, Yorgunluk sayacı (sıradaki Yorgunluk hasarı). Rakibin eli yalnız **sayı** olarak.
+- Raunt numarası, sıra kimde, Arena Çöküşü durumu: "Pasif — 8. rauntta başlar" / "Aktif — bu tur başında 2 hasar, sonraki 3".
+- Savaş kaydı (Türkçe, tamamı kaydırılabilir; rakibin çektiği kart gizli).
+- El: ad, MP, tür, metin; oynanamazsa soluk. Oynanabilirlik `validateAction` ile sorulur.
+- Turu Bitir.
+- Seed (kopyalanabilir) ve AI profili.
+
+**Akış:** Kurulum (profil, seed — boşsa UI üretir; `Math.random` yalnız UI'da serbest) → Savaş (AI hamleleri 700 ms aralıkla) → Sonuç + **Gate 1 formu**.
+
+**Gate 1 formu (her maç sonu):**
+1. Eğlence 1–5
+2. Karar vermek zorunda kaldım mı? 1–5
+3. Maç gereğinden uzun hissettirdi mi? Evet/Hayır
+4. Elimde işe yaramayan kart yüzünden sinirlendim mi? Evet/Hayır
+5. Sonucu değiştiren bir kararımı hatırlıyor muyum? Evet/Hayır
+6. Tek cümle not
+
+Kayda otomatik eklenenler: zaman, seed, AI profili, ilk oyuncu, kazanan, raunt sayısı, süre, Arena/Yorgunluk görüldü mü, config özeti (hash). Kayıt N6'ya göre `docs/gate-1/oturumlar.jsonl`'a eklenir; yedek tarayıcıda, "JSON indir" düğmesi.
+
+**İçerik hatası:** `ContentError` olursa ekran savaşı açmaz, hatayı dosya ve alan yoluyla gösterir.
+
+**Testler:** `format.test.ts` (her olay türünün Türkçe metni; rakip `CARD_DRAWN` gizli; `DAMAGE_DEALT` emilen kısmı, Arena ve Yorgunluk kaynağını gösterir) · form kaydının şekli. Elle doğrulama: her profille baştan sona bir maç, Playwright ekran görüntüsü (`/opt/pw-browsers/chromium`) Yasin'e gösterilir.
+
+Commit: `feat(client): battle sandbox ui with gate 1 form`
+
+---
+
+## Görev 13 — GATE 1 protokolü
+
+**Dosyalar:** `docs/gate-1.md`, `docs/gate-1/oturumlar.jsonl` (boş), `docs/devam-notu.md`
+
+**A. Simülasyon (Görev 11 raporundan)**
+| Ölçüt | Hedef |
+|---|---|
+| Ortalama raunt | 7–11 |
+| İlk oyuncu kazanma | %45–55 |
+| Berabere | < %2 |
+| Hiç oynanmayan kart | 0 |
+| Her maç oynanan kart | dikkat: otomatik seçim olabilir |
+| Ort. kullanılmayan MP / tur | izlenir |
+
+**B. Yasin'in testi:** en az 10 maç, her profile karşı en az 3. Her maç Görev 12 formuyla kaydedilir.
+
+**C. Değerlendirme:** Ortalama tek başına karar vermez. Evet/Hayır cevapları ve notlar sorunun yerini gösterir (ör. "uzun" çoğunluktaysa Arena/HP; "işe yaramayan kart" çoğunluktaysa maliyet eğrisi/deste). Sonuç Yasin üzerinden Copilot'a iletilir, ayar önerileri birlikte değerlendirilir.
+- **Geçti:** eğlence medyanı ≥ 4 ve A tablosunda bariz sorun yok → Faz 2.
+- **Kaldı:** yalnız savaş düzeltilir. Sırayla denenecek kollar (her biri tek değişiklik + yeniden test):
+  1. Değerler (HP, kart sayıları, Arena/Yorgunluk eğrisi) — yalnız JSON.
+  2. K1 `shield.persistence = "persistent"` varyantı.
+  3. K6 job temel yeteneği (2 MP) — Yasin onayıyla.
   4. Deste 12 → 16 (açık soru 2).
   5. Minion'lı model (açık soru 1) — en son, spec güncellemesi gerektirir.
 
-Devam notu güncellemesi: "Faz 0–1 planı yazıldı, uygulama Görev N'de" + Gate 1 sonucu.
-
-Commit: `docs: gate 1 protocol`
+Commit: `docs: gate 1 protocol` → **DURUM RAPORU**. **Gate 1 geçilmeden Faz 2'ye geçilmez.**
 
 ---
 
-## Kapanış kontrol listesi (Faz 1 bitti sayılması için)
+## Kapanış kontrol listesi
 
 - [ ] `pnpm test`, `pnpm typecheck`, `pnpm lint` temiz
-- [ ] `rules` içinde DOM/Node/`Math.random`/`Date.now` yok (bekçi testi yeşil)
-- [ ] Golden replay ve property testleri yeşil
-- [ ] 12 Warrior kartı JSON'da, şemadan geçiyor
-- [ ] AI üç profille oynuyor; 900 maçlık duman simülasyonu temiz
-- [ ] `pnpm dev` ile tarayıcıda baştan sona maç oynanıyor
-- [ ] `docs/gate-1.md` A tablosu dolu, B için Yasin'e teslim edildi
+- [ ] `rules` saf: bekçi testi yeşil, tüm sayılar tamsayı
+- [ ] Golden replay dosyaları repo'da ve yeşil; property testleri yeşil
+- [ ] Tüm kural değerleri `content/` içinde; `docs/savas-degerleri.md` üretilmiş ve güncel
+- [ ] Bozuk içerik anlaşılır mesajla duruyor (test + ekran)
+- [ ] AI üç profilde oynuyor, gizli bilgi testi yeşil
+- [ ] `reports/sim/latest.{md,json,csv}` commit'li
+- [ ] `pnpm dev` ile maç oynanıyor, Gate 1 formu `docs/gate-1/oturumlar.jsonl`'a yazıyor
