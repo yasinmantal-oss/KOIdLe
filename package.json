@@ -12,7 +12,8 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "values": "pnpm --filter @koidle/content-schema values",
-    "sim": "pnpm --filter @koidle/sim sim"
+    "sim": "pnpm --filter @koidle/sim sim",
+    "dev": "pnpm --filter @koidle/client dev"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
