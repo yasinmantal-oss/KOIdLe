@@ -31,9 +31,6 @@ describe('formatEvent', () => {
     expect(formatEvent({ type: 'STRENGTH_USED', player: 0, amount: 6, multiplier: 2 }, cards)).toBe(
       'Güç iki kat sayıldı: ilk vuruşa +6 hasar.',
     );
-    expect(formatEvent({ type: 'MP_GAINED', player: 0, amount: 2 }, cards)).toBe(
-      'Sen: bu tur +2 MP.',
-    );
   });
 
   it('describes self damage and valueless statuses', () => {

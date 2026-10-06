@@ -63,8 +63,6 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       return `${who(e.player)}: ${statusLabel(e.status, e.amount)} etkisiz (daha güçlüsü aktif).`;
     case 'STATUS_EXPIRED':
       return `${who(e.player)}: ${STATUS_TR[e.status]} sona erdi.`;
-    case 'MP_GAINED':
-      return `${who(e.player)}: bu tur +${e.amount} MP.`;
     case 'STRENGTH_USED':
       return e.multiplier > 1
         ? `Güç iki kat sayıldı: ilk vuruşa +${e.amount} hasar.`

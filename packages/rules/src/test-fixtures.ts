@@ -4,7 +4,7 @@ import type { BattleConfig, BattleState, CardDef, PlayerIndex, StatusId } from '
 
 export const testConfig: BattleConfig = {
   hero: { hp: 30 },
-  mp: { start: 1, perTurn: 1, max: 8 },
+  mp: { start: 1, perTurn: 1, max: 8, secondPlayerFirstTurnBonus: 0 },
   hand: {
     starting: 4,
     limit: 8,
@@ -61,7 +61,6 @@ export const testCards: CardDef[] = [
   ]),
   card('pierce', 'attack', 4, [{ kind: 'damage', amount: 6, ignoreShield: true }]),
   card('ruin', 'attack', 6, [{ kind: 'damage', amount: 14 }]),
-  card('sprint', 'skill', 0, [{ kind: 'gainMp', amount: 1 }]),
   card('sting', 'attack', 1, [
     { kind: 'damage', amount: 1 },
     { kind: 'selfDamage', amount: 1 },

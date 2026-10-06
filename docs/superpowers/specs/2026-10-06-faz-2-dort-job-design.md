@@ -319,3 +319,39 @@ Yalnız sayı değişti (mekanik, ad ve AI aynı). Başlangıç: Okçu, Warrior'
 - Power Shot: ÖNCE 6 hasar, HP ≤12 ise +4 → SONRA 5 hasar, HP ≤12 ise +3
 - Viper: ÖNCE 4 Zehir → SONRA 3 Zehir
 - Howling Sword: ÖNCE 6 hasar → SONRA 7 hasar
+
+## Revizyon 2 (Yasin, 2026-10-07) — yön kontrolü sonrası
+
+> **Bu bölüm Revizyon 1 ve Denge turu 1 ile çelişen her yerde geçerlidir.** Yasin 10 maç oynadı (`reports/faz-2a/2026-10-07-yon-kontrolu.md`) ve düzeltme paketini onayladı.
+
+**Neden (10 maç bulguları):** hız kartları (Sprint, Light Feet) işe yaramadı; Okçu 0/3 kazandı; Warrior kolay (4/5); maçların yarısı (5/10) Arena Çöküşü ile bitti, yani kartlar yeterince hasar vermedi; ilk oyuncu %32 kazandı.
+
+**Kaldırıldı / eklendi:**
+- Sprint (ortak) ve Light Feet (Rogue ortak) kaldırıldı; `gainMp` efekti ve `MP_GAINED` olayı motordan, şemadan, client'tan silindi. Ortak havuz 5 kart, her job havuzu 15 kart (deste 12). Toplam 32 kart.
+- **Evade** (Rogue ortak, `evade`, Skill, 1 MP): "Kaçınma kazan." Okçu ve Asas hazır destelerinde Light Feet'in yerine girdi.
+
+**Config:**
+- `mp.secondPlayerFirstTurnBonus`: ÖNCE yok → SONRA 4. İkinci oyuncunun kendi 1. turunda maks MP'ye eklenir (yalnız o tur).
+- `hand.firstPlayerSkipsFirstDraw`: ÖNCE true → SONRA false. Sim'de K3 açıkken MP bonusu ilk oyuncu oranını oynatmadı (%33–38); kapatınca %57–59. Ayrıntı: devam notu, K3.
+
+**Kart sayıları (ÖNCE → SONRA):**
+- Multiple Shot: 3 MP → 2 MP (Okçu kısmi geri alma)
+- Viper: 3 Zehir → 4 Zehir
+- Arrow Shower: 3 kez 2 hasar → 4 kez 2 hasar
+- Power Shot: 5 hasar → 6 hasar (HP ≤12 bonusu +3 aynı)
+- Quick Strike: 3 → 4 hasar
+- Power Strike: 7 → 8 hasar
+- Slash: 3 → 4 hasar
+- Gain: 2 → 3 Güç
+- Leg Cutting: 2 → 3 hasar (Zayıflık 2 aynı)
+- Berserker: Kendine 2 hasar → Kendine 1 hasar (3 Güç aynı; sim'de oynanma oranı %58, önce %30 civarıydı)
+- Cleave: 6 → 8 hasar
+- Howling Sword: 7 → 8 hasar
+- Sword Dancing: 5 → 6 hasar (4 iyileşme aynı)
+- Hell Blade: 9 → 10 hasar
+- Thrust: 5 → 6 hasar
+- Blinding: 2 → 3 hasar (Zayıflık 3 aynı)
+- Spike: 8 → 7 hasar (Asas'ın Warrior ve Okçu karşısında aşırı güçlenmesini dengeler)
+- Değişmeyenler: Perfect Arrow 2, Poison Arrow 1+2 Zehir, Blinding Strafe, Beast Hiding, Stab, kalkan ve iyileşme kartları.
+
+**Sim sonucu (900 maç, balanced, hazır desteler):** ortalama 7,09 raunt (önce 8,49), Arena ile biten %15,6 (önce %40,8), ilk oyuncu %58,6, job hücreleri %42,0–58,0 (hepsi %40–60 içinde), en düşük oynanma oranı Berserker %58. Bkz. `reports/sim/latest.md`. **Ulaşılamayan hedef:** ilk oyuncu %45–55; K3 kapalı ve bonus 4 ile 300 seed'de %57,0. MP bonusu 5'te de aynı. Kalan fark kart sayısı ve zamanlama farkından geliyor; Gate 2 öncesi yeniden bakılır.

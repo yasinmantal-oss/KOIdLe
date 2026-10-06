@@ -9,7 +9,8 @@
       "mp": {
         "start": 1,
         "perTurn": 1,
-        "max": 8
+        "max": 8,
+        "secondPlayerFirstTurnBonus": 0
       },
       "hand": {
         "starting": 4,
@@ -234,20 +235,6 @@
           }
         ],
         "text": "ruin"
-      },
-      {
-        "id": "sprint",
-        "name": "sprint",
-        "job": "warrior",
-        "type": "skill",
-        "cost": 0,
-        "effects": [
-          {
-            "kind": "gainMp",
-            "amount": 1
-          }
-        ],
-        "text": "sprint"
       },
       {
         "id": "sting",
@@ -1062,7 +1049,8 @@
         "mp": {
           "start": 1,
           "perTurn": 1,
-          "max": 8
+          "max": 8,
+          "secondPlayerFirstTurnBonus": 0
         },
         "hand": {
           "starting": 4,
@@ -1431,20 +1419,6 @@
             }
           ],
           "text": "ruin"
-        },
-        "sprint": {
-          "id": "sprint",
-          "name": "sprint",
-          "job": "warrior",
-          "type": "skill",
-          "cost": 0,
-          "effects": [
-            {
-              "kind": "gainMp",
-              "amount": 1
-            }
-          ],
-          "text": "sprint"
         },
         "sting": {
           "id": "sting",

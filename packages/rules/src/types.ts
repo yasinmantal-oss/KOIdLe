@@ -28,7 +28,6 @@ export type Effect =
       strengthMultiplier?: number;
     }
   | { kind: 'selfDamage'; amount: number }
-  | { kind: 'gainMp'; amount: number }
   | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number; bonus?: Bonus }
@@ -51,7 +50,7 @@ export interface CardDef {
 
 export interface BattleConfig {
   hero: { hp: number };
-  mp: { start: number; perTurn: number; max: number };
+  mp: { start: number; perTurn: number; max: number; secondPlayerFirstTurnBonus: number };
   hand: {
     starting: number;
     limit: number;
@@ -159,7 +158,6 @@ export type BattleEvent =
     }
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number }
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
-  | { type: 'MP_GAINED'; player: PlayerIndex; amount: number }
   /** Güç harcandı: `amount` toplam eklenen değer (çarpan dahil); çarpan > 1 ise Hell Blade kombosu. */
   | { type: 'STRENGTH_USED'; player: PlayerIndex; amount: number; multiplier: number }
   | { type: 'CRIT_USED'; player: PlayerIndex }

@@ -8,24 +8,10 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 3
+        "amount": 4
       }
     ],
-    "text": "3 hasar ver."
-  },
-  {
-    "id": "sprint",
-    "name": "Sprint",
-    "job": "common",
-    "type": "skill",
-    "cost": 0,
-    "effects": [
-      {
-        "kind": "gainMp",
-        "amount": 1
-      }
-    ],
-    "text": "Bu tur 1 MP kazan."
+    "text": "4 hasar ver."
   },
   {
     "id": "absoluteness",
@@ -86,9 +72,9 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 7
+        "amount": 8
       }
     ],
-    "text": "7 hasar ver."
+    "text": "8 hasar ver."
   }
 ]

@@ -12,12 +12,13 @@
 | MP başlangıcı | `mp.start` | 1 | Kendi 1. turundaki maks MP |
 | MP artışı | `mp.perTurn` | 1 | Her kendi turunda maks MP artışı |
 | MP tavanı | `mp.max` | 6 | MP her tur başında dolar, devretmez |
+| İkinci oyuncu 1. tur MP bonusu | `mp.secondPlayerFirstTurnBonus` | 4 | Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir |
 | Başlangıç eli | `hand.starting` | 4 | İki oyuncu için |
 | El sınırı | `hand.limit` | 8 | Dolu ele gelen kart yanar (ıskartaya gider) |
 | Tur başı çekiş | `hand.drawPerTurn` | 1 |  |
-| İlk oyuncu ilk çekişi atlar | `hand.firstPlayerSkipsFirstDraw` | evet | K3 |
+| İlk oyuncu ilk çekişi atlar | `hand.firstPlayerSkipsFirstDraw` | hayır | K3 |
 | Açılış eli garantisi | `hand.openingGuarantee` | evet | F2-7: başlangıç eline Ağır kart gelmez; elde en az bir 1 MP'lik kart olur |
-| Deste boyutu | `deck.size` | 12 | Oyuncu tek kopyalık deste kurar (F2-4); havuz 16 karttır |
+| Deste boyutu | `deck.size` | 12 | Oyuncu tek kopyalık deste kurar (F2-4); havuz 15 karttır |
 | Maks Ağır kart | `deckBuilding.maxHeavy` | 2 | F2-5: destede en fazla. Motor yok sayar; deste kurma, hazır desteler ve sim doğrular |
 | Asgari açılış kartı | `deckBuilding.minOpeners` | 3 | F2-6: destede en az 1 MP'lik kart sayısı |
 | Karıştırma hakkı | `deck.reshuffles` | 1 | Deste bitince ıskarta karıştırılır. Iskarta boşsa hak harcanmaz (N4) |
@@ -51,42 +52,41 @@
 - MP kazanma: bu tur MP'yi (gerekirse maks MP'nin üstüne) artırır. Kendine hasar Kalkanı yok sayar.
 - İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.
 
-## 2. Kartlar (33)
+## 2. Kartlar (32)
 
 ★ = Ağır kart (destede en fazla 2; açılış eline gelmez). Kart başına tek anahtar kelime (F2-8).
 
-### Ortak (6)
+### Ortak (5)
 
 | id | Ad | Tür | MP | Etki |
 |---|---|---|---|---|
-| `quick-strike` | Quick Strike | Attack | 1 | 3 hasar ver. |
-| `sprint` | Sprint | Skill | 0 | Bu tur 1 MP kazan. |
+| `quick-strike` | Quick Strike | Attack | 1 | 4 hasar ver. |
 | `absoluteness` | Absoluteness | Defense | 1 | 4 Kalkan kazan. |
 | `intimidate` | Intimidate | Debuff | 1 | Rakibe Zayıflık 2 ver. |
 | `valor` | Valor | Heal | 2 | 4 HP iyileş. HP'n 15 veya altındaysa 8 HP iyileş. |
-| `power-strike` | Power Strike | Attack | 3 | 7 hasar ver. |
+| `power-strike` | Power Strike | Attack | 3 | 8 hasar ver. |
 
 ### Warrior (10)
 
 | id | Ad | Tür | MP | Etki |
 |---|---|---|---|---|
-| `slash` | Slash | Attack | 1 | 3 hasar ver. |
-| `gain` | Gain | Buff | 1 | 2 Güç kazan. |
-| `leg-cutting` | Leg Cutting | Debuff | 2 | 2 hasar ver. Rakibe Zayıflık 2 ver. |
-| `berserker` | Berserker | Buff | 2 | 3 Güç kazan. Kendine 2 hasar ver (Kalkanını yok sayar). |
+| `slash` | Slash | Attack | 1 | 4 hasar ver. |
+| `gain` | Gain | Buff | 1 | 3 Güç kazan. |
+| `leg-cutting` | Leg Cutting | Debuff | 2 | 3 hasar ver. Rakibe Zayıflık 2 ver. |
+| `berserker` | Berserker | Buff | 2 | 3 Güç kazan. Kendine 1 hasar ver (Kalkanını yok sayar). |
 | `iron-skin` | Iron Skin | Defense | 2 | 5 Kalkan kazan. |
-| `cleave` | Cleave | Attack | 3 | 6 hasar ver. |
-| `howling-sword` | Howling Sword | Attack | 4 | 7 hasar ver. Kalkanı deler. |
+| `cleave` | Cleave | Attack | 3 | 8 hasar ver. |
+| `howling-sword` | Howling Sword | Attack | 4 | 8 hasar ver. Kalkanı deler. |
 | `wall-of-iron` | ★ Wall of Iron | Defense | 3 | 10 Kalkan kazan. |
-| `sword-dancing` | ★ Sword Dancing | Attack | 4 | 5 hasar ver. 4 HP iyileş. |
-| `hell-blade` | ★ Hell Blade | Attack | 5 | 9 hasar ver. Güç'ün iki kat sayılır. |
+| `sword-dancing` | ★ Sword Dancing | Attack | 4 | 6 hasar ver. 4 HP iyileş. |
+| `hell-blade` | ★ Hell Blade | Attack | 5 | 10 hasar ver. Güç'ün iki kat sayılır. |
 
 ### Rogue ortak (3)
 
 | id | Ad | Tür | MP | Etki |
 |---|---|---|---|---|
 | `minor-healing` | Minor Healing | Heal | 1 | 3 HP iyileş. |
-| `light-feet` | Light Feet | Skill | 0 | Bu tur 2 MP kazan. |
+| `evade` | Evade | Skill | 1 | Kaçınma kazan. |
 | `scaled-skin` | ★ Scaled Skin | Defense | 3 | 10 Kalkan kazan. |
 
 ### Rogue · Asas (7)
@@ -95,9 +95,9 @@
 |---|---|---|---|---|
 | `stab` | Stab | Attack | 1 | 3 hasar ver. |
 | `stealth` | Stealth | Skill | 1 | Kaçınma kazan. |
-| `thrust` | Thrust | Attack | 2 | 5 hasar ver. |
-| `blinding` | Blinding | Debuff | 2 | 2 hasar ver. Rakibe Zayıflık 3 ver. |
-| `spike` | Spike | Attack | 3 | 8 hasar ver. |
+| `thrust` | Thrust | Attack | 2 | 6 hasar ver. |
+| `blinding` | Blinding | Debuff | 2 | 3 hasar ver. Rakibe Zayıflık 3 ver. |
+| `spike` | Spike | Attack | 3 | 7 hasar ver. |
 | `critical-point` | ★ Critical Point | Skill | 2 | Kritik kazan. |
 | `beast-hiding` | ★ Beast Hiding | Attack | 4 | 6 hasar ver, sonra Kaçınma kazan. |
 
@@ -107,14 +107,14 @@
 |---|---|---|---|---|
 | `poison-arrow` | Poison Arrow | Debuff | 1 | 1 hasar ver. Rakibe 2 Zehir ver. |
 | `perfect-arrow` | Perfect Arrow | Attack | 1 | 2 hasar ver. Kalkanı deler. |
-| `multiple-shot` | Multiple Shot | Attack | 3 | 3 kez 2 hasar ver. |
-| `viper` | Viper | Debuff | 2 | Rakibe 3 Zehir ver. |
+| `multiple-shot` | Multiple Shot | Attack | 2 | 3 kez 2 hasar ver. |
+| `viper` | Viper | Debuff | 2 | Rakibe 4 Zehir ver. |
 | `blinding-strafe` | Blinding Strafe | Debuff | 2 | 2 hasar ver. Rakibe Zayıflık 2 ver. |
-| `arrow-shower` | ★ Arrow Shower | Attack | 4 | 3 kez 2 hasar ver. |
-| `power-shot` | ★ Power Shot | Attack | 4 | 5 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3. |
+| `arrow-shower` | ★ Arrow Shower | Attack | 4 | 4 kez 2 hasar ver. |
+| `power-shot` | ★ Power Shot | Attack | 4 | 6 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3. |
 
-Maliyet dağılımı: 0 MP ×2 · 1 MP ×10 · 2 MP ×9 · 3 MP ×6 · 4 MP ×5 · 5 MP ×1.
-Kart türleri: Attack ×15 · Skill ×4 · Defense ×4 · Debuff ×6 · Heal ×2 · Buff ×2.
+Maliyet dağılımı: 1 MP ×11 · 2 MP ×10 · 3 MP ×5 · 4 MP ×5 · 5 MP ×1.
+Kart türleri: Attack ×15 · Defense ×4 · Debuff ×6 · Heal ×2 · Buff ×2 · Skill ×3.
 
 Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-10-07). Gözlem listesi: Gain/Berserker → Hell Blade, Critical Point + büyük kart, Viper + Poison Arrow. Sim ve Yasin testinde izlenir.
 
@@ -123,8 +123,8 @@ Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-
 | Deste | Kartlar | Ağır | 1 MP'lik |
 |---|---|---|---|
 | Warrior | Slash, Gain, Leg Cutting, Berserker, Iron Skin, Cleave, Howling Sword, Hell Blade, Sword Dancing, Quick Strike, Intimidate, Absoluteness | 2/2 | 5 (en az 3) |
-| Rogue · Asas | Stab, Stealth, Thrust, Blinding, Spike, Critical Point, Beast Hiding, Light Feet, Minor Healing, Quick Strike, Absoluteness, Power Strike | 2/2 | 6 (en az 3) |
-| Rogue · Okçu | Poison Arrow, Perfect Arrow, Multiple Shot, Viper, Blinding Strafe, Arrow Shower, Power Shot, Light Feet, Minor Healing, Absoluteness, Intimidate, Power Strike | 2/2 | 6 (en az 3) |
+| Rogue · Asas | Stab, Stealth, Thrust, Blinding, Spike, Critical Point, Beast Hiding, Evade, Minor Healing, Quick Strike, Absoluteness, Power Strike | 2/2 | 6 (en az 3) |
+| Rogue · Okçu | Poison Arrow, Perfect Arrow, Multiple Shot, Viper, Blinding Strafe, Arrow Shower, Power Shot, Evade, Minor Healing, Absoluteness, Intimidate, Power Strike | 2/2 | 6 (en az 3) |
 
 ## 4. AI profilleri (AI ayarı, kural değeri değil)
 

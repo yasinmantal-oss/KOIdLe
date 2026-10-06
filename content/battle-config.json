@@ -1,22 +1,53 @@
 {
-  "hero": { "hp": 30 },
-  "mp": { "start": 1, "perTurn": 1, "max": 6 },
+  "hero": {
+    "hp": 30
+  },
+  "mp": {
+    "start": 1,
+    "perTurn": 1,
+    "max": 6,
+    "secondPlayerFirstTurnBonus": 4
+  },
   "hand": {
     "starting": 4,
     "limit": 8,
     "drawPerTurn": 1,
-    "firstPlayerSkipsFirstDraw": true,
+    "firstPlayerSkipsFirstDraw": false,
     "openingGuarantee": true
   },
-  "deck": { "size": 12, "reshuffles": 1 },
-  "fatigue": { "start": 1, "step": 1, "ignoresShield": true },
-  "shield": { "persistence": "resetOnOwnTurnStart" },
-  "arenaCollapse": { "startRound": 8, "start": 1, "step": 1, "ignoresShield": true },
-  "statuses": {
-    "weak": { "duration": 2 },
-    "strength": { "max": 5 },
-    "poison": { "max": 6, "decay": 2 }
+  "deck": {
+    "size": 12,
+    "reshuffles": 1
   },
-  "deckBuilding": { "maxHeavy": 2, "minOpeners": 3 },
+  "fatigue": {
+    "start": 1,
+    "step": 1,
+    "ignoresShield": true
+  },
+  "shield": {
+    "persistence": "resetOnOwnTurnStart"
+  },
+  "arenaCollapse": {
+    "startRound": 8,
+    "start": 1,
+    "step": 1,
+    "ignoresShield": true
+  },
+  "statuses": {
+    "weak": {
+      "duration": 2
+    },
+    "strength": {
+      "max": 5
+    },
+    "poison": {
+      "max": 6,
+      "decay": 2
+    }
+  },
+  "deckBuilding": {
+    "maxHeavy": 2,
+    "minOpeners": 3
+  },
   "roundCap": 20
 }

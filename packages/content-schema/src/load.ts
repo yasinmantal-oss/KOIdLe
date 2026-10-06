@@ -92,7 +92,7 @@ const CARD_FILES: { file: string; job: Job | 'common'; raw: unknown }[] = [
   { file: 'content/cards/rogue.json', job: 'rogue', raw: rogueJson },
 ];
 
-/** Tüm kartlar (33). Dosyalar arası yinelenen id de hatadır. */
+/** Tüm kartlar (32). Dosyalar arası yinelenen id de hatadır. */
 export function loadAllCards(): CardDef[] {
   const all = CARD_FILES.flatMap((f) => parseCards(f.raw, f.file, f.job));
   const dupes = all.filter((c, i) => all.findIndex((x) => x.id === c.id) !== i);

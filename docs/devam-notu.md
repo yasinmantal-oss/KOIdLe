@@ -37,6 +37,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
+- **Yön kontrolü sonrası düzeltme paketi (Yasin onayı, 2026-10-07):** Sprint ve Light Feet kaldırıldı (`gainMp` efekti ve MP_GAINED olayı silindi), Evade eklendi, Okçu kısmen geri alındı, ikinci oyuncu MP bonusu, kart hasarları artırıldı. Ayrıntı: spec "Revizyon 2", rapor `reports/faz-2a/2026-10-07-yon-kontrolu.md`.
 - **Kart yeniden tasarımı (Yasin, 2026-10-07):** ilk Faz 2a kartları reddedildi. Lanet/Gizli/Zincir kaldırıldı; Güç tek seferlik, Kritik ve Kaçınma eklendi, Zehir azalır; kartlar KO skill etkisine göre, adlar İngilizce, metin Türkçe + kart altı sözlük. Ayrıntı: spec eki "Revizyon 1". Sim yeniden üretildi (`reports/sim/latest.md`).
 - **Tamamlanmayan:** Faz 2a uygulama planı ve kodu; Faz 2b; Gate 2.
 
@@ -95,7 +96,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Ağır Darbe.** ÖNCE: 7 hasar. SONRA: 7 hasar, Güç varsa +3. NEDEN: Savaş Narası → Ağır Darbe kurulum hattı.
 - **Yarıp Geç.** ÖNCE: kalkanı yok sayarak 6. SONRA: aynı, rakip Zayıfsa +3. NEDEN: Gözdağı'nı savunmada mı yoksa kombo için mi harcayacağın ikilemi.
 - **Kalkan Darbesi (Gate 1B koşulu).** ÖNCE: "Bu tur kazandığın Kalkan kadar hasar ver" (tek başına 0). SONRA: "4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver." NEDEN: Yasin 2 notta "işe yaramıyor" dedi; artık tek başına da çalışıyor, Siper ile kombo sürüyor. Claude'un v0.2'deki "değiştirme" önerisi veriyle çürüdü.
-- **K3 ilk oyuncu kuralı.** ÖNCE ve SONRA aynı: ilk oyuncu ilk turunda çekmez. NEDEN: kapatma denendi, ilk oyuncu %40 → %59; ters dengesizlik.
+- **K3 ilk oyuncu kuralı (Faz 2a yön kontrolü, 2026-10-07).** ÖNCE: ilk oyuncu ilk turunda çekmez (`hand.firstPlayerSkipsFirstDraw: true`), ikinci oyuncuya ek MP yok. SONRA: ikinci oyuncu kendi 1. turunda +4 MP alır (`mp.secondPlayerFirstTurnBonus: 4`, yalnız o tur) ve ilk oyuncu da ilk turunda çeker (`firstPlayerSkipsFirstDraw: false`). NEDEN: 10 maçta ilk oyuncu %32 kazandı; sim'de K3 açıkken yalnız MP bonusu işe yaramadı (bonus 1 → 5 arası ilk oyuncu %33–38, çünkü MP zaten tam kullanılmıyor, sınır kart sayısı). K3 kapatılınca ve bonus 4 ile ilk oyuncu %57–59 (300 seed %57,0; hedef 45–55, ulaşılamadı). Bonus 5'te kazanım yok (%57,5). Kalan fark kartla çözülmeli; açık konu.
 - **Yıkım.** ÖNCE: 6 MP, 14 hasar (sim'de %99 "otomatik"). SONRA: rakip HP ≤ 15 ise 14, değilse 7. NEDEN: zamanlama kararı, bitirici rolü.
 - **Çalışma düzeni.** ÖNCE: Claude uygular, Copilot inceler, Yasin karar verir. SONRA: Copilot geçici olarak devre dışı. NEDEN: süreç Yasin'in kafasını karıştırıyordu.
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)

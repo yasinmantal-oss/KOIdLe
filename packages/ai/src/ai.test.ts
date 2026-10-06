@@ -81,8 +81,8 @@ describe('chooseAction', () => {
   });
 
   it('profiles differ: aggressive attacks, defensive blocks', () => {
-    const { state, me } = withHand(1, ['quick-strike', 'absoluteness'], 2);
-    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('quick-strike');
+    const { state, me } = withHand(1, ['stab', 'absoluteness'], 2);
+    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('stab');
     expect(cardOf(state, me, chooseAction(state, me, profiles.defensive))).toBe('absoluteness');
   });
 
@@ -209,7 +209,7 @@ describe('turn planner (F2-11)', () => {
   }
 
   it('finds the Stab + Thrust kill that greedy misses (greedy wastes the MP on Power Strike)', () => {
-    const { state, me } = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 8);
+    const { state, me } = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 9);
     expect(cardOf(state, me, chooseAction(state, me, profiles.balanced))).toBe('power-strike');
     expect(
       cardOf(state, me, chooseAction(state, me, profiles.balanced, { planner: PLANNER })),
@@ -217,7 +217,7 @@ describe('turn planner (F2-11)', () => {
   });
 
   it('executing the plan action by action wins the battle', () => {
-    const fight = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 8);
+    const fight = assassinFight(1, ['power-strike', 'stab', 'thrust'], 3, 9);
     const me = fight.me;
     let state = fight.state;
     for (let i = 0; i < 2 && !state.result; i++) {

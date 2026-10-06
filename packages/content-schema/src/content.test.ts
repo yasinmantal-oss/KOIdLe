@@ -35,16 +35,16 @@ describe('real content', () => {
     expect(loadAiProfiles().balanced).toBeDefined();
   });
 
-  it('33 cards, ids unique across files', () => {
-    expect(cards).toHaveLength(33);
-    expect(new Set(cards.map((c) => c.id)).size).toBe(33);
+  it('32 cards, ids unique across files', () => {
+    expect(cards).toHaveLength(32);
+    expect(new Set(cards.map((c) => c.id)).size).toBe(32);
     const ids = [...commonJson, ...warriorJson, ...rogueJson].map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it.each(ARCHETYPE_IDS)('%s pool: 16 cards, exactly 3 heavy', (id) => {
+  it.each(ARCHETYPE_IDS)('%s pool: 15 cards, exactly 3 heavy', (id) => {
     const pool = loadPool(id);
-    expect(pool).toHaveLength(16);
+    expect(pool).toHaveLength(15);
     expect(pool.filter(isHeavy)).toHaveLength(3);
   });
 

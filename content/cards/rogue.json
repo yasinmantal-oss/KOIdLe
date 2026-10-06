@@ -14,18 +14,20 @@
     "text": "3 HP iyileş."
   },
   {
-    "id": "light-feet",
-    "name": "Light Feet",
+    "id": "evade",
+    "name": "Evade",
     "job": "rogue",
     "type": "skill",
-    "cost": 0,
+    "cost": 1,
     "effects": [
       {
-        "kind": "gainMp",
-        "amount": 2
+        "kind": "applyStatus",
+        "target": "self",
+        "status": "evade",
+        "amount": 1
       }
     ],
-    "text": "Bu tur 2 MP kazan."
+    "text": "Kaçınma kazan."
   },
   {
     "id": "scaled-skin",
@@ -84,10 +86,10 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 5
+        "amount": 6
       }
     ],
-    "text": "5 hasar ver."
+    "text": "6 hasar ver."
   },
   {
     "id": "blinding",
@@ -99,7 +101,7 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 2
+        "amount": 3
       },
       {
         "kind": "applyStatus",
@@ -108,7 +110,7 @@
         "amount": 3
       }
     ],
-    "text": "2 hasar ver. Rakibe Zayıflık 3 ver."
+    "text": "3 hasar ver. Rakibe Zayıflık 3 ver."
   },
   {
     "id": "spike",
@@ -120,10 +122,10 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 8
+        "amount": 7
       }
     ],
-    "text": "8 hasar ver."
+    "text": "7 hasar ver."
   },
   {
     "id": "critical-point",
@@ -208,7 +210,7 @@
     "job": "rogue",
     "branch": "archer",
     "type": "attack",
-    "cost": 3,
+    "cost": 2,
     "effects": [
       {
         "kind": "damage",
@@ -230,10 +232,10 @@
         "kind": "applyStatus",
         "target": "enemy",
         "status": "poison",
-        "amount": 3
+        "amount": 4
       }
     ],
-    "text": "Rakibe 3 Zehir ver."
+    "text": "Rakibe 4 Zehir ver."
   },
   {
     "id": "blinding-strafe",
@@ -268,10 +270,10 @@
       {
         "kind": "damage",
         "amount": 2,
-        "hits": 3
+        "hits": 4
       }
     ],
-    "text": "3 kez 2 hasar ver."
+    "text": "4 kez 2 hasar ver."
   },
   {
     "id": "power-shot",
@@ -284,7 +286,7 @@
     "effects": [
       {
         "kind": "damage",
-        "amount": 5,
+        "amount": 6,
         "ignoreShield": true,
         "bonus": {
           "if": {
@@ -294,6 +296,6 @@
         }
       }
     ],
-    "text": "5 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3."
+    "text": "6 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3."
   }
 ]

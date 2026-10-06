@@ -29,6 +29,12 @@ function rows(c: BattleConfig): Row[] {
     ['MP başlangıcı', 'mp.start', c.mp.start, 'Kendi 1. turundaki maks MP'],
     ['MP artışı', 'mp.perTurn', c.mp.perTurn, 'Her kendi turunda maks MP artışı'],
     ['MP tavanı', 'mp.max', c.mp.max, 'MP her tur başında dolar, devretmez'],
+    [
+      'İkinci oyuncu 1. tur MP bonusu',
+      'mp.secondPlayerFirstTurnBonus',
+      c.mp.secondPlayerFirstTurnBonus,
+      'Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir',
+    ],
     ['Başlangıç eli', 'hand.starting', c.hand.starting, 'İki oyuncu için'],
     ['El sınırı', 'hand.limit', c.hand.limit, 'Dolu ele gelen kart yanar (ıskartaya gider)'],
     ['Tur başı çekiş', 'hand.drawPerTurn', c.hand.drawPerTurn, ''],
@@ -48,7 +54,7 @@ function rows(c: BattleConfig): Row[] {
       'Deste boyutu',
       'deck.size',
       c.deck.size,
-      'Oyuncu tek kopyalık deste kurar (F2-4); havuz 16 karttır',
+      'Oyuncu tek kopyalık deste kurar (F2-4); havuz 15 karttır',
     ],
     [
       'Maks Ağır kart',

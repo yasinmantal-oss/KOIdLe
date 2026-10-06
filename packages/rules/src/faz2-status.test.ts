@@ -163,15 +163,7 @@ describe('Zehir', () => {
   });
 });
 
-describe('MP kazanma ve kendine hasar', () => {
-  it('gainMp adds MP for this turn, above maxMp if needed', () => {
-    const { state, me } = setup(['sprint'], 1);
-    const maxMp = state.players[me].maxMp;
-    const s = play(state, me, 0).state;
-    expect(s.players[me].mp).toBe(2);
-    expect(maxMp).toBeLessThanOrEqual(1);
-  });
-
+describe('Kendine hasar', () => {
   it('selfDamage ignores own shield and can be lethal', () => {
     const { state, me, foe } = setup(['sting']);
     state.players[me].shield = 5;

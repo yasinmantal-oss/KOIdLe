@@ -19,6 +19,27 @@ function endTurns(state: BattleState, n: number) {
 
 const withConfig = (patch: Partial<BattleConfig>) => ({ ...testConfig, ...patch });
 
+describe('second player first-turn MP bonus', () => {
+  it('gives +1 MP on the second player first turn only', () => {
+    const cfg = withConfig({
+      mp: { ...testConfig.mp, secondPlayerFirstTurnBonus: 1 },
+    });
+    const { state } = newBattle(1, cfg);
+    const first = state.active;
+    const second = first === 0 ? 1 : 0;
+    expect(state.players[first].maxMp).toBe(1);
+    const s1 = endTurn(state).state;
+    expect(s1.players[second].maxMp).toBe(2);
+    expect(s1.players[second].mp).toBe(2);
+    const s2 = endTurns(s1, 2).state;
+    expect(s2.active).toBe(second);
+    expect(s2.players[first].maxMp).toBe(2);
+    expect(s2.players[second].maxMp).toBe(2);
+    const s3 = endTurns(s2, 2).state;
+    expect(s3.players[second].maxMp).toBe(3);
+  });
+});
+
 describe('END_TURN', () => {
   it('rejects the wrong player and leaves input untouched', () => {
     const { state } = newBattle(1);

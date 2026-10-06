@@ -13,6 +13,8 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
 
   pl.turnsTaken += 1;
   pl.maxMp = Math.min(mp.start + (pl.turnsTaken - 1) * mp.perTurn, mp.max);
+  // Denge: ikinci oyuncu kendi 1. turunda bonus MP alır (yalnız o tur).
+  if (p !== state.firstPlayer && pl.turnsTaken === 1) pl.maxMp += mp.secondPlayerFirstTurnBonus;
   events.push({ type: 'TURN_STARTED', player: p, round: state.round, maxMp: pl.maxMp });
 
   // Kaçınma: kullanılmadıysa sahibinin sonraki turunun başında düşer.

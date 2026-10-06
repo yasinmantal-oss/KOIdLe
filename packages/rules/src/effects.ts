@@ -138,10 +138,6 @@ export function resolveEffect(
       // Kendine hasar Kalkanı yok sayar.
       dealDamage(state, source, source, effect.amount, true, events);
       return;
-    case 'gainMp':
-      me.mp += effect.amount;
-      events.push({ type: 'MP_GAINED', player: source, amount: effect.amount });
-      return;
     case 'shield':
       me.shield += effect.amount;
       me.shieldGainedThisTurn += effect.amount;

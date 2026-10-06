@@ -6,7 +6,12 @@ const positive = () => z.int().min(1);
 
 export const BattleConfigSchema = z.strictObject({
   hero: z.strictObject({ hp: positive() }),
-  mp: z.strictObject({ start: positive(), perTurn: int(), max: positive().max(20) }),
+  mp: z.strictObject({
+    start: positive(),
+    perTurn: int(),
+    max: positive().max(20),
+    secondPlayerFirstTurnBonus: int(),
+  }),
   hand: z.strictObject({
     starting: int(),
     limit: positive(),
@@ -53,7 +58,6 @@ export const EffectSchema = z.discriminatedUnion('kind', [
     strengthMultiplier: z.int().min(2).exactOptional(),
   }),
   z.strictObject({ kind: z.literal('selfDamage'), amount: positive() }),
-  z.strictObject({ kind: z.literal('gainMp'), amount: positive() }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),
   z.strictObject({ kind: z.literal('shield'), amount: positive() }),
   z.strictObject({
