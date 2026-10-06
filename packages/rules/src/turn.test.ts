@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { apply, IllegalActionError } from './engine';
-import { newBattle, setHand, testConfig } from './test-fixtures';
+import { addCard, newBattle, setHand, setStatus, testConfig } from './test-fixtures';
 import type { BattleConfig, BattleEvent, BattleState } from './types';
 
 const endTurn = (s: BattleState) => apply(s, { type: 'END_TURN', player: s.active });
@@ -119,17 +119,12 @@ describe('statuses (K7)', () => {
     const { state } = newBattle(1);
     const me = state.active;
     state.players[me].statuses = [{ id: 'strength', amount: 2, turnsLeft: 1 }];
-    const cards = state.cards;
-    cards.small = {
-      ...cards.rally!,
-      id: 'small',
-      effects: [{ kind: 'applyStatus', target: 'self', status: 'strength', amount: 1 }],
-    };
-    cards.big = {
-      ...cards.rally!,
-      id: 'big',
-      effects: [{ kind: 'applyStatus', target: 'self', status: 'strength', amount: 3 }],
-    };
+    addCard(state, 'small', 1, [
+      { kind: 'applyStatus', target: 'self', status: 'strength', amount: 1 },
+    ]);
+    addCard(state, 'big', 1, [
+      { kind: 'applyStatus', target: 'self', status: 'strength', amount: 3 },
+    ]);
     setHand(state, me, ['small', 'rally', 'big']);
     let r = apply(state, { type: 'PLAY_CARD', player: me, iid: `t${me}-0` });
     expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: 1 }]);
@@ -141,7 +136,7 @@ describe('statuses (K7)', () => {
     });
     r = apply(r.state, { type: 'PLAY_CARD', player: me, iid: `t${me}-1` });
     expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 2, turnsLeft: 2 }]);
-    r.state.players[me].statuses[0]!.turnsLeft = 1;
+    setStatus(r.state, me, 'strength', 2, 1);
     r = apply(r.state, { type: 'PLAY_CARD', player: me, iid: `t${me}-2` });
     expect(r.state.players[me].statuses).toEqual([{ id: 'strength', amount: 3, turnsLeft: 2 }]);
   });

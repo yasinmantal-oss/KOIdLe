@@ -76,3 +76,27 @@ export function setHand(state: BattleState, p: PlayerIndex, cardIds: string[], m
   pl.mp = mp;
   pl.maxMp = Math.max(pl.maxMp, mp);
 }
+
+/** Testte geçici kart tanımı ekler. */
+export function addCard(
+  state: BattleState,
+  id: string,
+  cost: number,
+  effects: CardDef['effects'],
+): void {
+  state.cards[id] = card(id, 'skill', cost, effects);
+}
+
+/** Oyuncuya doğrudan statü koyar. */
+export function setStatus(
+  state: BattleState,
+  p: PlayerIndex,
+  id: 'strength' | 'weak',
+  amount: number,
+  turnsLeft = 2,
+): void {
+  state.players[p].statuses = [
+    ...state.players[p].statuses.filter((s) => s.id !== id),
+    { id, amount, turnsLeft },
+  ];
+}
