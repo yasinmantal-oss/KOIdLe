@@ -15,7 +15,10 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
   - Rapor: `reports/gate-1/2026-10-06-gate-1b-raporu.md`.
   - **Claude önerisi: CONDITIONAL PASS.** Koşullar: (1) Kalkan Darbesi düzeltmesi, 2 notta "işe yaramıyor"; (2) ilk oyuncu dengesi, sim'de %39,3.
-  - **Yasin kararı bekleniyor.** Faz 2 başlamadı.
+  - **Yasin kararı: CONDITIONAL PASS** (önerilen tüm düzeltmeler kabul).
+  - Kalkan Darbesi düzeltildi (`c85cac2`).
+  - İlk oyuncu: K3 sim'de denendi, kapatınca %59; K3 kaldı, açık konu.
+  - **Doğrulama maçları bekleniyor.** Faz 2 başlamadı.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -28,7 +31,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
-- **Tamamlanmayan:** Gate 1B kararı (Yasin) ve koşulların kapatılması.
+- **Tamamlanmayan:** doğrulama maçları (3–4) ve Gate 1 PASS kararı.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -69,6 +72,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **MP tavanı (Combat v0.2).** ÖNCE: 8. SONRA: 6. NEDEN: toplam MP (36) deste maliyetini (28) aşıyordu, her kart oynanıyordu; kart saklamanın anlamı yoktu.
 - **Ağır Darbe.** ÖNCE: 7 hasar. SONRA: 7 hasar, Güç varsa +3. NEDEN: Savaş Narası → Ağır Darbe kurulum hattı.
 - **Yarıp Geç.** ÖNCE: kalkanı yok sayarak 6. SONRA: aynı, rakip Zayıfsa +3. NEDEN: Gözdağı'nı savunmada mı yoksa kombo için mi harcayacağın ikilemi.
+- **Kalkan Darbesi (Gate 1B koşulu).** ÖNCE: "Bu tur kazandığın Kalkan kadar hasar ver" (tek başına 0). SONRA: "4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver." NEDEN: Yasin 2 notta "işe yaramıyor" dedi; artık tek başına da çalışıyor, Siper ile kombo sürüyor. Claude'un v0.2'deki "değiştirme" önerisi veriyle çürüdü.
+- **K3 ilk oyuncu kuralı.** ÖNCE ve SONRA aynı: ilk oyuncu ilk turunda çekmez. NEDEN: kapatma denendi, ilk oyuncu %40 → %59; ters dengesizlik.
 - **Yıkım.** ÖNCE: 6 MP, 14 hasar (sim'de %99 "otomatik"). SONRA: rakip HP ≤ 15 ise 14, değilse 7. NEDEN: zamanlama kararı, bitirici rolü.
 - **Çalışma düzeni.** ÖNCE: Claude uygular, Copilot inceler, Yasin karar verir. SONRA: Copilot geçici olarak devre dışı. NEDEN: süreç Yasin'in kafasını karıştırıyordu.
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)
@@ -107,7 +112,13 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Spec'teki yol: job havuzu 12'den büyük olacak ve oyuncu destesini kurar; item'lar Power/HP verir ve bazı kartların davranışını değiştirir (spec §3).
   - v0.2'deki koşullu bonus yapısı, item'ın kart davranışını değiştirmesi için de kullanılabilir.
   - Ama kart kimliği (skill hissi) ve item/güç bağlantısı henüz tasarlanmadı. **Açık tasarım konusu, Gate 1B'den sonra ele alınacak.**
-- **İlk oyuncu dezavantajı:** v0.2 sim'de ilk oyuncu %39,3 kazanıyor. Gate 1B'de izlenecek; değer değişmedi.
+- **İlk oyuncu dengesi (açık):**
+  - v0.2.1 sim'de ilk oyuncu %40,2 kazanıyor; K3 kapatılınca %59,1. Config ile çözülmüyor.
+  - Seçenekler: (a) bilinen sorun olarak Faz 2'ye taşı, 4 job ile denge zaten değişecek; (b) ikinci oyuncuya tek seferlik +1 MP (kod gerektirir). Yasin kararı.
+- **v0.2.1 sim izleme:**
+  - Arena ile bitiş %28,6 (v0.2: %21)
+  - defensive AI aggressive'e karşı %64,5
+  - Kalkan Darbesi'nden sonra savunma güçlendi; doğrulama maçlarında izlenecek.
 - **AI sınırı:** AI açgözlü ve tek hamlelik; kombo kurmaz, Yıkım'ı erken harcayabilir. AI kodu değişikliği ayrı karar gerektirir.
 - Gate 1 bulguları (rapor §8):
   - P0: maç içi plan / kombo yok. Yasin teyit etti: kastı maç içi plan.
@@ -134,12 +145,11 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Gate 1B raporundaki üç kararı vermek:
-1. CONDITIONAL PASS kabul mü?
-2. Kalkan Darbesi için hangi düzeltme (öneri: (c) "4 Kalkan kazan, sonra bu tur kazandığın Kalkan kadar hasar ver")?
-3. İlk oyuncu dengesi sim ile denensin mi?
-
-Karar gelmeden Claude değer değiştirmez. Koşullar kapanınca: sim + 3–4 maç doğrulama, ardından Gate 1 PASS ve Faz 2 (dört job).
+**Tek görev (Yasin):** doğrulama: sayfada 3–4 maç (aynı form; yeni config otomatik ayrışır). Kalkan Darbesi'ni denemeye çalış.
+**Sonra:**
+- Claude kayıtları okur; bariz sorun yoksa Yasin Gate 1 PASS der.
+- İlk oyuncu kararı verilir: (a) Faz 2'ye taşı, ya da (b) ikinci oyuncuya +1 MP.
+- Faz 2 planı yazılır: dört job, ~40–50 kart, kart kimliği. Faz 2 Gate 1 PASS olmadan başlamaz.
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
