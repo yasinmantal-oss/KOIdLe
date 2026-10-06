@@ -70,6 +70,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## BUGÜN ALINAN KARARLAR (2026-10-07)
+- **Tasarım vitrini öne alındı (Yasin, 2026-10-07).** 8 mockup ekranı (CZ haritası, slot, aktif farm, baskın, savaş, Örs, Kasaba, Tezgâh) + Karakter, Harman görünümüyle `apps/client` içinde oynanabilir hale getirilir. Savaş gerçek motorla; CZ/farm/Örs/Tezgâh **sahte prototip verisiyle** (`apps/client/src/world/`), `packages/rules` ve `content/` değişmez. Mockup çelişkileri (parşömen, slot 6, vergi, niyet, Iskalamaz, telefon kilidi) spec lehine düzeltilir. Neden: "tasarımı görüp motive olmam ve buna göre devam etmem gerek". Bu, Faz 3 sistemlerinin kurallarının kodlanması değildir; Gate 2 şartı Faz 3 kural/içerik işi için geçerli kalır. **Uygulandı:** commit `0069923`, `16f6316`; yayın: https://claude.ai/artifact/K1g4KKYhjHVmpaeGAyjCAP (ayrı sayfa; maç formu kayıtları eski sayfada kalır). "CZ" adı yasaklı listede olduğu için arayüzde "Sınır Bölgesi".
 - **Kart mekaniği KO skill etkisine karşılık gelir (Yasin).** Neden: ilk Faz 2a kartlarında Stealth kritik atıyor, Sprint kart çekiyordu; "skiller gerçek oyundaki gibi duruyor ama değil". Lanet/Gizli/Zincir kalktı (Revizyon 1).
 - **Tüm kart adları İngilizce, metin Türkçe, kart altında terim açıklaması (Yasin).** Neden: karışık dil; "okuyan herkes her şeyi anlasın".
 - **Hız kartları (Sprint, Light Feet) oyundan çıktı (Yasin).** Neden: kart çekme de ekstra MP de "hiçbir şeye oturmadı". Okçu'ya savunma kartı Evade geldi (Revizyon 2).
@@ -178,8 +179,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Faz 3 ve sonrası (karakter, item, upgrade, CZ, farm, pazar): **Gate 2 PASS olmadan başlamaz.**
 - Farklı job kartlarını tek destede karıştırmak, kahraman gücü (K6), kart kilidi, stun/uyutma/MP kesme/taunt (Faz 2 spec eki §10).
 - Spec'in ÇIKSIN listesi: Sefer, dayanıklılık, crafting, premium para/Mühür, klan, ulus savaşı, sezon/ranked, Filiz, söylenti drop'u, dünya boss'u, +9/+10, set bonusu, iksir, mobil/Steam.
-- Pixi, Harman görünümü, kart çizimleri, ses (K4; Faz 2'de yalnız CSS coşkusu serbest).
-- Mockup'taki ekranları (CZ, Örs, Tezgâh vb.) kodlamak.
+- Pixi, kart çizimleri, ses (K4). ~~Harman görünümü~~ ve ~~mockup ekranlarını kodlamak~~: 2026-10-07'de Yasin kararıyla tasarım vitrini olarak açıldı (yalnız UI + sahte veri).
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
