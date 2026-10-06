@@ -1,4 +1,6 @@
-import type { BattleConfig, CardDef, CardType } from '@koidle/rules';
+import { type BattleConfig, type CardDef, type CardType, isHeavy } from '@koidle/rules';
+import { ARCHETYPE_IDS, ARCHETYPES, type ArchetypeId } from './archetypes';
+import { deckStats } from './deck';
 import type { AiProfiles } from './schema';
 
 // docs/savas-degerleri.md üreticisi. Tek kaynak content/ JSON'larıdır (C2); bu dosya yalnız görünüm.
@@ -42,7 +44,24 @@ function rows(c: BattleConfig): Row[] {
       c.hand.openingGuarantee,
       `F2-7: başlangıç eline Ağır kart gelmez; elde en az bir ${c.mp.start} MP'lik kart olur`,
     ],
-    ['Deste boyutu', 'deck.size', c.deck.size, 'Faz 1: Warrior havuzundaki her karttan birer tane'],
+    [
+      'Deste boyutu',
+      'deck.size',
+      c.deck.size,
+      'Oyuncu tek kopyalık deste kurar (F2-4); havuz 16 karttır',
+    ],
+    [
+      'Maks Ağır kart',
+      'deckBuilding.maxHeavy',
+      c.deckBuilding.maxHeavy,
+      'F2-5: destede en fazla. Motor yok sayar; deste kurma, hazır desteler ve sim doğrular',
+    ],
+    [
+      'Asgari açılış kartı',
+      'deckBuilding.minOpeners',
+      c.deckBuilding.minOpeners,
+      `F2-6: destede en az ${c.mp.start} MP'lik kart sayısı`,
+    ],
     [
       'Karıştırma hakkı',
       'deck.reshuffles',
@@ -147,12 +166,27 @@ function countBy<T>(items: T[], key: (t: T) => string | number): string {
     .join(' · ');
 }
 
-export function renderValuesTable(config: BattleConfig, cards: CardDef[], ai: AiProfiles): string {
+const SECTIONS: { title: string; keep: (c: CardDef) => boolean }[] = [
+  { title: 'Ortak', keep: (c) => c.job === 'common' },
+  { title: 'Warrior', keep: (c) => c.job === 'warrior' },
+  { title: 'Rogue ortak', keep: (c) => c.job === 'rogue' && c.branch === undefined },
+  { title: 'Rogue · Asas', keep: (c) => c.branch === 'assassin' },
+  { title: 'Rogue · Okçu', keep: (c) => c.branch === 'archer' },
+];
+
+const cardName = (c: CardDef): string => `${isHeavy(c) ? '★ ' : ''}${c.name}`;
+
+export function renderValuesTable(
+  config: BattleConfig,
+  cards: CardDef[],
+  ai: AiProfiles,
+  decks: Record<ArchetypeId, string[]>,
+): string {
   const out: string[] = [];
-  out.push('# Savaş Değerleri (Faz 1 · Gate 1)');
+  out.push('# Savaş Değerleri (Faz 2a)');
   out.push('');
   out.push(
-    '> **Bu dosya üretilir, elle düzenlenmez.** Tek kaynak: `content/battle-config.json`, `content/cards/warrior.json`, `content/ai-profiles.json` (C2).',
+    '> **Bu dosya üretilir, elle düzenlenmez.** Tek kaynak: `content/battle-config.json`, `content/cards/*.json`, `content/decks/*.json`, `content/ai-profiles.json` (C2).',
   );
   out.push(
     "> Değer değiştirmek için JSON'u düzenle, sonra `pnpm values` çalıştır. JSON'la uyuşmazsa test kırılır.",
@@ -185,14 +219,29 @@ export function renderValuesTable(config: BattleConfig, cards: CardDef[], ai: Ai
   out.push(
     "- Kart hasarı = `max(0, kart değeri + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef))`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç). Zehir hasarı Lanet'ten etkilenmez.",
   );
+  out.push(
+    '- Gizli: bir sonraki hasar veren kartın **ilk vuruşuna** +değer ekler ve o vuruş Kalkanı yok sayar; sonra düşer. Çoklu vuruşta Güç/Zayıflık/Lanet her vuruşa uygulanır.',
+  );
+  out.push(
+    '- Zincir N: bu tur, bu karttan **önce** en az N kart oynandıysa bonus. Sayaç kart çözüldükten sonra artar.',
+  );
   out.push("- İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.");
   out.push('');
-  out.push(`## 2. Warrior kartları (${cards.length})`);
+  out.push(`## 2. Kartlar (${cards.length})`);
   out.push('');
-  out.push('| id | Ad | Tür | MP | Etki |');
-  out.push('|---|---|---|---|---|');
-  for (const c of cards) {
-    out.push(`| \`${c.id}\` | ${c.name} | ${TYPE_TR[c.type]} | ${c.cost} | ${c.text} |`);
+  out.push(
+    `★ = Ağır kart (destede en fazla ${config.deckBuilding.maxHeavy}; açılış eline gelmez). Kart başına tek anahtar kelime (F2-8).`,
+  );
+  for (const section of SECTIONS) {
+    const list = cards.filter(section.keep);
+    out.push('');
+    out.push(`### ${section.title} (${list.length})`);
+    out.push('');
+    out.push('| id | Ad | Tür | MP | Etki |');
+    out.push('|---|---|---|---|---|');
+    for (const c of list) {
+      out.push(`| \`${c.id}\` | ${cardName(c)} | ${TYPE_TR[c.type]} | ${c.cost} | ${c.text} |`);
+    }
   }
   out.push('');
   out.push(
@@ -204,10 +253,23 @@ export function renderValuesTable(config: BattleConfig, cards: CardDef[], ai: Ai
   out.push(`Kart türleri: ${countBy(cards, (c) => TYPE_TR[c.type])}.`);
   out.push('');
   out.push(
-    'Gözlem listesi (C3, C4): Siper + Kalkan Darbesi, Yarıp Geç ve Yıkım. Gate 1 ve simülasyonda izlenir; şimdilik değer değişikliği yok.',
+    'Gözlem listesi: Stab → Thrust → Spike (19 hasar, 6 MP), Berserker → Hell Blade (16), Viper + Power Shot. Sim ve Yasin testinde izlenir; şimdilik değer değişikliği yok.',
   );
   out.push('');
-  out.push('## 3. AI profilleri (AI ayarı, kural değeri değil)');
+  out.push('## 3. Hazır desteler (önerilen deste = AI destesi)');
+  out.push('');
+  out.push(`| Deste | Kartlar | Ağır | ${config.mp.start} MP'lik |`);
+  out.push('|---|---|---|---|');
+  for (const id of ARCHETYPE_IDS) {
+    const deck = decks[id];
+    const stats = deckStats(deck, cards, config);
+    const names = deck.map((cid) => cards.find((c) => c.id === cid)?.name ?? cid).join(', ');
+    out.push(
+      `| ${ARCHETYPES[id].name} | ${names} | ${stats.heavy}/${config.deckBuilding.maxHeavy} | ${stats.openers} (en az ${config.deckBuilding.minOpeners}) |`,
+    );
+  }
+  out.push('');
+  out.push('## 4. AI profilleri (AI ayarı, kural değeri değil)');
   out.push('');
   out.push('Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, deste sırası).');
   out.push('');

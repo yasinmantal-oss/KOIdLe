@@ -1,20 +1,31 @@
 import { readFileSync } from 'node:fs';
 import battleConfigJson from '@koidle/content/battle-config.json';
+import commonJson from '@koidle/content/cards/common.json';
+import rogueJson from '@koidle/content/cards/rogue.json';
 import warriorJson from '@koidle/content/cards/warrior.json';
-import { createBattle } from '@koidle/rules';
+import { apply, createBattle, isHeavy } from '@koidle/rules';
 import { describe, expect, it } from 'vitest';
 import {
+  ARCHETYPE_IDS,
+  type ArchetypeId,
   ContentError,
-  defaultDeck,
+  deckStats,
   loadAiProfiles,
+  loadAllCards,
   loadBattleConfig,
-  loadCards,
+  loadPool,
+  loadPresetDeck,
+  loadPresetDecks,
   parseBattleConfig,
   parseCards,
+  validateDeck,
 } from './index';
 import { valuesDocPath, valuesDocText } from './values-doc';
 
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
+const config = loadBattleConfig();
+const cards = loadAllCards();
+const issues = (deck: string[], id: ArchetypeId) => validateDeck(deck, id, cards, config);
 
 describe('real content', () => {
   it('loads and validates', () => {
@@ -22,27 +33,64 @@ describe('real content', () => {
     expect(loadAiProfiles().balanced).toBeDefined();
   });
 
-  it('warrior pool: 12 unique kebab-case cards covering all six types', () => {
-    const cards = loadCards('warrior');
-    expect(cards).toHaveLength(12);
-    expect(new Set(cards.map((c) => c.id)).size).toBe(12);
-    expect(new Set(cards.map((c) => c.type))).toEqual(
-      new Set(['attack', 'skill', 'defense', 'heal', 'buff', 'debuff']),
-    );
+  it('33 cards, ids unique across files', () => {
+    expect(cards).toHaveLength(33);
+    expect(new Set(cards.map((c) => c.id)).size).toBe(33);
+    const ids = [...commonJson, ...warriorJson, ...rogueJson].map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('default deck matches config deck.size and starts a battle', () => {
-    const config = loadBattleConfig();
-    const deck = defaultDeck('warrior');
+  it.each(ARCHETYPE_IDS)('%s pool: 16 cards, exactly 3 heavy', (id) => {
+    const pool = loadPool(id);
+    expect(pool).toHaveLength(16);
+    expect(pool.filter(isHeavy)).toHaveLength(3);
+  });
+
+  it('a Rogue branch never leaks into the other branch pool', () => {
+    expect(loadPool('assassin').some((c) => c.branch === 'archer')).toBe(false);
+    expect(loadPool('archer').some((c) => c.branch === 'assassin')).toBe(false);
+    expect(loadPool('warrior').some((c) => c.job === 'rogue')).toBe(false);
+  });
+
+  it.each(ARCHETYPE_IDS)('%s preset deck is valid and starts a battle', (id) => {
+    const deck = loadPresetDeck(id);
     expect(deck).toHaveLength(config.deck.size);
+    expect(issues(deck, id)).toEqual([]);
+    const stats = deckStats(deck, cards, config);
+    expect(stats.heavy).toBeLessThanOrEqual(config.deckBuilding.maxHeavy);
+    expect(stats.openers).toBeGreaterThanOrEqual(config.deckBuilding.minOpeners);
     const { state } = createBattle({
       config,
-      cards: loadCards('warrior'),
+      cards,
       decks: [deck, deck],
       names: ['A', 'B'],
       seed: 1,
     });
     expect(state.players[0].hp).toBe(config.hero.hp);
+  });
+
+  it('loadPresetDecks returns all three', () => {
+    expect(Object.keys(loadPresetDecks()).sort()).toEqual(['archer', 'assassin', 'warrior']);
+  });
+
+  it('Stab → Thrust → Spike deals 19 in one turn (real content)', () => {
+    const deck = loadPresetDeck('assassin');
+    const { state } = createBattle({
+      config,
+      cards,
+      decks: [deck, deck],
+      names: ['A', 'B'],
+      seed: 1,
+    });
+    const me = state.active;
+    const foe = me === 0 ? 1 : 0;
+    const pl = state.players[me];
+    pl.hand = ['stab', 'thrust', 'spike'].map((cardId, i) => ({ iid: `c${i}`, cardId }));
+    pl.mp = 6;
+    pl.maxMp = 6;
+    let s = state;
+    for (let i = 0; i < 3; i++) s = apply(s, { type: 'PLAY_CARD', player: me, iid: `c${i}` }).state;
+    expect(s.players[foe].hp).toBe(config.hero.hp - 19);
   });
 
   it('docs/savas-degerleri.md is generated from content (C2, N7)', () => {
@@ -53,17 +101,64 @@ describe('real content', () => {
   });
 });
 
+describe('validateDeck', () => {
+  const warrior = loadPresetDeck('warrior');
+
+  it('13 cards', () => {
+    expect(issues([...warrior, 'valor'], 'warrior').join('\n')).toMatch(/12 kart/);
+  });
+
+  it('duplicate card', () => {
+    const deck = [...warrior.slice(0, 11), warrior[0] ?? ''];
+    expect(issues(deck, 'warrior').join('\n')).toMatch(/birden fazla/);
+  });
+
+  it('unknown card', () => {
+    const deck = ['yok-boyle-kart', ...warrior.slice(1)];
+    expect(issues(deck, 'warrior').join('\n')).toMatch(/bilinmeyen/);
+  });
+
+  it('an Assassin card in an Archer deck', () => {
+    const deck = loadPresetDeck('archer').map((id) => (id === 'viper' ? 'stab' : id));
+    expect(issues(deck, 'archer').join('\n')).toMatch(/Stab.*havuzunda değil/);
+  });
+
+  it('3 heavy cards', () => {
+    const deck = warrior.map((id) => (id === 'sprint' ? 'wall-of-iron' : id));
+    expect(issues(deck, 'warrior').join('\n')).toMatch(/Ağır kart en fazla 2/);
+  });
+
+  it('only 2 one-MP cards', () => {
+    const deck = [
+      'leg-cutting',
+      'berserker',
+      'iron-skin',
+      'cleave',
+      'howling-sword',
+      'valor',
+      'guclu-vurus',
+      'wall-of-iron',
+      'sword-dancing',
+      'hell-blade',
+      'gozdagi',
+      'sprint',
+    ];
+    expect(deckStats(deck, cards, config)).toEqual({ size: 12, heavy: 3, openers: 2 });
+    expect(issues(deck, 'warrior').join('\n')).toMatch(/MP'lik kart gerekli/);
+  });
+});
+
 describe('invalid content stops with a readable message', () => {
   type RawCard = Record<string, unknown>;
   const cardsError = (mutate: (card: (i: number) => RawCard) => void): string => {
-    const cards = clone(warriorJson) as RawCard[];
+    const list = clone(warriorJson) as RawCard[];
     mutate((i) => {
-      const c = cards[i];
+      const c = list[i];
       if (!c) throw new Error(`kart ${i} yok`);
       return c;
     });
     try {
-      parseCards(cards, 'content/cards/warrior.json');
+      parseCards(list, 'content/cards/warrior.json', 'warrior');
     } catch (e) {
       expect(e).toBeInstanceOf(ContentError);
       return (e as Error).message;
@@ -105,6 +200,14 @@ describe('invalid content stops with a readable message', () => {
     ).toMatch(/\[0\]\.effects\[0\]\.bonus\.if/);
   });
 
+  it('single hit count is rejected (hits must be 2 or more)', () => {
+    expect(
+      cardsError((c) => {
+        c(0).effects = [{ kind: 'damage', amount: 3, hits: 1 }];
+      }),
+    ).toMatch(/\[0\]\.effects\[0\]\.hits/);
+  });
+
   it('missing field and duplicate id', () => {
     expect(
       cardsError((c) => {
@@ -115,7 +218,23 @@ describe('invalid content stops with a readable message', () => {
       cardsError((c) => {
         c(1).id = c(0).id;
       }),
-    ).toMatch(/"yarma" birden fazla/);
+    ).toMatch(/"slash" birden fazla/);
+  });
+
+  it('a card in the wrong job file', () => {
+    expect(
+      cardsError((c) => {
+        c(0).job = 'rogue';
+      }),
+    ).toMatch(/\[0\]\.job/);
+  });
+
+  it('branch on a non-Rogue card', () => {
+    expect(
+      cardsError((c) => {
+        c(0).branch = 'archer';
+      }),
+    ).toMatch(/\[0\]\.branch/);
   });
 
   it('bad config value', () => {

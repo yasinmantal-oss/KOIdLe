@@ -1,4 +1,9 @@
-import { loadAiProfiles, loadBattleConfig, loadCards } from '@koidle/content-schema';
+import {
+  loadAiProfiles,
+  loadAllCards,
+  loadBattleConfig,
+  loadPresetDeck,
+} from '@koidle/content-schema';
 import type { BattleConfig, CardDef } from '@koidle/rules';
 
 export interface LoadedContent {
@@ -13,13 +18,13 @@ export type ContentResult = { ok: true; content: LoadedContent } | { ok: false; 
 /** Geçersiz içerik ekranı kilitler ve dosya + alan yolunu gösterir. */
 export function loadContent(): ContentResult {
   try {
-    const cards = loadCards('warrior');
+    const cards = loadAllCards();
     return {
       ok: true,
       content: {
         config: loadBattleConfig(),
         cards,
-        deck: cards.map((c) => c.id),
+        deck: loadPresetDeck('warrior'),
         profiles: loadAiProfiles(),
       },
     };

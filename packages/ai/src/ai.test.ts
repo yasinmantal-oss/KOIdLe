@@ -1,4 +1,9 @@
-import { defaultDeck, loadAiProfiles, loadBattleConfig, loadCards } from '@koidle/content-schema';
+import {
+  loadAiProfiles,
+  loadAllCards,
+  loadBattleConfig,
+  loadPresetDeck,
+} from '@koidle/content-schema';
 import {
   type Action,
   apply,
@@ -14,8 +19,8 @@ import { chooseAction, HIDDEN_CARD_ID, redactForAi, type Scorer } from './index'
 
 const profiles = loadAiProfiles();
 const config = loadBattleConfig();
-const cards = loadCards('warrior');
-const deck = defaultDeck('warrior');
+const cards = loadAllCards();
+const deck = loadPresetDeck('warrior');
 
 function battle(seed: number): BattleState {
   return createBattle({ config, cards, decks: [deck, deck], names: ['A', 'B'], seed }).state;
@@ -50,27 +55,27 @@ function midBattle(seed: number, steps: number[]): BattleState {
 
 describe('chooseAction', () => {
   it('takes a winning move', () => {
-    const { state, me } = withHand(1, ['siper', 'yarma'], 3);
+    const { state, me } = withHand(1, ['absoluteness', 'hizli-vurus'], 3);
     state.players[me === 0 ? 1 : 0].hp = 3;
     for (const p of ['aggressive', 'balanced', 'defensive'] as const) {
-      expect(cardOf(state, me, chooseAction(state, me, profiles[p]))).toBe('yarma');
+      expect(cardOf(state, me, chooseAction(state, me, profiles[p]))).toBe('hizli-vurus');
     }
   });
 
   it('ends the turn when nothing is affordable or useful', () => {
-    const poor = withHand(1, ['yikim'], 2);
+    const poor = withHand(1, ['hell-blade'], 2);
     expect(chooseAction(poor.state, poor.me, profiles.balanced)).toEqual({
       type: 'END_TURN',
       player: poor.me,
     });
-    const useless = withHand(1, ['ikinci-nefes'], 2); // HP dolu → iyileşme 0
+    const useless = withHand(1, ['minor-healing'], 2); // HP dolu → iyileşme 0
     expect(chooseAction(useless.state, useless.me, profiles.aggressive).type).toBe('END_TURN');
   });
 
   it('profiles differ: aggressive attacks, defensive blocks', () => {
-    const { state, me } = withHand(1, ['yarma', 'siper'], 2);
-    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('yarma');
-    expect(cardOf(state, me, chooseAction(state, me, profiles.defensive))).toBe('siper');
+    const { state, me } = withHand(1, ['hizli-vurus', 'absoluteness'], 2);
+    expect(cardOf(state, me, chooseAction(state, me, profiles.aggressive))).toBe('hizli-vurus');
+    expect(cardOf(state, me, chooseAction(state, me, profiles.defensive))).toBe('absoluteness');
   });
 
   it('always returns a legal action', () => {
@@ -100,13 +105,13 @@ describe('hidden information (C6)', () => {
 
   it('a scorer that would peek at the deck cannot (structural guard)', () => {
     const decide = (topCard: string) => {
-      const { state, me } = withHand(1, ['hazirlik'], 2);
+      const { state, me } = withHand(1, ['sprint'], 2);
       state.players[me].deck = state.players[me].deck.map((c, i) =>
         i === 0 ? { ...c, cardId: topCard } : c,
       );
       return chooseAction(state, me, profiles.balanced, cheater);
     };
-    expect(decide('yikim')).toEqual(decide('yarma'));
+    expect(decide('hell-blade')).toEqual(decide('hizli-vurus'));
   });
 
   it('redaction hides opponent hand and both decks, keeps counts', () => {

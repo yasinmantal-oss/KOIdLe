@@ -1,9 +1,22 @@
 import aiProfilesJson from '@koidle/content/ai-profiles.json';
 import battleConfigJson from '@koidle/content/battle-config.json';
+import commonJson from '@koidle/content/cards/common.json';
+import rogueJson from '@koidle/content/cards/rogue.json';
 import warriorJson from '@koidle/content/cards/warrior.json';
-import type { BattleConfig, CardDef } from '@koidle/rules';
+import archerDeckJson from '@koidle/content/decks/archer.json';
+import assassinDeckJson from '@koidle/content/decks/assassin.json';
+import warriorDeckJson from '@koidle/content/decks/warrior.json';
+import type { BattleConfig, CardDef, Job } from '@koidle/rules';
 import type { z } from 'zod';
-import { type AiProfiles, AiProfilesSchema, BattleConfigSchema, CardListSchema } from './schema';
+import { type ArchetypeId, archetype, inPool } from './archetypes';
+import { validateDeck } from './deck';
+import {
+  type AiProfiles,
+  AiProfilesSchema,
+  BattleConfigSchema,
+  CardListSchema,
+  DeckSchema,
+} from './schema';
 
 /** Geçersiz içerik: mesaj dosya yolu + alan yolu + sorunu içerir. */
 export class ContentError extends Error {
@@ -38,16 +51,23 @@ export function parseBattleConfig(raw: unknown, file = 'content/battle-config.js
   return parse(BattleConfigSchema, raw, file) as BattleConfig;
 }
 
-export function parseCards(raw: unknown, file: string): CardDef[] {
+/** Bir kart dosyasını doğrular: şema + dosyanın job'ı + yol yalnız Rogue'da + yinelenen id yok. */
+export function parseCards(raw: unknown, file: string, job: Job | 'common'): CardDef[] {
   const cards = parse(CardListSchema, raw, file) as CardDef[];
+  const issues: string[] = [];
+  cards.forEach((c, i) => {
+    if (c.job !== job) {
+      issues.push(`[${i}].job: bu dosya "${job}" kartları içermeli, "${c.job}" bulundu`);
+    }
+    if (c.branch !== undefined && c.job !== 'rogue') {
+      issues.push(`[${i}].branch: yol yalnız Rogue kartlarında olabilir`);
+    }
+  });
   const ids = cards.map((c) => c.id);
-  const dupes = cards.filter((c, i) => ids.indexOf(c.id) !== i);
-  if (dupes.length > 0) {
-    throw new ContentError(
-      file,
-      dupes.map((c) => `id "${c.id}" birden fazla kez tanımlı`),
-    );
+  for (const c of cards.filter((c, i) => ids.indexOf(c.id) !== i)) {
+    issues.push(`id "${c.id}" birden fazla kez tanımlı`);
   }
+  if (issues.length > 0) throw new ContentError(file, issues);
   return cards;
 }
 
@@ -58,13 +78,50 @@ export function parseAiProfiles(raw: unknown, file = 'content/ai-profiles.json')
 export const loadBattleConfig = (): BattleConfig => parseBattleConfig(battleConfigJson);
 export const loadAiProfiles = (): AiProfiles => parseAiProfiles(aiProfilesJson);
 
-const CARD_FILES: { warrior: unknown } = { warrior: warriorJson };
+const CARD_FILES: { file: string; job: Job | 'common'; raw: unknown }[] = [
+  { file: 'content/cards/common.json', job: 'common', raw: commonJson },
+  { file: 'content/cards/warrior.json', job: 'warrior', raw: warriorJson },
+  { file: 'content/cards/rogue.json', job: 'rogue', raw: rogueJson },
+];
 
-export function loadCards(job: 'warrior'): CardDef[] {
-  return parseCards(CARD_FILES[job], `content/cards/${job}.json`);
+/** Tüm kartlar (33). Dosyalar arası yinelenen id de hatadır. */
+export function loadAllCards(): CardDef[] {
+  const all = CARD_FILES.flatMap((f) => parseCards(f.raw, f.file, f.job));
+  const dupes = all.filter((c, i) => all.findIndex((x) => x.id === c.id) !== i);
+  if (dupes.length > 0) {
+    throw new ContentError(
+      'content/cards/*.json',
+      dupes.map((c) => `id "${c.id}" birden fazla dosyada tanımlı`),
+    );
+  }
+  return all;
 }
 
-/** Faz 1: job havuzundaki her karttan birer tane (deste boyutu config'den doğrulanır). */
-export function defaultDeck(job: 'warrior'): string[] {
-  return loadCards(job).map((c) => c.id);
+/** Bir arketipin deste kurma havuzu (ortak + job + yol). */
+export function loadPool(id: ArchetypeId): CardDef[] {
+  const a = archetype(id);
+  return loadAllCards().filter((c) => inPool(c, a));
+}
+
+const DECK_FILES: Record<ArchetypeId, unknown> = {
+  warrior: warriorDeckJson,
+  assassin: assassinDeckJson,
+  archer: archerDeckJson,
+};
+
+/** Önerilen deste. `validateDeck` sorun bulursa ContentError fırlatır. */
+export function loadPresetDeck(id: ArchetypeId): string[] {
+  const file = `content/decks/${id}.json`;
+  const deck = parse(DeckSchema, DECK_FILES[id], file);
+  const issues = validateDeck(deck, id, loadAllCards(), loadBattleConfig());
+  if (issues.length > 0) throw new ContentError(file, issues);
+  return deck;
+}
+
+export function loadPresetDecks(): Record<ArchetypeId, string[]> {
+  return {
+    warrior: loadPresetDeck('warrior'),
+    assassin: loadPresetDeck('assassin'),
+    archer: loadPresetDeck('archer'),
+  };
 }

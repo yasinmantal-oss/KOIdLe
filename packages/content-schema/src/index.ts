@@ -1,9 +1,20 @@
 export {
+  ARCHETYPE_IDS,
+  ARCHETYPES,
+  type Archetype,
+  type ArchetypeId,
+  archetype,
+  inPool,
+} from './archetypes';
+export { type DeckStats, deckStats, validateDeck } from './deck';
+export {
   ContentError,
-  defaultDeck,
   loadAiProfiles,
+  loadAllCards,
   loadBattleConfig,
-  loadCards,
+  loadPool,
+  loadPresetDeck,
+  loadPresetDecks,
   parseAiProfiles,
   parseBattleConfig,
   parseCards,

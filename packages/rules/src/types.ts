@@ -58,6 +58,8 @@ export interface BattleConfig {
     stacking: 'maxAmountRefreshOnGte';
     tickOn: 'ownerTurnEnd';
   } & Record<StatusId, { duration: number }>;
+  /** Deste kurma sınırları. Motor yok sayar; deste kurma ekranı, hazır desteler ve sim doğrular. */
+  deckBuilding: { maxHeavy: number; minOpeners: number };
   roundCap: number;
 }
 

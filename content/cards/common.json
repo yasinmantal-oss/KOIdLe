@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hizli-vurus",
+    "name": "Hızlı Vuruş",
+    "job": "common",
+    "type": "attack",
+    "cost": 1,
+    "effects": [{ "kind": "damage", "amount": 3 }],
+    "text": "3 hasar ver."
+  },
+  {
+    "id": "sprint",
+    "name": "Sprint",
+    "job": "common",
+    "type": "skill",
+    "cost": 1,
+    "effects": [{ "kind": "draw", "count": 1 }],
+    "text": "1 kart çek."
+  },
+  {
+    "id": "absoluteness",
+    "name": "Absoluteness",
+    "job": "common",
+    "type": "defense",
+    "cost": 1,
+    "effects": [{ "kind": "shield", "amount": 4 }],
+    "text": "4 Kalkan kazan."
+  },
+  {
+    "id": "gozdagi",
+    "name": "Gözdağı",
+    "job": "common",
+    "type": "debuff",
+    "cost": 1,
+    "effects": [{ "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }],
+    "text": "Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "valor",
+    "name": "Valor",
+    "job": "common",
+    "type": "heal",
+    "cost": 2,
+    "effects": [
+      { "kind": "heal", "amount": 4, "bonus": { "if": { "selfHpAtMost": 15 }, "amount": 4 } }
+    ],
+    "text": "4 HP iyileş. HP'n 15 veya altındaysa 8."
+  },
+  {
+    "id": "guclu-vurus",
+    "name": "Güçlü Vuruş",
+    "job": "common",
+    "type": "attack",
+    "cost": 3,
+    "effects": [{ "kind": "damage", "amount": 7 }],
+    "text": "7 hasar ver."
+  }
+]

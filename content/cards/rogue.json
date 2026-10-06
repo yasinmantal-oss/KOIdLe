@@ -1,0 +1,211 @@
+[
+  {
+    "id": "minor-healing",
+    "name": "Minor Healing",
+    "job": "rogue",
+    "type": "heal",
+    "cost": 1,
+    "effects": [{ "kind": "heal", "amount": 3 }],
+    "text": "3 HP iyileş."
+  },
+  {
+    "id": "light-feet",
+    "name": "Light Feet",
+    "job": "rogue",
+    "type": "skill",
+    "cost": 1,
+    "effects": [{ "kind": "draw", "count": 1 }],
+    "text": "1 kart çek."
+  },
+  {
+    "id": "scaled-skin",
+    "name": "Scaled Skin",
+    "job": "rogue",
+    "tags": ["heavy"],
+    "type": "defense",
+    "cost": 3,
+    "effects": [{ "kind": "shield", "amount": 10 }],
+    "text": "10 Kalkan kazan."
+  },
+  {
+    "id": "stab",
+    "name": "Stab",
+    "job": "rogue",
+    "branch": "assassin",
+    "type": "attack",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 2,
+        "bonus": { "if": { "cardsPlayedAtLeast": 1 }, "amount": 2 }
+      }
+    ],
+    "text": "2 hasar ver. Zincir 1: +2."
+  },
+  {
+    "id": "stealth",
+    "name": "Stealth",
+    "job": "rogue",
+    "branch": "assassin",
+    "type": "skill",
+    "cost": 1,
+    "effects": [{ "kind": "applyStatus", "target": "self", "status": "stealth", "amount": 3 }],
+    "text": "Kendine Gizli 3 ver."
+  },
+  {
+    "id": "thrust",
+    "name": "Thrust",
+    "job": "rogue",
+    "branch": "assassin",
+    "type": "attack",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 4,
+        "bonus": { "if": { "cardsPlayedAtLeast": 1 }, "amount": 3 }
+      }
+    ],
+    "text": "4 hasar ver. Zincir 1: +3."
+  },
+  {
+    "id": "blinding",
+    "name": "Blinding",
+    "job": "rogue",
+    "branch": "assassin",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [
+      { "kind": "damage", "amount": 3 },
+      { "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }
+    ],
+    "text": "3 hasar ver. Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "spike",
+    "name": "Spike",
+    "job": "rogue",
+    "branch": "assassin",
+    "type": "attack",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 6,
+        "bonus": { "if": { "cardsPlayedAtLeast": 2 }, "amount": 4 }
+      }
+    ],
+    "text": "6 hasar ver. Zincir 2: +4."
+  },
+  {
+    "id": "critical-point",
+    "name": "Critical Point",
+    "job": "rogue",
+    "branch": "assassin",
+    "tags": ["heavy"],
+    "type": "skill",
+    "cost": 2,
+    "effects": [{ "kind": "applyStatus", "target": "self", "status": "stealth", "amount": 7 }],
+    "text": "Kendine Gizli 7 ver."
+  },
+  {
+    "id": "beast-hiding",
+    "name": "Beast Hiding",
+    "job": "rogue",
+    "branch": "assassin",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 4,
+    "effects": [
+      { "kind": "damage", "amount": 6 },
+      { "kind": "applyStatus", "target": "self", "status": "stealth", "amount": 3 }
+    ],
+    "text": "6 hasar ver. Sonra kendine Gizli 3 ver."
+  },
+  {
+    "id": "poison-arrow",
+    "name": "Poison Arrow",
+    "job": "rogue",
+    "branch": "archer",
+    "type": "debuff",
+    "cost": 1,
+    "effects": [
+      { "kind": "damage", "amount": 1 },
+      { "kind": "applyStatus", "target": "enemy", "status": "poison", "amount": 2 }
+    ],
+    "text": "1 hasar ver. Rakibe Zehir 2 ver."
+  },
+  {
+    "id": "perfect-arrow",
+    "name": "Perfect Arrow",
+    "job": "rogue",
+    "branch": "archer",
+    "type": "attack",
+    "cost": 1,
+    "effects": [{ "kind": "damage", "amount": 2, "ignoreShield": true }],
+    "text": "Kalkanı yok sayarak 2 hasar ver."
+  },
+  {
+    "id": "multiple-shot",
+    "name": "Multiple Shot",
+    "job": "rogue",
+    "branch": "archer",
+    "type": "attack",
+    "cost": 2,
+    "effects": [{ "kind": "damage", "amount": 2, "hits": 3 }],
+    "text": "3 kez 2 hasar ver."
+  },
+  {
+    "id": "viper",
+    "name": "Viper",
+    "job": "rogue",
+    "branch": "archer",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [{ "kind": "applyStatus", "target": "enemy", "status": "poison", "amount": 4 }],
+    "text": "Rakibe Zehir 4 ver."
+  },
+  {
+    "id": "blinding-strafe",
+    "name": "Blinding Strafe",
+    "job": "rogue",
+    "branch": "archer",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [
+      { "kind": "damage", "amount": 3 },
+      { "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }
+    ],
+    "text": "3 hasar ver. Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "arrow-shower",
+    "name": "Arrow Shower",
+    "job": "rogue",
+    "branch": "archer",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 4,
+    "effects": [{ "kind": "damage", "amount": 2, "hits": 5 }],
+    "text": "5 kez 2 hasar ver."
+  },
+  {
+    "id": "power-shot",
+    "name": "Power Shot",
+    "job": "rogue",
+    "branch": "archer",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 4,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 7,
+        "ignoreShield": true,
+        "bonus": { "if": { "enemyHpAtMost": 12 }, "amount": 5 }
+      }
+    ],
+    "text": "Kalkanı yok sayarak 7 hasar ver. Rakibin HP'si 12 veya altındaysa +5."
+  }
+]

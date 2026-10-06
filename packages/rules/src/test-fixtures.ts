@@ -25,6 +25,7 @@ export const testConfig: BattleConfig = {
     poison: { duration: 2 },
     stealth: { duration: 2 },
   },
+  deckBuilding: { maxHeavy: 2, minOpeners: 3 },
   roundCap: 20,
 };
 

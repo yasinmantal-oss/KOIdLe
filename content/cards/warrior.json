@@ -1,99 +1,71 @@
 [
   {
-    "id": "yarma",
-    "name": "Yarma",
+    "id": "slash",
+    "name": "Slash",
     "job": "warrior",
     "type": "attack",
     "cost": 1,
-    "effects": [{ "kind": "damage", "amount": 3 }],
-    "text": "3 hasar ver."
+    "effects": [
+      { "kind": "damage", "amount": 3, "bonus": { "if": { "selfHas": "strength" }, "amount": 2 } }
+    ],
+    "text": "3 hasar ver. Güç'ün varsa +2."
   },
   {
-    "id": "kalkan-kaldir",
-    "name": "Kalkan Kaldır",
-    "job": "warrior",
-    "type": "defense",
-    "cost": 1,
-    "effects": [{ "kind": "shield", "amount": 4 }],
-    "text": "4 Kalkan kazan."
-  },
-  {
-    "id": "gozdagi",
-    "name": "Gözdağı",
-    "job": "warrior",
-    "type": "debuff",
-    "cost": 1,
-    "effects": [{ "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }],
-    "text": "Rakibe Zayıflık 2 ver."
-  },
-  {
-    "id": "hazirlik",
-    "name": "Hazırlık",
-    "job": "warrior",
-    "type": "skill",
-    "cost": 1,
-    "effects": [{ "kind": "draw", "count": 1 }, { "kind": "shield", "amount": 2 }],
-    "text": "1 kart çek. 2 Kalkan kazan."
-  },
-  {
-    "id": "kalkan-darbesi",
-    "name": "Kalkan Darbesi",
-    "job": "warrior",
-    "type": "attack",
-    "cost": 2,
-    "effects": [{ "kind": "shield", "amount": 4 }, { "kind": "damageFromShieldGainedThisTurn" }],
-    "text": "4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver."
-  },
-  {
-    "id": "savas-narasi",
-    "name": "Savaş Narası",
+    "id": "gain",
+    "name": "Gain",
     "job": "warrior",
     "type": "buff",
-    "cost": 2,
+    "cost": 1,
     "effects": [{ "kind": "applyStatus", "target": "self", "status": "strength", "amount": 2 }],
     "text": "Kendine Güç 2 ver."
   },
   {
-    "id": "siper",
-    "name": "Siper",
+    "id": "leg-cutting",
+    "name": "Leg Cutting",
+    "job": "warrior",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [
+      { "kind": "damage", "amount": 2 },
+      { "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }
+    ],
+    "text": "2 hasar ver. Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "job": "warrior",
+    "type": "buff",
+    "cost": 2,
+    "effects": [
+      { "kind": "applyStatus", "target": "self", "status": "strength", "amount": 3 },
+      { "kind": "applyStatus", "target": "self", "status": "curse", "amount": 2 }
+    ],
+    "text": "Kendine Güç 3 ve Lanet 2 ver."
+  },
+  {
+    "id": "iron-skin",
+    "name": "Iron Skin",
     "job": "warrior",
     "type": "defense",
     "cost": 2,
-    "effects": [{ "kind": "shield", "amount": 7 }],
-    "text": "7 Kalkan kazan."
+    "effects": [{ "kind": "shield", "amount": 6 }],
+    "text": "6 Kalkan kazan."
   },
   {
-    "id": "ikinci-nefes",
-    "name": "İkinci Nefes",
-    "job": "warrior",
-    "type": "heal",
-    "cost": 2,
-    "effects": [{ "kind": "heal", "amount": 6 }],
-    "text": "6 HP iyileş."
-  },
-  {
-    "id": "agir-darbe",
-    "name": "Ağır Darbe",
+    "id": "cleave",
+    "name": "Cleave",
     "job": "warrior",
     "type": "attack",
     "cost": 3,
     "effects": [
       { "kind": "damage", "amount": 7, "bonus": { "if": { "selfHas": "strength" }, "amount": 3 } }
     ],
-    "text": "7 hasar ver. Güç'ün varsa +3 hasar."
+    "text": "7 hasar ver. Güç'ün varsa +3."
   },
   {
-    "id": "savas-ritmi",
-    "name": "Savaş Ritmi",
-    "job": "warrior",
-    "type": "skill",
-    "cost": 3,
-    "effects": [{ "kind": "draw", "count": 2 }, { "kind": "damage", "amount": 3 }],
-    "text": "2 kart çek. 3 hasar ver."
-  },
-  {
-    "id": "yarip-gec",
-    "name": "Yarıp Geç",
+    "id": "howling-sword",
+    "name": "Howling Sword",
     "job": "warrior",
     "type": "attack",
     "cost": 4,
@@ -105,17 +77,38 @@
         "bonus": { "if": { "enemyHas": "weak" }, "amount": 3 }
       }
     ],
-    "text": "Kalkanı yok sayarak 6 hasar ver. Rakip Zayıfsa +3 hasar."
+    "text": "Kalkanı yok sayarak 6 hasar ver. Rakip Zayıfsa +3."
   },
   {
-    "id": "yikim",
-    "name": "Yıkım",
+    "id": "wall-of-iron",
+    "name": "Wall of Iron",
     "job": "warrior",
+    "tags": ["heavy"],
+    "type": "defense",
+    "cost": 3,
+    "effects": [{ "kind": "shield", "amount": 12 }],
+    "text": "12 Kalkan kazan."
+  },
+  {
+    "id": "sword-dancing",
+    "name": "Sword Dancing",
+    "job": "warrior",
+    "tags": ["heavy"],
     "type": "attack",
-    "cost": 6,
+    "cost": 4,
+    "effects": [{ "kind": "damage", "amount": 6 }, { "kind": "heal", "amount": 5 }],
+    "text": "6 hasar ver. 5 HP iyileş."
+  },
+  {
+    "id": "hell-blade",
+    "name": "Hell Blade",
+    "job": "warrior",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 5,
     "effects": [
-      { "kind": "damage", "amount": 7, "bonus": { "if": { "enemyHpAtMost": 15 }, "amount": 7 } }
+      { "kind": "damage", "amount": 9, "bonus": { "if": { "selfHas": "strength" }, "amount": 4 } }
     ],
-    "text": "Rakibin HP'si 15 veya altındaysa 14 hasar ver; değilse 7."
+    "text": "9 hasar ver. Güç'ün varsa +4."
   }
 ]

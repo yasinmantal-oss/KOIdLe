@@ -32,6 +32,7 @@ export const BattleConfigSchema = z.strictObject({
     poison: z.strictObject({ duration: positive() }),
     stealth: z.strictObject({ duration: positive() }),
   }),
+  deckBuilding: z.strictObject({ maxHeavy: int(), minOpeners: int() }),
   roundCap: positive(),
 }) satisfies z.ZodType<BattleConfig>;
 
@@ -72,9 +73,11 @@ export const EffectSchema = z.discriminatedUnion('kind', [
 ]);
 
 export const CardSchema = z.strictObject({
-  id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'kebab-case olmalı (ör. kalkan-kaldir)'),
+  id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'kebab-case olmalı (ör. leg-cutting)'),
   name: z.string().min(1),
-  job: z.literal('warrior'),
+  job: z.enum(['common', 'warrior', 'rogue']),
+  branch: z.enum(['assassin', 'archer']).exactOptional(),
+  tags: z.array(z.literal('heavy')).min(1).exactOptional(),
   type: z.enum(['attack', 'skill', 'defense', 'heal', 'buff', 'debuff']),
   cost: int().max(10),
   effects: z.array(EffectSchema).min(1),
@@ -82,6 +85,9 @@ export const CardSchema = z.strictObject({
 }) satisfies z.ZodType<CardDef>;
 
 export const CardListSchema = z.array(CardSchema).min(1);
+
+/** Hazır deste: yalnız kart id'leri; kurallar `validateDeck`'te. */
+export const DeckSchema = z.array(z.string().min(1)).min(1);
 
 export const AiWeightsSchema = z.strictObject({
   enemyDamage: z.number().min(0),
