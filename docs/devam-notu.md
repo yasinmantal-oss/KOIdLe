@@ -11,7 +11,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## MEVCUT DURUM
 - **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
-- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Test **tamamlandı**: 11 maç (aggressive 5 · balanced 3 · defensive 3). Final analiz: `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Claude'un **önerisi FAIL / ITERATE**; nihai karar Yasin + Copilot + Claude incelemesinde. Tasarım kararı yok, değer değişmedi.
+- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Test **tamamlandı**: 11 maç (aggressive 5 · balanced 3 · defensive 3). Final analiz: `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Claude ve Copilot'un **önerisi FAIL / ITERATE**: Hero vs Hero başarısız sayılmıyor, minion yok, Faz 2 yok. **Yasin'in nihai onayı bekleniyor.** Değer değişmedi.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -23,7 +23,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - `apps/client`: React savaş ekranı + Gate 1 formu.
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
-- **Tamamlanmayan:** Gate 1 nihai kararı (üçlü inceleme), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
+- **Tamamlanmayan:** Gate 1 nihai kararı (Yasin) ve Combat v0.2 paket seçimi. Öneri: `docs/combat-v0.2-oneri.md`.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -47,6 +47,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## BUGÜN ALINAN KARARLAR (2026-10-06)
+- **Copilot geçici olarak devre dışı (Yasin, 2026-10-06).** Neden: süreç kafa karıştırıyordu. Copilot'un son katkısı: Gate önerisi FAIL / ITERATE ve Combat v0.2 hedefi ("oyuncuya birkaç hamlelik küçük planlar kurdurmak"; `mp.max` 8 → 6 destekleniyor ama P0'ın tek çözümü değil). Bundan sonra karar yalnız Yasin'de.
 - Spec v0.2 Yasin tarafından onaylandı. Faz 0–1 planı rev. 2 (K1–K7 Yasin, N1–N7 Claude + Copilot + Yasin onayı, C1–C8 Copilot).
 - **Oturum kapanış/senkronizasyon protokolü** benimsendi (`docs/kapanis-protokolu.md`). Neden: GitHub, repo dokümanı ve vault birbirinden kopmasın; hiçbir karar yalnız sohbet geçmişinde kalmasın.
 - `ekranlar-v0.1.html` repo'ya **referans olarak** alındı, içeriği değiştirilmedi. Spec ile çeliştiği yerlerde spec geçerli.
@@ -100,13 +101,13 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Yasin final raporu Copilot'a iletir; Yasin + Copilot + Claude Gate 1 kararını verir (PASS / CONDITIONAL / FAIL-ITERATE) ve varsa ilk iterasyonu seçer. **Karar gelmeden Claude değer veya kod değiştirmez.**
+**Tek görev (Yasin):** Gate 1 = FAIL / ITERATE kararını onaylamak ve `docs/combat-v0.2-oneri.md`'deki paketi onaylamak ya da değiştirmek. **Onay gelmeden Claude değer veya kod değiştirmez.** Onaydan sonra Claude paketi uygular (test + sim + sayfa), Yasin Gate 1B maçlarını oynar.
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
 3. Gate kalırsa yalnız savaşı düzeltir (`docs/gate-1.md` §C).
 
-Paralel ve engellemeyen işler: Copilot incelemesi; PR #1'i `master`'a birleştirme kararı (Yasin).
+Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 
 ## Yeni oturum nasıl başlar (Claude için)
 1. Bu dosyayı ve `CLAUDE.md`'yi oku.
@@ -120,7 +121,7 @@ Paralel ve engellemeyen işler: Copilot incelemesi; PR #1'i `master`'a birleşti
 
 ## Çalışma düzeni
 - **Claude:** tek uygulayıcı (kod, test, commit, push).
-- **Copilot:** bağımsız inceleyici; repo'yu göremez, yalnız Yasin'in ilettiğini okur.
+- **Copilot:** geçici olarak devre dışı (2026-10-06). Geri dönerse: bağımsız inceleyici; repo'yu göremez, yalnız Yasin'in ilettiğini okur.
 - **Yasin:** karar veren ve köprü.
 - Copilot önerisi repo'daki gerçek durumla çelişirse Claude uygulamadan önce yazar ve Yasin'e sorar. Copilot önerisi emir değildir.
 - Her önemli adımın sonunda **DURUM RAPORU** (şablon: plan §1).
@@ -137,6 +138,7 @@ Paralel ve engellemeyen işler: Copilot incelemesi; PR #1'i `master`'a birleşti
 - `docs/gate-1.md`: Gate 1 protokolü
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
+- `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarım önerisi (onay bekliyor)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
