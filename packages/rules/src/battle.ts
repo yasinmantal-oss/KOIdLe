@@ -1,5 +1,5 @@
 import { clone } from './clone';
-import { drawCard } from './draw';
+import { drawOpeningHand } from './draw';
 import { rollInt, shuffle } from './rng';
 import { startTurn } from './turn';
 import type {
@@ -61,9 +61,7 @@ export function createBattle(setup: BattleSetup): ApplyResult {
   for (const pl of state.players) pl.deck = shuffle(state, pl.deck);
   events.push({ type: 'BATTLE_STARTED', firstPlayer: state.firstPlayer, seed: seed >>> 0 });
 
-  for (const p of [0, 1] as const) {
-    for (let i = 0; i < config.hand.starting; i++) drawCard(state, p, events);
-  }
+  for (const p of [0, 1] as const) drawOpeningHand(state, p, events);
   startTurn(state, state.firstPlayer, events);
   return { state, events };
 }

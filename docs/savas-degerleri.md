@@ -16,6 +16,7 @@
 | El sınırı | `hand.limit` | 8 | Dolu ele gelen kart yanar (ıskartaya gider) |
 | Tur başı çekiş | `hand.drawPerTurn` | 1 |  |
 | İlk oyuncu ilk çekişi atlar | `hand.firstPlayerSkipsFirstDraw` | evet | K3 |
+| Açılış eli garantisi | `hand.openingGuarantee` | evet | F2-7: başlangıç eline Ağır kart gelmez; elde en az bir 1 MP'lik kart olur |
 | Deste boyutu | `deck.size` | 12 | Faz 1: Warrior havuzundaki her karttan birer tane |
 | Karıştırma hakkı | `deck.reshuffles` | 1 | Deste bitince ıskarta karıştırılır. Iskarta boşsa hak harcanmaz (N4) |
 | Yorgunluk başlangıcı | `fatigue.start` | 1 | Hak bittikten sonra boş desteden çekiş |

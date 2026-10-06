@@ -15,7 +15,8 @@
         "starting": 4,
         "limit": 8,
         "drawPerTurn": 1,
-        "firstPlayerSkipsFirstDraw": true
+        "firstPlayerSkipsFirstDraw": true,
+        "openingGuarantee": false
       },
       "deck": {
         "size": 12,
@@ -1102,7 +1103,8 @@
           "starting": 4,
           "limit": 8,
           "drawPerTurn": 1,
-          "firstPlayerSkipsFirstDraw": true
+          "firstPlayerSkipsFirstDraw": true,
+          "openingGuarantee": false
         },
         "deck": {
           "size": 12,

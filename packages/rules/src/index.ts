@@ -1,6 +1,7 @@
 export const RULES_VERSION = '0.2.0';
 
 export { createBattle } from './battle';
+export { isHeavy, isOpener } from './cards';
 export { apply, IllegalActionError, type IllegalReason, validateAction } from './engine';
 export { legalActions } from './legal';
 export { type CardPreview, previewCard } from './preview';

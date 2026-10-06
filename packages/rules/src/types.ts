@@ -1,5 +1,7 @@
 export type PlayerIndex = 0 | 1;
-export type Job = 'warrior';
+export type Job = 'warrior' | 'rogue';
+export type Branch = 'assassin' | 'archer';
+export type CardTag = 'heavy';
 export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuff';
 export type StatusId = 'strength' | 'weak' | 'curse' | 'poison' | 'stealth';
 
@@ -27,7 +29,11 @@ export type Effect =
 export interface CardDef {
   id: string;
   name: string;
-  job: Job;
+  job: Job | 'common';
+  /** Yalnız Rogue kartlarında; Rogue ortak kartlarında yok. */
+  branch?: Branch;
+  /** 'heavy' = Ağır: destede en fazla `deckBuilding.maxHeavy`, açılış eline gelmez. */
+  tags?: CardTag[];
   type: CardType;
   cost: number;
   effects: Effect[];
@@ -42,6 +48,7 @@ export interface BattleConfig {
     limit: number;
     drawPerTurn: number;
     firstPlayerSkipsFirstDraw: boolean;
+    openingGuarantee: boolean;
   };
   deck: { size: number; reshuffles: number };
   fatigue: { start: number; step: number; ignoresShield: boolean };

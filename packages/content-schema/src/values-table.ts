@@ -36,6 +36,12 @@ function rows(c: BattleConfig): Row[] {
       c.hand.firstPlayerSkipsFirstDraw,
       'K3',
     ],
+    [
+      'Açılış eli garantisi',
+      'hand.openingGuarantee',
+      c.hand.openingGuarantee,
+      `F2-7: başlangıç eline Ağır kart gelmez; elde en az bir ${c.mp.start} MP'lik kart olur`,
+    ],
     ['Deste boyutu', 'deck.size', c.deck.size, 'Faz 1: Warrior havuzundaki her karttan birer tane'],
     [
       'Karıştırma hakkı',

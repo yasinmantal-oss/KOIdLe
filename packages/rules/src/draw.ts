@@ -1,6 +1,7 @@
+import { isHeavy, isOpener } from './cards';
 import { dealDamage } from './outcome';
 import { shuffle } from './rng';
-import type { BattleEvent, BattleState, PlayerIndex } from './types';
+import type { BattleEvent, BattleState, CardInstance, PlayerIndex } from './types';
 
 /**
  * Bir kart çeker (K2, N4). Deste boşsa: hak varsa ve ıskarta doluysa ıskarta karıştırılır;
@@ -36,4 +37,44 @@ export function drawCard(state: BattleState, p: PlayerIndex, events: BattleEvent
     pl.hand.push(drawn);
     events.push({ type: 'CARD_DRAWN', player: p, iid: drawn.iid, cardId: drawn.cardId });
   }
+}
+
+/**
+ * Açılış eli (F2-7): bayrak açıksa karışık destenin ilk `starting` Ağır olmayan kartı ele gider;
+ * elde 1 MP'lik kart yoksa son seçilen, kalanlardan ilk Ağır olmayan açılış kartıyla değişir.
+ * Kalan kartlar yeniden karıştırılır. Bayrak kapalıysa eski davranış (sırayla çek).
+ */
+export function drawOpeningHand(state: BattleState, p: PlayerIndex, events: BattleEvent[]): void {
+  const pl = state.players[p];
+  const { starting, openingGuarantee } = state.config.hand;
+  if (openingGuarantee) {
+    const defOf = (c: CardInstance) => state.cards[c.cardId];
+    const picked: CardInstance[] = [];
+    const rest: CardInstance[] = [];
+    for (const c of pl.deck) {
+      const def = defOf(c);
+      if (picked.length < starting && def && !isHeavy(def)) picked.push(c);
+      else rest.push(c);
+    }
+    const hasOpener = picked.some((c) => {
+      const def = defOf(c);
+      return def !== undefined && isOpener(def, state.config);
+    });
+    if (!hasOpener && picked.length > 0) {
+      const at = rest.findIndex((c) => {
+        const def = defOf(c);
+        return def !== undefined && !isHeavy(def) && isOpener(def, state.config);
+      });
+      if (at >= 0) {
+        const swapped = picked.pop();
+        const [opener] = rest.splice(at, 1);
+        if (swapped && opener) {
+          picked.push(opener);
+          rest.push(swapped);
+        }
+      }
+    }
+    pl.deck = [...picked, ...shuffle(state, rest)];
+  }
+  for (let i = 0; i < starting; i++) drawCard(state, p, events);
 }

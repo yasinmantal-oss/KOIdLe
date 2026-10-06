@@ -5,7 +5,13 @@ import type { BattleConfig, BattleState, CardDef, PlayerIndex, StatusId } from '
 export const testConfig: BattleConfig = {
   hero: { hp: 30 },
   mp: { start: 1, perTurn: 1, max: 8 },
-  hand: { starting: 4, limit: 8, drawPerTurn: 1, firstPlayerSkipsFirstDraw: true },
+  hand: {
+    starting: 4,
+    limit: 8,
+    drawPerTurn: 1,
+    firstPlayerSkipsFirstDraw: true,
+    openingGuarantee: false,
+  },
   deck: { size: 12, reshuffles: 1 },
   fatigue: { start: 1, step: 1, ignoresShield: true },
   shield: { persistence: 'resetOnOwnTurnStart' },

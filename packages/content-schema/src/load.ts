@@ -1,7 +1,7 @@
 import aiProfilesJson from '@koidle/content/ai-profiles.json';
 import battleConfigJson from '@koidle/content/battle-config.json';
 import warriorJson from '@koidle/content/cards/warrior.json';
-import type { BattleConfig, CardDef, Job } from '@koidle/rules';
+import type { BattleConfig, CardDef } from '@koidle/rules';
 import type { z } from 'zod';
 import { type AiProfiles, AiProfilesSchema, BattleConfigSchema, CardListSchema } from './schema';
 
@@ -58,13 +58,13 @@ export function parseAiProfiles(raw: unknown, file = 'content/ai-profiles.json')
 export const loadBattleConfig = (): BattleConfig => parseBattleConfig(battleConfigJson);
 export const loadAiProfiles = (): AiProfiles => parseAiProfiles(aiProfilesJson);
 
-const CARD_FILES: Record<Job, unknown> = { warrior: warriorJson };
+const CARD_FILES: { warrior: unknown } = { warrior: warriorJson };
 
-export function loadCards(job: Job): CardDef[] {
+export function loadCards(job: 'warrior'): CardDef[] {
   return parseCards(CARD_FILES[job], `content/cards/${job}.json`);
 }
 
 /** Faz 1: job havuzundaki her karttan birer tane (deste boyutu config'den doğrulanır). */
-export function defaultDeck(job: Job): string[] {
+export function defaultDeck(job: 'warrior'): string[] {
   return loadCards(job).map((c) => c.id);
 }
