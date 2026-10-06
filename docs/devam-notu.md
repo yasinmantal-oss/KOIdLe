@@ -1,6 +1,7 @@
 # KOIdLe — Devam Notu (oturum devri)
 
-> Son güncelleme: 2026-10-06 (akşam oturumu: Gate 1 PASS, Faz 2 tasarımı onaylandı) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-07 (Faz 2a uygulandı, kartlar iki kez revize edildi, yön kontrolü oynandı, sayfa sürüm 5 yayında) · Bir sonraki oturum buradan başlar.
+> **Faz 2a planı:** `docs/superpowers/plans/2026-10-06-faz-2a-warrior-rogue.md` (Görev 1–11 uygulandı; kart içeriği planın değil spec "Revizyon 1–2"nin dediği gibidir).
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
 > **Faz 2 tasarımı (onaylı spec eki):** `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md`.
 > **Geçerli uygulama planı:** `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md` (rev. 2). Araştırma raporlarıyla (01–05) ve mockup'larla çelişen her noktada spec geçerlidir.
@@ -11,7 +12,12 @@
 KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yükselttiğin ve karşı ulusun oyuncularıyla kart tabanlı savaşlara girdiğin bir **idle PvPvE RPG**. Kartlar ürünün kendisi değil, savaş dili. MMORPG değil. Knight Online'dan esinlenir; onun isimleri kullanılmaz.
 
 ## MEVCUT DURUM
-- **Faz:** Faz 0–1 tamam. **Gate 1 PASS (Yasin, 2026-10-06). Faz 2 (dört job) açıldı.** Tasarım onaylandı; Faz 2a uygulama planı henüz yazılmadı, kod yok.
+- **Faz:** Faz 0–1 tamam. Gate 1 PASS (Yasin, 2026-10-06). **Faz 2a (Warrior + Rogue Asas/Okçu) uygulandı ve yön kontrolü oynandı (10 maç, eğlence medyanı 5).** Sırada Faz 2b (Mage + Priest) → Gate 2.
+- **Faz 2a özeti (2026-10-06/07):**
+  - Kod: plan Görev 1–10 (statüler, açılış eli, 3 arketip, deste kurma ekranı, AI tur planı (beam 4×5), sim job matrisi, CSS coşkusu, Faz 2 maç formu). Kayıtlar sayfanın `faz2` deposunda.
+  - Kartlar iki kez revize edildi: **Revizyon 1** (Yasin reddetti: mekanik KO skill etkisine uymalı, adlar İngilizce) ve **Revizyon 2** (yön kontrolü düzeltmeleri). Ayrıntı spec ekinde.
+  - Son durum: 32 kart, her havuz 15, deste 12. Sim: job eşleşmeleri %42–58, ort. 7,1 raunt, Arena bitişi %15,6, ilk oyuncu %58,6.
+  - Sayfa sürüm 5 yayında (aynı link). Son commit `4335f4d` + kapanış docs.
 - **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PASS** (Yasin, 2026-10-06, doğrulama sonrası). Tarihçe: ilk karar FAIL / ITERATE (11 maç, `reports/gate-1/2026-10-06-gate-1-final-raporu.md`) → Combat v0.2 → Gate 1B CONDITIONAL PASS → doğrulama → PASS. Sıradaki gate: **Gate 2** (Faz 2b sonu, ölçütler spec eki §9).
 - **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
   - Rapor: `reports/gate-1/2026-10-06-gate-1b-raporu.md`.
@@ -39,7 +45,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
 - **Yön kontrolü sonrası düzeltme paketi (Yasin onayı, 2026-10-07):** Sprint ve Light Feet kaldırıldı (`gainMp` efekti ve MP_GAINED olayı silindi), Evade eklendi, Okçu kısmen geri alındı, ikinci oyuncu MP bonusu, kart hasarları artırıldı. Ayrıntı: spec "Revizyon 2", rapor `reports/faz-2a/2026-10-07-yon-kontrolu.md`.
 - **Kart yeniden tasarımı (Yasin, 2026-10-07):** ilk Faz 2a kartları reddedildi. Lanet/Gizli/Zincir kaldırıldı; Güç tek seferlik, Kritik ve Kaçınma eklendi, Zehir azalır; kartlar KO skill etkisine göre, adlar İngilizce, metin Türkçe + kart altı sözlük. Ayrıntı: spec eki "Revizyon 1". Sim yeniden üretildi (`reports/sim/latest.md`).
-- **Tamamlanmayan:** Faz 2a uygulama planı ve kodu; Faz 2b; Gate 2.
+- **Tamamlanmayan:** ikinci oyuncu telafisinin ekstra karta çevrilmesi; Faz 2b; Gate 2.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -63,7 +69,14 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Teknik | `packages/rules` saf ve deterministik: `apply(state, action) → {state, events}`. Seed'li PRNG, `Math.random` ve `Date.now` yasak. Tüm içerik `content/` altında JSON + Zod. Şanslar basis point cinsinden. Faz 5'te hafif backend + bot oyuncular. |
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
-## BUGÜN ALINAN KARARLAR (2026-10-06)
+## BUGÜN ALINAN KARARLAR (2026-10-07)
+- **Kart mekaniği KO skill etkisine karşılık gelir (Yasin).** Neden: ilk Faz 2a kartlarında Stealth kritik atıyor, Sprint kart çekiyordu; "skiller gerçek oyundaki gibi duruyor ama değil". Lanet/Gizli/Zincir kalktı (Revizyon 1).
+- **Tüm kart adları İngilizce, metin Türkçe, kart altında terim açıklaması (Yasin).** Neden: karışık dil; "okuyan herkes her şeyi anlasın".
+- **Hız kartları (Sprint, Light Feet) oyundan çıktı (Yasin).** Neden: kart çekme de ekstra MP de "hiçbir şeye oturmadı". Okçu'ya savunma kartı Evade geldi (Revizyon 2).
+- **İkinci oyuncu telafisi ekstra kart olacak (Yasin).** Neden: +4 MP bonusu oyuncu gözüyle garip; ekstra kart anlaşılır. Faz 2b'nin ilk işi.
+- **Çalışma şekli (Yasin):** ağır işler ajanlara; ara onaylar ve uzun planlar yok, "yapıştır bitir". Neden: token ve süre.
+
+## ÖNCEKİ GÜN ALINAN KARARLAR (2026-10-06)
 - **Faz 2 tasarımı ONAYLANDI (Yasin).** Ayrıntı ve gerekçeler spec ekinde (F2-1…F2-15). Özet:
   - **KO skill isimleri kullanılabilir (Yasin).** Ulus/şehir/item/boss/NPC/para yasağı sürer; kişi adı içeren skill adı yok. Kart adı İngilizce KO skill adı, metin Türkçe. Neden: skill hissi, KO'cu kartı tanısın.
   - Havuz 49 kart: 6 ortak + Warrior 10 + Rogue 17 (3 ortak + Asas 7 + Okçu 7) + Mage 10 + Priest 10. Deste 12, tek kopya, havuz 16. Neden: deste kurma olsun (Yasin), spec ~40–50 içinde kalsın.
@@ -170,9 +183,11 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Claude, yeni oturum):** Faz 2a uygulama planını yaz (`superpowers:writing-plans`), girdi: `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md` + motor fizibilite özeti (spec §11). Plan Yasin onayından sonra uygulanır.
-- Önerilen uygulama sırası (fizibilite analizi): (1) çoklu job altyapısı + ortak kartlar + deste doğrulama, (2) `cardsPlayedThisTurn` + Zincir, (3) yeni statüler (Donma → Zehir/Gizli/Lanet) + `statusScore`, (4) Warrior + Rogue içeriği + hazır desteler, (5) AI tur planı, (6) sim job matrisi + açılış metrikleri, (7) client: job/yol seçimi, deste kurma, coşku, Gate formu alanları.
-- Riskler: AI–denge bağımlılığı (AI planı olmadan denge verisi geçersiz), statü çerçevesi genişlerken tur başı sırası hataları, `savas-degerleri.md`/şema/`Job` literal'inin aynı anda değişmesi.
+**Faz 2b (Claude, yeni oturum), sırayla:**
+1. **İkinci oyuncu telafisi = ekstra kart (Yasin, 2026-10-07).** `mp.secondPlayerFirstTurnBonus: 4` kaldırılır; ikinci oyuncu ilk turunda +1 kart çeker. Sim ile ilk oyuncu %45–55 hedeflenir (K3 kapalı kalır mı, sim karar verir).
+2. **Mage + Priest** kartları, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15.
+3. Sim (5×5 job matrisi, %40–60), sayfa yayını, Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
+- **Çalışma şekli (Yasin):** hızlı ilerle; ağır işleri ajanlara ver; ara onay için durma, sonucu getir. Uzun plan dokümanı yazma.
 - Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
 
 Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
@@ -180,8 +195,8 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 ## Yeni oturum nasıl başlar (Claude için)
 1. Bu dosyayı ve `CLAUDE.md`'yi oku.
 2. Dalı doğrula: `git fetch`, sonra `claude/upbeat-pasteur-k7xt1j`. PR birleştiyse yeni işi güncel `master`'dan yeni dalda yap.
-3. Ortamı doğrula: `pnpm install && pnpm test && pnpm typecheck && pnpm lint`.
-4. Gate 1 kayıtlarını oku: `ArtifactData` (`action: list`, `collection: gate1`, `url: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT`). Yerelde oynandıysa kayıtlar `docs/gate-1/oturumlar.jsonl` içinde.
+3. Ortamı doğrula. Bu makinede `pnpm` PATH'te yok: `corepack pnpm -r test`, `corepack pnpm -r typecheck`, `corepack pnpm exec biome check apps packages content tools` (kök `pnpm lint` git-ignore'lu `.work/`'e takılır).
+4. Maç kayıtlarını oku: `ArtifactData` (`action: list`, `collection: faz2`; Gate 1 kayıtları `gate1`), `url: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT`. Yerelde oynandıysa `docs/faz-2/oturumlar.jsonl`.
 5. Oyun içeriği değişirse sayfayı güncelle:
    - `pnpm --filter @koidle/client artifact` çalıştır.
    - `apps/client/dist/koidle-savas.html` dosyasını Artifact aracıyla aynı `url`'ye yayınla (önce `action: read`).
