@@ -12,7 +12,10 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 ## MEVCUT DURUM
 - **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
 - **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. **Gate 1 kararı: FAIL / ITERATE** (Yasin, 2026-10-06). Test: 11 maç, rapor `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Hero vs Hero başarısız sayılmadı; minion yok, Faz 2 yok.
-- **Gate 1B:** PENDING. Combat v0.2 uygulandı ve sayfaya yayınlandı; Yasin'in testi bekleniyor (`docs/gate-1.md` §E: ≥ 6 maç, her profile ≥ 2).
+- **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
+  - Rapor: `reports/gate-1/2026-10-06-gate-1b-raporu.md`.
+  - **Claude önerisi: CONDITIONAL PASS.** Koşullar: (1) Kalkan Darbesi düzeltmesi, 2 notta "işe yaramıyor"; (2) ilk oyuncu dengesi, sim'de %39,3.
+  - **Yasin kararı bekleniyor.** Faz 2 başlamadı.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -25,7 +28,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
-- **Tamamlanmayan:** Gate 1B testi ve değerlendirmesi.
+- **Tamamlanmayan:** Gate 1B kararı (Yasin) ve koşulların kapatılması.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -89,6 +92,13 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - kullanılmayan MP 0,32/tur (v0.1: 0,34)
   - profiller %43–57 arası
   - Yıkım hâlâ %97,7 oynanıyor: açgözlü AI 7 hasarı da oynuyor, bu beklenen bir AI sınırı
+- **Gate 1B insan testi:**
+  - eğlence medyanı 5
+  - kazanma 4/8
+  - karar hatırlama 3/8
+  - Kalkan Darbesi 2 notta "işe yaramıyor"
+  - "görsellik yok" (beklenen)
+  - **Uyarı:** öğrenme etkisi ayrıştırılamıyor.
 - **Henüz sonuç çıkarılmamalı:** Tek maç ve AI-vs-AI sim, denge ya da eğlence kararı için yeterli değil. Değerlere Gate 1 değerlendirmesinden önce dokunulmaz.
 
 ## AÇIK KONULAR
@@ -124,8 +134,12 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Gate 1B: sayfada en az 6 maç (her AI profiline ≥ 2), her maçtan sonra form. Not alanına özellikle kombo kurup kuramadığını yaz.
-**Sonra Claude:** Gate 1B kayıtlarını (yeni `configHash`) okuyup Gate 1 ile karşılaştırır ve rapor yazar. Değerlendirme gelmeden değer değişmez.
+**Tek görev (Yasin):** Gate 1B raporundaki üç kararı vermek:
+1. CONDITIONAL PASS kabul mü?
+2. Kalkan Darbesi için hangi düzeltme (öneri: (c) "4 Kalkan kazan, sonra bu tur kazandığın Kalkan kadar hasar ver")?
+3. İlk oyuncu dengesi sim ile denensin mi?
+
+Karar gelmeden Claude değer değiştirmez. Koşullar kapanınca: sim + 3–4 maç doğrulama, ardından Gate 1 PASS ve Faz 2 (dört job).
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
@@ -162,6 +176,7 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 - `docs/gate-1.md`: Gate 1 protokolü
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
+- `reports/gate-1/2026-10-06-gate-1b-raporu.md`: Gate 1B raporu (öneri CONDITIONAL PASS)
 - `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarımı (onaylandı, uygulandı; alternatifler v0.3 adayı)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
