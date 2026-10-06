@@ -137,6 +137,6 @@ export function resolveEffect(
       );
       return;
     default:
-      return assertNever(effect);
+      assertNever(effect);
   }
 }
