@@ -13,8 +13,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Spec self-review edildi, Yasin'in kararlarıyla **v0.2** yazıldı: Faz 5'te hafif backend + bot oyuncular · saldıran da CZ'de olmalı, slot içi seçim + "Savaş Ara" · baskın kalkanı + saldıranın riski · tüm job kartları baştan açık · item desteye kart eklemez · taşıma kapasitesi · EXP risk dışı.
 - **Yasin v0.2'yi onayladı (2026-10-06).**
 - **Faz 0–1 planı rev. 2** (Yasin + Copilot kararları): K1 Kalkan tur başında sıfırlanır, K2 tek karıştırma + Yorgunluk, K3–K7 onaylı, tek config dosyası, AI gizli bilgi görmez, `tools/sim` raporu, Gate 1 maç formu. Claude'un küçük kararları N1–N7 onay bekliyor (plan §0.2).
-- **Görev 1 (P0.2) bitti:** `docs/savas-degerleri.md` (tek savaş değer tablosu), `docs/test-degerleri.md` (savaş dışı değerler).
-- **Henüz kod yazılmadı.**
+- Copilot incelemesi: N1–N7 onaylı, ek kararlar C1–C8 plan §0.3'te. N8 (AI ağırlıkları `content/ai-profiles.json`) Claude ekledi, onay bekliyor.
+- **Faz 1 kodu bitti (Görev 1–13).** `packages/rules` (saf motor, golden replay + property testleri), `content/` + `packages/content-schema` (Zod, üretilen değer tablosu), `packages/ai` (3 profil, gizli bilgi görmez), `tools/sim` (900 maç raporu), `apps/client` (React savaş ekranı + Gate 1 formu).
+- **Sıradaki iş Yasin'de: GATE 1 testi** (`docs/gate-1.md`).
 
 ## Kesinleşen kararlar (özet; ayrıntı spec'te)
 | Konu | Karar |
@@ -36,8 +37,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## Sıradaki adımlar
-1. Copilot incelemesi: plan §0, `docs/savas-degerleri.md`. N1–N7 için Yasin onayı.
-2. Görev 2: monorepo iskeleti. Sonra Görev 3–13 sırayla. Gate 1 geçilmeden Faz 2 yok.
+1. Copilot: `reports/sim/latest.md` ve kodu incelesin; N8 onayı.
+2. Yasin: `pnpm install && pnpm dev`, en az 10 maç (her profile ≥ 3), form doldur. Kayıtlar `docs/gate-1/oturumlar.jsonl`.
+3. Sonuçlar Copilot ile değerlendirilir; kalırsa yalnız savaş düzeltilir (`docs/gate-1.md` §C). **Gate 1 geçilmeden Faz 2 yok.**
 
 ## Çalışma düzeni
 - **Claude:** tek uygulayıcı (kod, test, commit, push). **Copilot:** bağımsız inceleyici, repo'yu göremez, yalnız Yasin'in ilettiğini okur. **Yasin:** karar veren ve köprü.
@@ -49,6 +51,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 ## Dosyalar
 - `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md`: geçerli spec (v0.1: tarihçe)
 - `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md`: Faz 0–1 uygulama planı (rev. 2)
-- `docs/savas-degerleri.md`: tek savaş değer tablosu · `docs/test-degerleri.md`: savaş dışı P0.2 değerleri
+- `docs/savas-degerleri.md`: tek savaş değer tablosu (üretilir, `pnpm values`) · `docs/test-degerleri.md`: savaş dışı P0.2 değerleri
+- `docs/gate-1.md`: Gate 1 protokolü · `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
