@@ -4,6 +4,7 @@ import type { BattleEvent, BattleState } from '@koidle/rules';
 import { useState } from 'react';
 import { HUMAN } from '../format';
 import { contentHash, downloadBackup, type Gate1Answers, inArtifact, saveRecord } from '../gate1';
+import type { RaidContext } from './BattleScreen';
 import { Gate1Form } from './Gate1Form';
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
   durationSec: number;
   onRestart: () => void;
   onNew: () => void;
+  /** Sınır baskını: form yok, tek buton sonucu dünyaya taşır. */
+  raid: RaidContext | null;
+  onExit: (() => void) | null;
 }
 
 const END_TR = {
@@ -37,6 +41,8 @@ export function ResultPanel({
   durationSec,
   onRestart,
   onNew,
+  raid,
+  onExit,
 }: Props) {
   const [saved, setSaved] = useState<string | null>(null);
   const result = state.result;
@@ -65,28 +71,58 @@ export function ResultPanel({
     setSaved(where);
   }
 
-  return (
-    <div className="result">
-      <h2 className={`result__title result__title--${sonuc}`}>
-        {sonuc === 'kazandın' ? 'Kazandın' : sonuc === 'kaybettin' ? 'Kaybettin' : 'Berabere'}
-      </h2>
-      <p>
-        {END_TR[result.reason]} · {state.round}. raunt · {Math.floor(durationSec / 60)} dk{' '}
-        {durationSec % 60} sn
-      </p>
-      {saved ? <p className="saved">Kaydedildi ({saved}).</p> : <Gate1Form onSubmit={submit} />}
-      <div className="result__actions">
-        <button type="button" onClick={onRestart}>
-          Tekrar (aynı seed)
-        </button>
-        <button type="button" onClick={onNew}>
-          Yeni savaş
-        </button>
-        {!inArtifact() && (
-          <button type="button" className="link" onClick={downloadBackup}>
-            Kayıtları JSON indir
+  if (raid) {
+    const won = result.winner === null || result.winner === HUMAN;
+    return (
+      <div className="overlay">
+        <div className={`result panel result--${won ? 'win' : 'loss'}`}>
+          <p className="result__kicker">SINIR BASKINI</p>
+          <h2 className={`result__title result__title--${sonuc}`}>
+            {result.winner === null ? 'Berabere' : won ? 'Baskın püskürtüldü' : 'Düştün'}
+          </h2>
+          <p>
+            {END_TR[result.reason]} · {state.round}. raunt ·{' '}
+            {won
+              ? 'Ganimetin sende kaldı, baskın kalkanı açıldı.'
+              : 'Taşıdığın ganimetin bir kısmı gitti; kasabada uyanacaksın.'}
+          </p>
+          <button type="button" className="btn btn--gold" onClick={() => raid.onFinish(won)}>
+            {won ? 'FARMA DÖN' : 'KASABAYA DÖN'}
           </button>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overlay">
+      <div className="result panel">
+        <h2 className={`result__title result__title--${sonuc}`}>
+          {sonuc === 'kazandın' ? 'Kazandın' : sonuc === 'kaybettin' ? 'Kaybettin' : 'Berabere'}
+        </h2>
+        <p>
+          {END_TR[result.reason]} · {state.round}. raunt · {Math.floor(durationSec / 60)} dk{' '}
+          {durationSec % 60} sn
+        </p>
+        {saved ? <p className="saved">Kaydedildi ({saved}).</p> : <Gate1Form onSubmit={submit} />}
+        <div className="result__actions">
+          <button type="button" onClick={onRestart}>
+            Tekrar (aynı seed)
+          </button>
+          <button type="button" onClick={onNew}>
+            Yeni savaş
+          </button>
+          {onExit && (
+            <button type="button" onClick={onExit}>
+              Kasabaya dön
+            </button>
+          )}
+          {!inArtifact() && (
+            <button type="button" className="link" onClick={downloadBackup}>
+              Kayıtları JSON indir
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

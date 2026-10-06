@@ -10,6 +10,7 @@ import { useMemo, useState } from 'react';
 import type { LoadedContent } from '../content';
 import { readSavedDeck, saveDeck } from '../deck';
 import { glossaryLine } from '../format';
+import { cardArt } from '../ui/cardArt';
 import { CardText } from './CardText';
 
 interface Props {
@@ -17,9 +18,16 @@ interface Props {
   archetypeId: ArchetypeId;
   onBack: () => void;
   onConfirm: (deck: string[]) => void;
+  confirmLabel?: string;
 }
 
-export function DeckBuilder({ content, archetypeId, onBack, onConfirm }: Props) {
+export function DeckBuilder({
+  content,
+  archetypeId,
+  onBack,
+  onConfirm,
+  confirmLabel = 'Savaşa Başla',
+}: Props) {
   const { config, cards, presets } = content;
   const arch = ARCHETYPES[archetypeId];
   const pool = useMemo(
@@ -46,7 +54,11 @@ export function DeckBuilder({ content, archetypeId, onBack, onConfirm }: Props) 
     <main className="deck">
       <header className="deck__head">
         <h1>Deste kur · {arch.name}</h1>
-        <button type="button" onClick={() => setDeck(presets[archetypeId])}>
+        <button
+          type="button"
+          className="chip chip--btn"
+          onClick={() => setDeck(presets[archetypeId])}
+        >
           Önerilen deste
         </button>
       </header>
@@ -82,11 +94,14 @@ export function DeckBuilder({ content, archetypeId, onBack, onConfirm }: Props) 
               onClick={() => toggle(c.id)}
             >
               <span className="pick__top">
-                <span>
+                <span className="pick__art" aria-hidden="true">
+                  {cardArt(c.id)}
+                </span>
+                <span className="pick__name">
                   {c.name}
                   {isHeavy(c) ? ' ★' : ''}
                 </span>
-                <span>{c.cost} MP</span>
+                <span className="pick__cost">{c.cost}</span>
               </span>
               <span className="pick__text">
                 <CardText text={c.text} />
@@ -99,18 +114,19 @@ export function DeckBuilder({ content, archetypeId, onBack, onConfirm }: Props) 
         })}
       </div>
       <div className="deck__actions">
-        <button type="button" onClick={onBack}>
-          Geri
+        <button type="button" className="btn btn--ghost" onClick={onBack}>
+          GERİ
         </button>
         <button
           type="button"
+          className="btn btn--gold"
           disabled={issues.length > 0}
           onClick={() => {
             saveDeck(archetypeId, deck);
             onConfirm(deck);
           }}
         >
-          Savaşa Başla
+          {confirmLabel}
         </button>
       </div>
     </main>

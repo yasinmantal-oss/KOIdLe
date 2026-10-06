@@ -19,7 +19,8 @@ const read = (ext) =>
 const js = read('.js').replaceAll('</script', '<\\/script');
 const css = read('.css');
 
-const html = `<title>KOIdLe Savaş Sandbox</title>
+const html = `<title>KOIdLe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lilita+One&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
 ${css}
 </style>

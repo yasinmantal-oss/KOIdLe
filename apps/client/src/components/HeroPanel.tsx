@@ -1,6 +1,9 @@
 import type { BattleConfig, PlayerState } from '@koidle/rules';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import { statusLabel } from '../format';
+import { ItemTile } from '../ui/common';
+import type { GearSlot } from '../world/protoData';
+import type { Item } from '../world/world';
 
 export interface PopView {
   key: string;
@@ -11,18 +14,47 @@ interface Props {
   player: PlayerState;
   config: BattleConfig;
   title: string;
+  sub: string;
+  portrait: string;
+  side: 'me' | 'opp';
   active: boolean;
   showHandCount: boolean;
   /** Bu aksiyonda hasar aldıysa seq çift/tek (animasyon yeniden başlasın diye), yoksa null. */
   hit: 0 | 1 | null;
   pops: PopView[];
+  /** Kahramanın 3 item gözü (yalnız gösterim; kurala etkisi yok). */
+  gear?: Record<GearSlot, Item | null> | null;
 }
 
-export function HeroPanel({ player: p, config, title, active, showHandCount, hit, pops }: Props) {
+export function HeroPanel({
+  player: p,
+  config,
+  title,
+  sub,
+  portrait,
+  side,
+  active,
+  showHandCount,
+  hit,
+  pops,
+  gear,
+}: Props) {
   const nextFatigue = config.fatigue.start + p.fatigueCount * config.fatigue.step;
+  const hpPct = p.maxHp === 0 ? 0 : Math.round((p.hp / p.maxHp) * 100);
+  const por = (
+    <div className="fighter__por">
+      <span aria-hidden="true">{portrait}</span>
+      {p.shield > 0 && (
+        <span className="fighter__shield" title="Kalkan">
+          {p.shield}
+        </span>
+      )}
+    </div>
+  );
   return (
     <section
-      className={`hero ${active ? 'hero--active' : ''}${hit === null ? '' : ` hero--hit${hit}`}`}
+      className={`fighter fighter--${side}${active ? ' fighter--active' : ''}${hit === null ? '' : ` hero--hit${hit}`}`}
+      aria-label={title}
     >
       <div className="pops" aria-hidden="true">
         {pops.map((pop, i) => (
@@ -31,59 +63,76 @@ export function HeroPanel({ player: p, config, title, active, showHandCount, hit
           </span>
         ))}
       </div>
-      <header>
-        <h2>{title}</h2>
-        {active && <span className="badge">Sıra burada</span>}
-      </header>
-      <div className="bars">
-        <Meter label="HP" value={p.hp} max={p.maxHp} kind="hp" />
-        <Meter label="MP" value={p.mp} max={p.maxMp} kind="mp" />
+      {gear ? (
+        <div className="fighter__gear">
+          <ItemTile item={gear.armor} empty="armor" size="sm" />
+          {por}
+          <ItemTile item={gear.weapon} empty="weapon" size="sm" />
+          <ItemTile item={gear.accessory} empty="accessory" size="sm" />
+        </div>
+      ) : (
+        por
+      )}
+      <div className="fighter__body">
+        <h2 className="fighter__name">
+          {title} <small>{sub}</small>
+          {active && <span className="badge">{side === 'me' ? 'Senin sıran' : 'Oynuyor…'}</span>}
+        </h2>
+        <div className="bar bar--hp">
+          <i className="meter__fill" style={{ width: `${hpPct}%` }} />
+          <b>
+            <span className="sr-only">HP </span>
+            {p.hp} / {p.maxHp}
+          </b>
+        </div>
+        <div className="mpgems">
+          {Array.from({ length: config.mp.max }, (_, i) => (
+            <i
+              aria-hidden="true"
+              // biome-ignore lint/suspicious/noArrayIndexKey: sabit MP gözleri
+              key={i}
+              className={`gem gem--${i < p.mp ? 'full' : i < p.maxMp ? 'empty' : 'locked'}`}
+            />
+          ))}
+          <b>
+            {p.mp}/{p.maxMp} MP
+          </b>
+        </div>
+        <div className="fxchips">
+          {p.statuses.map((s) => (
+            <span key={s.id} className={`fxchip kw--${s.id}`}>
+              {statusLabel(s.id, s.amount)}
+              {s.turnsLeft !== null && <small> · {s.turnsLeft} tur</small>}
+            </span>
+          ))}
+        </div>
+        <dl className="fighter__meta">
+          {showHandCount && (
+            <div>
+              <dt>El</dt>
+              <dd>{p.hand.length}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Deste</dt>
+            <dd>{p.deck.length}</dd>
+          </div>
+          <div>
+            <dt>Iskarta</dt>
+            <dd>{p.discard.length}</dd>
+          </div>
+          <div>
+            <dt>Karıştırma</dt>
+            <dd>{p.reshufflesLeft}</dd>
+          </div>
+          <div>
+            <dt>Yorgunluk</dt>
+            <dd>
+              {p.fatigueCount} · sıradaki {nextFatigue}
+            </dd>
+          </div>
+        </dl>
       </div>
-      <dl className="stats">
-        <Stat label="Kalkan" value={<span className="kw kw--shield">{p.shield}</span>} />
-        <Stat
-          label="Statüler"
-          value={
-            p.statuses.length === 0
-              ? '—'
-              : p.statuses.map((s, i) => (
-                  <span key={s.id}>
-                    {i > 0 && ', '}
-                    <span className={`kw kw--${s.id}`}>{statusLabel(s.id, s.amount)}</span>
-                    {s.turnsLeft !== null && ` · ${s.turnsLeft} tur`}
-                  </span>
-                ))
-          }
-        />
-        {showHandCount && <Stat label="Eldeki kart" value={p.hand.length} />}
-        <Stat label="Deste" value={p.deck.length} />
-        <Stat label="Iskarta" value={p.discard.length} />
-        <Stat label="Karıştırma hakkı" value={p.reshufflesLeft} />
-        <Stat label="Yorgunluk" value={`${p.fatigueCount} kez · sıradaki ${nextFatigue}`} />
-      </dl>
     </section>
-  );
-}
-
-function Meter(props: { label: string; value: number; max: number; kind: 'hp' | 'mp' }) {
-  const pct = props.max === 0 ? 0 : Math.round((props.value / props.max) * 100);
-  return (
-    <div className="meter">
-      <span className="meter__label">
-        {props.label} {props.value}/{props.max}
-      </span>
-      <span className={`meter__track meter__track--${props.kind}`}>
-        <span className="meter__fill" style={{ width: `${pct}%` }} />
-      </span>
-    </div>
-  );
-}
-
-function Stat(props: { label: string; value: ReactNode }) {
-  return (
-    <div className="stat">
-      <dt>{props.label}</dt>
-      <dd>{props.value}</dd>
-    </div>
   );
 }

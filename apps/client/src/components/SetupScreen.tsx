@@ -9,8 +9,12 @@ const PROFILE_TR: Record<AiProfile, string> = {
   defensive: 'Savunmacı',
 };
 
-export function SetupScreen(props: { onStart: (setup: MatchSetup) => void }) {
-  const [mine, setMine] = useState<ArchetypeId>('warrior');
+export function SetupScreen(props: {
+  onStart: (setup: MatchSetup) => void;
+  onBack?: () => void;
+  initialMine?: ArchetypeId;
+}) {
+  const [mine, setMine] = useState<ArchetypeId>(props.initialMine ?? 'warrior');
   const [ai, setAi] = useState<ArchetypeId | 'random'>('random');
   const [profile, setProfile] = useState<AiProfile>('balanced');
   const [seed, setSeed] = useState('');
@@ -25,8 +29,8 @@ export function SetupScreen(props: { onStart: (setup: MatchSetup) => void }) {
         props.onStart({ seed: s, mine, ai: ai === 'random' ? pickAi(s) : ai, profile });
       }}
     >
-      <h1>KOIdLe · Savaş Sandbox</h1>
-      <p>Faz 2a · Warrior ve Rogue</p>
+      <h1>Düello</h1>
+      <p className="setup__sub">Kart savaşı sandbox'ı · Faz 2a · Warrior ve Rogue</p>
       <fieldset>
         <legend>Sen</legend>
         {ARCHETYPE_IDS.map((id) => (
@@ -72,7 +76,16 @@ export function SetupScreen(props: { onStart: (setup: MatchSetup) => void }) {
         Seed (boş bırakırsan rastgele)
         <input inputMode="numeric" value={seed} onChange={(e) => setSeed(e.target.value)} />
       </label>
-      <button type="submit">Desteni Kur</button>
+      <div className="setup__actions">
+        {props.onBack && (
+          <button type="button" className="btn btn--ghost" onClick={props.onBack}>
+            KASABA
+          </button>
+        )}
+        <button type="submit" className="btn btn--gold">
+          DESTENİ KUR
+        </button>
+      </div>
     </form>
   );
 }

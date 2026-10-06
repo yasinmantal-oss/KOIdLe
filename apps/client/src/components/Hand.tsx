@@ -1,8 +1,9 @@
 import { type BattleState, isHeavy, previewCard, validateAction } from '@koidle/rules';
 import { glossaryLine, HUMAN } from '../format';
+import { cardArt } from '../ui/cardArt';
 import { CardText } from './CardText';
 
-const TYPE_TR = {
+export const TYPE_TR = {
   attack: 'Saldırı',
   skill: 'Beceri',
   defense: 'Savunma',
@@ -26,7 +27,7 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
           <button
             type="button"
             key={c.iid}
-            className={`card card--${def.type}${preview.bonusActive ? ' card--combo' : ''}`}
+            className={`card card--${def.type}${preview.bonusActive ? ' card--combo' : ''}${playable ? ' card--ready' : ''}`}
             disabled={!playable}
             onClick={() => onPlay(c.iid)}
           >
@@ -36,18 +37,21 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
                 ★
               </span>
             )}
+            <span className="card__art" aria-hidden="true">
+              {cardArt(def.id)}
+            </span>
             <span className="card__name">{def.name}</span>
             <span className="card__type">{TYPE_TR[def.type]}</span>
             <span className="card__text">
               <CardText text={def.text} />
             </span>
-            {glossary && <span className="card__gloss">{glossary}</span>}
             {preview.damage !== null && (
               <span className="card__dmg">
                 Şu an: <strong>{preview.damage}</strong> hasar
-                {preview.bonusActive && <span className="card__check"> ✓ bonus aktif</span>}
+                {preview.bonusActive && <span className="card__check"> ✓ bonus</span>}
               </span>
             )}
+            {glossary && <span className="card__gloss">{glossary}</span>}
           </button>
         );
       })}
