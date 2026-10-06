@@ -16,7 +16,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Copilot incelemesi: N1–N7 onaylı, ek kararlar C1–C8 plan §0.3'te. N8 (AI ağırlıkları `content/ai-profiles.json`) Claude ekledi, onay bekliyor.
 - **Faz 1 kodu bitti (Görev 1–13).** `packages/rules` (saf motor, golden replay + property testleri), `content/` + `packages/content-schema` (Zod, üretilen değer tablosu), `packages/ai` (3 profil, gizli bilgi görmez), `tools/sim` (900 maç raporu), `apps/client` (React savaş ekranı + Gate 1 formu).
 - Gate 1 için oyun claude.ai'de sayfa olarak da yayınlandı (bilgisayar gerekmez): https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT · form kayıtları sayfanın `gate1` deposunda.
-- **Sıradaki iş Yasin'de: GATE 1 testi** (`docs/gate-1.md`). 2026-10-06 itibarıyla henüz kayıt yok.
+- **Sıradaki iş Yasin'de: GATE 1 testi** (`docs/gate-1.md`). Kayıt durumu (2026-10-06 akşam): **1 / en az 10 maç.** İlk maç: saldırgan AI, kaybetti, 6 raunt, eğlence 3, karar 5, işe yaramayan kart: evet, not: "Strateji kurma süreci yok." Sayfanın kayıt deposu çalışıyor.
 
 ## Kesinleşen kararlar (özet; ayrıntı spec'te)
 | Konu | Karar |
