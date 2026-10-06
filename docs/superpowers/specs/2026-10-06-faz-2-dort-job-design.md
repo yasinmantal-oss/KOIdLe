@@ -1,6 +1,6 @@
 # Faz 2 — Dört Job: Tasarım (spec eki)
 
-> Tarih: 2026-10-06 · Durum: **TASLAK, Yasin incelemesinde** · Üst belge: `2026-10-05-koidle-prototype-v0.2.md` (§2, §7, §13 Faz 2)
+> Tarih: 2026-10-06 · Durum: **ONAYLANDI (Yasin, 2026-10-06; Rogue'un Asas/Okçu ayrımı eklenerek)** · Üst belge: `2026-10-05-koidle-prototype-v0.2.md` (§2, §7, §13 Faz 2)
 > Girdiler:
 > - `reports/gate-1/2026-10-06-dogrulama-raporu.md` §6: 6 bulgu, zorunlu girdi
 > - `docs/research/06-ko-skilleri.md`: KO skilleri
@@ -29,8 +29,8 @@ Kartlar çocukça olmayacak.
 |---|---|---|---|
 | F2-1 | **KO skill isimleri kullanılabilir.** Uluslar, şehirler, item, boss, NPC ve para birimi yasağı aynen sürer. Kişi adı içeren skill isimleri kullanılmaz (ör. Minak's Thorn). | Skill hissi; KO'cu kartı adından tanır. Berserk, Malice, Spike gibi isimler genel kelimeler, riski düşük. Ticari çıkıştan önce avukat kontrolü (araştırma 01'deki not) geçerli. | Yasin |
 | F2-2 | Kart adı KO'daki İngilizce skill adıdır, kart metni Türkçedir. | TR sunucu oyuncuları skillere zaten İngilizce adıyla hitap ediyor ("spike", "malice", "CH"). | Claude (Yasin yetki verdi) |
-| F2-3 | Havuz: **6 ortak + 4 × 10 job kartı = 46 kart.** Spec'in ~40–50 aralığında; spec değişmez. | Ortak kartlar her job'a uyar, job kimliği job kartlarında kalır. | Claude (Yasin yetki verdi) |
-| F2-4 | **Deste kurma:** her job'ın havuzu 16 kart (kendi 10 + ortak 6). Oyuncu 12 kartlık tek kopyalık deste kurar. | Spec §7 "oyuncu destesini kurar". Snap dersi: kısa maçta 12 tekil kart yeterince derin. | Yasin ("deste kurmadan oyun mu olur") |
+| F2-3 | Havuz: **6 ortak + Warrior 10 + Rogue 17 (3 Rogue ortak + Asas 7 + Okçu 7) + Mage 10 + Priest 10 = 49 kart.** Spec'in ~40–50 aralığında; spec değişmez. | Ortak kartlar her job'a uyar, job kimliği job kartlarında kalır. | Claude (Yasin yetki verdi) |
+| F2-4 | **Deste kurma:** her job'ın (Rogue'da her yolun) havuzu 16 kart. Oyuncu 12 kartlık tek kopyalık deste kurar. | Spec §7 "oyuncu destesini kurar". Snap dersi: kısa maçta 12 tekil kart yeterince derin. | Yasin ("deste kurmadan oyun mu olur") |
 | F2-5 | **Ağır** etiketi: job'ın "80 skill"leri. Her job havuzunda 3 tane var, destede **en fazla 2** olabilir. | "Güçlü kartlar kolay geliyor" bulgusu. Havuzda yalnız 2 Ağır olsaydı herkes ikisini de alırdı ve seçim olmazdı. | Claude |
 | F2-6 | Destede **en az 3 adet 1 MP'lik kart** olmalı. Başka deste kısıtı yok. | Açılış kuralının dayanağı. Maliyet bütçesi ve eğri kuralları ek sayaç demek, sadeliğe ters. | Claude |
 | F2-7 | **Açılış eli kuralı:** başlangıç eline Ağır kart gelmez ve elde en az bir 1 MP'lik kart olur. | Doğrulamada eğlence 1 verilen iki maçın ikisi de kötü açılıştı. Yıkım ile açılma %33 → 0, 1 MP'siz açılış %14 → 0. Snap aynı sorunu benzer bir garantiyle çözdü. Yeni kavram öğretmek gerekmez. | Claude |
@@ -41,6 +41,7 @@ Kartlar çocukça olmayacak.
 | F2-12 | **CSS coşkusu** (bkz. §6): K4'e dar istisna. Pixi ve tam görsel paket yine Faz 9'da. | "Güçlü komboyla ekran titresin" (Yasin). Kombo görünmezse hissedilmez. | Yasin isteği, Claude kapsamı |
 | F2-13 | **İki dilim:** Faz 2a = altyapı + ortak + Warrior + Rogue + AI planı + deste kurma + coşku → Yasin oynar. Faz 2b = Mage + Priest → Gate 2. | Tek seferde 40 kart, yeni AI ve yeni ekran "takıldık" hissini büyütür. Kombo dili önce iki job'la doğrulanır. | Claude |
 | F2-14 | İlk oyuncu dengesi Faz 2b sim'inde yeniden ölçülür. | Yasin kararı (2026-10-06): Faz 2'ye ertelendi. | Yasin |
+| F2-15 | **Rogue iki yola ayrılır: Asas ya da Okçu.** Bir destede ikisi birden olmaz. Rogue ortak kartları (Explore) iki yolda da kullanılır. Diğer job'lar dallara ayrılmaz. | "Rogue'da hem okçu hem asas aynı anda oynanmasın" (Yasin). KO'da da build ayrı. | Yasin |
 
 ## 2. Statüler (6)
 
@@ -51,9 +52,9 @@ Mevcut iki statü kalır, dört yenisi eklenir. Hepsi mevcut K7 yığılma kural
 | **Güç** (mevcut) | kendine | Kart hasarına +değer | 2 | Warrior, ortak |
 | **Zayıflık** (mevcut) | rakibe | Kart hasarına −değer | 2 | Hepsi (Rogue'da "kör etme") |
 | **Lanet** (yeni) | rakibe ya da Berserker ile kendine | **Aldığı** kart hasarına +değer | 2 | Priest; Warrior (Berserker riski) |
-| **Zehir** (yeni) | rakibe | Sahibinin tur başında değer kadar hasar. Kalkan o anda zaten sıfırlandığı için Kalkan'a takılmaz. | 2 | Rogue |
+| **Zehir** (yeni) | rakibe | Sahibinin tur başında değer kadar hasar. Kalkan o anda zaten sıfırlandığı için Kalkan'a takılmaz. | 2 | Rogue (Okçu) |
 | **Donma** (yeni) | rakibe | Tek başına etkisi yok. Ateş kartları tüketir. | 2 | Mage |
-| **Gizli** (yeni) | kendine | Sonraki hasar veren kartının ilk vuruşu +değer hasar verir ve Kalkanı yok sayar. Sonra Gizli düşer. | 2 | Rogue |
+| **Gizli** (yeni) | kendine | Sonraki hasar veren kartının ilk vuruşu +değer hasar verir ve Kalkanı yok sayar. Sonra Gizli düşer. | 2 | Rogue (Asas) |
 
 **Kart hasarı formülü (güncellenir):**
 `max(0, kart değeri + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef))` · Gizli, şartı sağlanırsa ilk vuruşa eklenir.
@@ -120,25 +121,51 @@ Ortak havuzda tek Kalkan kartı var (F2: "kalkan kalkan deck" bulgusu).
 
 Not: Yıkım havuzdan çıktı. Doğrulamada "çok güçlü" denmişti; bitirici rolünü artık kurulum isteyen Hell Blade üstleniyor.
 
-### 4.3 Rogue: zincir, gizlen ve vur, zehir
+### 4.3 Rogue: iki yol, asas ya da okçu (F2-15)
+
+Destede **ya Asas ya Okçu** kartları olur, ikisi birden olmaz. Rogue ortak kartları (Explore dalı) iki yolda da kullanılır.
+
+**Rogue ortak (3):**
+
+| Kart | MP | Tür | Etki | KO karşılığı |
+|---|---|---|---|---|
+| Minor Healing | 1 | Heal | 3 HP iyileş. | Explore, Minor Healing ("minor") |
+| Light Feet | 1 | Skill | 1 kart çek. | Explore, Light Feet ("LF") |
+| ★ Scaled Skin | 3 | Defense | 10 Kalkan kazan. | Explore 60, Scaled Skin |
+
+**Asas (7): zincir, gizlen ve vur**
 
 | Kart | MP | Tür | Etki | KO karşılığı |
 |---|---|---|---|---|
 | Stab | 1 | Attack | 2 hasar ver. Zincir 1: +2. | Basic, Stab |
 | Stealth | 1 | Skill | Kendine Gizli 3 ver. | Assassin, Stealth |
-| Poison Arrow | 1 | Debuff | 1 hasar ver. Rakibe Zehir 2 ver. | Archery, Poison Arrow |
 | Thrust | 2 | Attack | 4 hasar ver. Zincir 1: +3. | Assassin, Thrust |
-| Blinding Strafe | 2 | Debuff | 3 hasar ver. Rakibe Zayıflık 2 ver. | Archery 75, Blinding Strafe ("kör etme") |
-| Viper | 2 | Debuff | Rakibe Zehir 4 ver. | Archery, Viper |
+| Blinding | 2 | Debuff | 3 hasar ver. Rakibe Zayıflık 2 ver. | Assassin 72, Blinding ("kör etme") |
 | Spike | 3 | Attack | 6 hasar ver. Zincir 2: +4. | Assassin, Spike |
 | ★ Critical Point | 2 | Skill | Kendine Gizli 7 ver. | Assassin 80, Critical Point ("critic") |
+| ★ Beast Hiding | 4 | Attack | 6 hasar ver. Sonra kendine Gizli 3 ver. | Assassin 75, Beast Hiding (vur ve kaybol) |
+
+**Asas kombolar:**
+- Stab → Thrust → Spike: 2 + 7 + 10 = 19, 6 MP. Destede her karttan 1 tane olduğu için üç parçanın aynı turda elde olması gerekiyor. Sim'de en güçlü kombo adayı olarak izlenecek.
+- Critical Point → Spike: 13 hasar, Kalkanı yok sayar. Asas'ın "critic + spike" anı.
+- Beast Hiding bu tur, Spike sonraki tur: vur, kaybol, tekrar vur.
+
+**Okçu (7): zehir, çoklu ok, bitirici**
+
+| Kart | MP | Tür | Etki | KO karşılığı |
+|---|---|---|---|---|
+| Poison Arrow | 1 | Debuff | 1 hasar ver. Rakibe Zehir 2 ver. | Archery, Poison Arrow |
+| Perfect Arrow | 1 | Attack | Kalkanı yok sayarak 2 hasar ver. | Archery, Perfect Arrow (ıskalamaz) |
+| Multiple Shot | 2 | Attack | 3 kez 2 hasar ver. | Archery, Multiple Shot (3 ok) |
+| Viper | 2 | Debuff | Rakibe Zehir 4 ver. | Archery, Viper |
+| Blinding Strafe | 2 | Debuff | 3 hasar ver. Rakibe Zayıflık 2 ver. | Archery 75, Blinding Strafe ("kör etme") |
 | ★ Arrow Shower | 4 | Attack | 5 kez 2 hasar ver. | Archery, Arrow Shower (5 ok) |
 | ★ Power Shot | 4 | Attack | Kalkanı yok sayarak 7 hasar ver. Rakibin HP'si 12 veya altındaysa +5. | Archery 80, Power Shot (kaçanı bitirir) |
 
-**Kombolar:**
-- Stab → Thrust → Spike: 2 + 7 + 10 = 19, 6 MP. Zincir hissi. Destede her karttan 1 tane olduğu için üç parçanın aynı turda elde olması gerekiyor. Sim'de en güçlü kombo adayı olarak izlenecek.
-- Critical Point → Spike: 13, Kalkanı yok sayar. Asas'ın "critic + spike" anı.
-- Viper → iki tur 4 hasar, sonra Power Shot ile bitirme.
+**Okçu kombolar:**
+- Viper → iki tur boyunca 4'er hasar, sonra Power Shot ile bitirme.
+- Gözdağı ya da Blinding Strafe ile rakibi zayıflat, Arrow Shower ile kalkanı tek tek söküp vur.
+- Çoklu oklar Güç'ten her vuruşta faydalanır. Rogue Güç vermez; Güç ancak ortak kartlarla gelirse işe yarar.
 
 ### 4.4 Mage: dondur ve yak (Faz 2b)
 
@@ -183,7 +210,7 @@ Not: Yıkım havuzdan çıktı. Doğrulamada "çok güçlü" denmişti; bitirici
 
 ### 4.6 Hazır desteler
 
-Her job için `content/decks/<job>.json` içinde 12'lik bir önerilen deste olur. Bu desteler hem AI'ın destesi hem oyuncunun "başlangıç destesi" olarak kullanılır, F2-5 ve F2-6'ya uyar.
+Her job için (Rogue'da her yol için) `content/decks/<job>.json` içinde 12'lik bir önerilen deste olur. Bu desteler hem AI'ın destesi hem oyuncunun "başlangıç destesi" olarak kullanılır, F2-5 ve F2-6'ya uyar.
 
 ## 5. AI tur planı (F2-11)
 
@@ -214,7 +241,7 @@ Tur başına toplam efekt süresi ~1 saniyeyi geçmez.
 
 ## 7. Deste kurma ekranı
 
-- Akış: job seç → 16 kartlık havuz → 12 kart seç → maç.
+- Akış: job seç (Rogue için yol da seçilir: Asas ya da Okçu) → 16 kartlık havuz → 12 kart seç → maç.
 - Rakip AI'ın job'u seçilir ya da rastgele gelir.
 - Canlı doğrulama mesajları:
   - "12/12"
@@ -241,7 +268,7 @@ Tur başına toplam efekt süresi ~1 saniyeyi geçmez.
 - açılışta oynanacak kart yokluğu ~0
 
 **Yasin testi:**
-- her job ile en az 2 maç
+- her job ile en az 2 maç (Rogue’un Asas ve Okçu yolları ayrı sayılır)
 - eğlence medyanı ≥ 4
 - maçların en az yarısında "sonucu değiştiren kombomu hatırlıyorum"
 - her job için "farklı hissettirdi mi?" (yeni form sorusu)
@@ -260,7 +287,7 @@ Tur başına toplam efekt süresi ~1 saniyeyi geçmez.
 ## 11. Teknik etki (özet; ayrıntı uygulama planında)
 
 - `rules`: `Job` genişler. Yeni statüler, koşullar (`cardsPlayedAtLeast`) ve efektler (`consumeStatus`, `reduceMaxHp`, iyileşme taşması) eklenir. Debuff sayımı bonusu, açılış eli kuralı, `cardsPlayedThisTurn` ve tur başı Zehir adımı gelir. `resolveEffect` için exhaustive kontrol yapılır.
-- `content-schema`: şemalar, `tags: ['heavy']`, `validateDeck`, `loadCards(job)` (job + ortak), hazır desteler.
+- `content-schema`: şemalar, `tags: ['heavy']`, kartta `branch` alanı (Rogue: `assassin` / `archer`; Rogue ortak kartlarda yok), `validateDeck` (tek yol kuralı dahil), `loadCards(job, branch?)` (job + yol + ortak), hazır desteler.
 - `ai`: tur planı, `statusScore` genişlemesi.
 - `sim`: job matrisi ve yeni metrikler.
 - `client`: job seçimi, deste kurma, coşku, Gate formu alanları.

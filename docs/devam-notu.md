@@ -1,7 +1,8 @@
 # KOIdLe — Devam Notu (oturum devri)
 
-> Son güncelleme: 2026-10-06 (akşam oturumu: doğrulama maçları okundu) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-06 (akşam oturumu: Gate 1 PASS, Faz 2 tasarımı onaylandı) · Bir sonraki oturum buradan başlar.
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
+> **Faz 2 tasarımı (onaylı spec eki):** `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md`.
 > **Geçerli uygulama planı:** `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md` (rev. 2). Araştırma raporlarıyla (01–05) ve mockup'larla çelişen her noktada spec geçerlidir.
 > **Oturum kapanışı:** her oturum `docs/kapanis-protokolu.md`'ye göre kapanır.
 > GitHub: https://github.com/yasinmantal-oss/KOIdLe · Kod dalı: `claude/upbeat-pasteur-k7xt1j` · PR: https://github.com/yasinmantal-oss/KOIdLe/pull/1
@@ -10,8 +11,8 @@
 KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yükselttiğin ve karşı ulusun oyuncularıyla kart tabanlı savaşlara girdiğin bir **idle PvPvE RPG**. Kartlar ürünün kendisi değil, savaş dili. MMORPG değil. Knight Online'dan esinlenir; onun isimleri kullanılmaz.
 
 ## MEVCUT DURUM
-- **Faz:** Faz 0–1 tamam. **Gate 1 PASS (Yasin, 2026-10-06). Faz 2 (dört job) açıldı**, planı henüz yazılmadı.
-- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. **Gate 1 kararı: FAIL / ITERATE** (Yasin, 2026-10-06). Test: 11 maç, rapor `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Hero vs Hero başarısız sayılmadı; minion yok, Faz 2 yok.
+- **Faz:** Faz 0–1 tamam. **Gate 1 PASS (Yasin, 2026-10-06). Faz 2 (dört job) açıldı.** Tasarım onaylandı; Faz 2a uygulama planı henüz yazılmadı, kod yok.
+- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PASS** (Yasin, 2026-10-06, doğrulama sonrası). Tarihçe: ilk karar FAIL / ITERATE (11 maç, `reports/gate-1/2026-10-06-gate-1-final-raporu.md`) → Combat v0.2 → Gate 1B CONDITIONAL PASS → doğrulama → PASS. Sıradaki gate: **Gate 2** (Faz 2b sonu, ölçütler spec eki §9).
 - **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
   - Rapor: `reports/gate-1/2026-10-06-gate-1b-raporu.md`.
   - **Claude önerisi: CONDITIONAL PASS.** Koşullar: (1) Kalkan Darbesi düzeltmesi, 2 notta "işe yaramıyor"; (2) ilk oyuncu dengesi, sim'de %39,3.
@@ -36,7 +37,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
-- **Tamamlanmayan:** Faz 2 tasarımı ve planı.
+- **Tamamlanmayan:** Faz 2a uygulama planı ve kodu; Faz 2b; Gate 2.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -61,6 +62,17 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## BUGÜN ALINAN KARARLAR (2026-10-06)
+- **Faz 2 tasarımı ONAYLANDI (Yasin).** Ayrıntı ve gerekçeler spec ekinde (F2-1…F2-15). Özet:
+  - **KO skill isimleri kullanılabilir (Yasin).** Ulus/şehir/item/boss/NPC/para yasağı sürer; kişi adı içeren skill adı yok. Kart adı İngilizce KO skill adı, metin Türkçe. Neden: skill hissi, KO'cu kartı tanısın.
+  - Havuz 49 kart: 6 ortak + Warrior 10 + Rogue 17 (3 ortak + Asas 7 + Okçu 7) + Mage 10 + Priest 10. Deste 12, tek kopya, havuz 16. Neden: deste kurma olsun (Yasin), spec ~40–50 içinde kalsın.
+  - **Rogue iki yol: Asas ya da Okçu, aynı destede ikisi olmaz (Yasin).**
+  - Ağır (= "80 skill") etiketi: havuzda 3, destede en fazla 2. Destede ≥3 adet 1 MP kart. Açılış eline Ağır gelmez, en az bir 1 MP kart garanti. Neden: doğrulamadaki kötü açılış ve "güçlü kart kolay" bulguları.
+  - 6 statü: Güç, Zayıflık, Lanet (yeni), Zehir (yeni), Donma (yeni), Gizli (yeni). Kombo dilleri: Zincir (Asas), Ateş+Donma (Mage), debuff sayımı (Priest), Berserker risk buff'ı (Warrior). Kart başına tek anahtar kelime.
+  - Stun, uyutma, MP kesme, taunt yok. Neden: rakibin turunu boşa çıkarıyor.
+  - AI tur planı (≤4 hamle, beam 5). Neden: açgözlü AI kombo kuramıyor, denge verisi çöp olur.
+  - CSS coşkusu (hitstop, sarsıntı, "ZİNCİR ×2!"): K4'e dar istisna; Pixi/tam görsel Faz 9.
+  - İki dilim: **Faz 2a** = altyapı + ortak + Warrior + Rogue (iki yol) + AI planı + deste kurma + coşku → Yasin 4–6 maç (yön kontrolü). **Faz 2b** = Mage + Priest → **Gate 2**.
+  - Yasin "olur dersen yapalım" ile tasarım ayrıntılarında Claude'a yetki verdi; Claude araştırma ve motor fizibilitesi için ajan kullandı (`docs/research/06-ko-skilleri.md`).
 - **GATE 1 PASS (Yasin, akşam).** Neden: savaşın yapısı tuttu (eğlence medyanı 1B'de 5, doğrulamada 5); kalan sorunlar 12 kartlık geçici desteye ait, Faz 2'de değişiyor. "Takıldık kaldık, ilerleyelim." Doğrulama raporu §6'daki 6 bulgu Faz 2'nin zorunlu girdisi.
 - **Gate 1 = FAIL / ITERATE (Yasin).** Neden: eğlence medyanı 3 < 4; P0 maç içi plan/kombo yok. Çekirdek ölü değil (düşünerek oynanan son 4 maçta medyan 5).
 - **Combat v0.2 onaylandı ve uygulandı (Yasin).** Neden: kart saklama ve kurulum kararı doğsun, yeni kavram eklenmesin. Ayrıntı: `docs/combat-v0.2-oneri.md`.
@@ -73,6 +85,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Rakip intent (Yasin):** PvP/CZ'de rakibin eli ve sıradaki kartı **gizlidir**; mockup'taki PvP intent göstergesi güncel karar değildir. Intent sistemi ileride yalnız PvE/Boss karşılaşmalarında kullanılabilir. Neden: PvP'de gizli bilgi kararın parçası; AI da gizli bilgiyi görmüyor.
 
 ## DEĞİŞTİRİLEN KARARLAR
+- **KO isimleri yasağı (kapsam netleşti).** ÖNCE: KO'ya ait isimler kullanılmaz (liste skill içermiyordu, kapsam belirsizdi). SONRA: skill isimleri serbest; ulus/şehir/item/boss/NPC/para yasağı aynen. NEDEN: skill hissi (Yasin).
+- **Warrior kart havuzu (Faz 2).** ÖNCE: Faz 1'in 12 kartı (Yarma, Yıkım, Kalkan Darbesi…). SONRA: KO skill'li 10 kart + 6 ortak; Yıkım ve Kalkan Darbesi havuzdan çıkıyor, bitirici rolü kurulum isteyen Hell Blade'de. NEDEN: "Yıkım çok güçlü", "Kalkan Darbesi iki iş, saçma", "kalkan kalkan deck" bulguları.
+- **K4 (sade React ekranı).** ÖNCE: animasyon yok. SONRA: Faz 2'de yalnız CSS coşkusu serbest. NEDEN: kombo görünmezse hissedilmez (Yasin: "ekran titresin").
 - **Kalkan (K1, plan rev. 1 → rev. 2):** ÖNCE: kalıcı, Hearthstone zırhı gibi birikir. SONRA: sahibinin sonraki tur başında sıfırlanır. NEDEN: savunma sınırsız stok değil, zamanlama kararı olsun. Eski davranış config ile hâlâ seçilebilir (`shield.persistence`).
 - **Deste bitince (K2, rev. 1 → rev. 2):** ÖNCE: ıskarta her bitişte karıştırılıp yeni deste olur, Yorgunluk yok, bitirici yalnız Arena Çöküşü. SONRA: savaş başına 1 karıştırma, sonra artan Yorgunluk hasarı (1, 2, 3…). NEDEN: deste bitince ikinci bir bitirici olsun. Not: sim'de Yorgunluk %0 görülüyor, Gate 1'de yorumlanacak.
 - **MP tavanı (Combat v0.2).** ÖNCE: 8. SONRA: 6. NEDEN: toplam MP (36) deste maliyetini (28) aşıyordu, her kart oynanıyordu; kart saklamanın anlamı yoktu.
@@ -117,7 +132,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Yasin'in endişesi (2026-10-06):** "Kartlar çok basit ve temel, skill gibi değil. Item'lı/item'sız karakter gücüne nasıl çevrileceği meçhul."
   - Spec'teki yol: job havuzu 12'den büyük olacak ve oyuncu destesini kurar; item'lar Power/HP verir ve bazı kartların davranışını değiştirir (spec §3).
   - v0.2'deki koşullu bonus yapısı, item'ın kart davranışını değiştirmesi için de kullanılabilir.
-  - Ama kart kimliği (skill hissi) ve item/güç bağlantısı henüz tasarlanmadı. **Açık tasarım konusu, Gate 1B'den sonra ele alınacak.**
+  - Ama kart kimliği (skill hissi) ve item/güç bağlantısı henüz tasarlanmadı. **Kart kimliği Faz 2 tasarımında çözüldü** (KO skill'li havuz). Item/güç bağlantısı Faz 3'te.
 - **İlk oyuncu dengesi (açık):**
   - v0.2.1 sim'de ilk oyuncu %40,2 kazanıyor; K3 kapatılınca %59,1. Config ile çözülmüyor.
   - **Karar (Yasin, 2026-10-06): (a) bilinen sorun olarak Faz 2'ye taşındı.** Neden: dört job gelince denge baştan değişecek; şimdi ayarlamak boşa iş olur.
@@ -145,14 +160,17 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   7. **Push bildirimi:** Telefon kilit ekranı gösteriyor. Prototip PC/Web; mobil sonraya.
 
 ## SCOPE DIŞI (şimdilik yapılmayacak)
-- Faz 2 ve sonrası (CZ, farm, item, upgrade, pazar): **Gate 1 PASS olmadan başlamaz.**
+- Faz 3 ve sonrası (karakter, item, upgrade, CZ, farm, pazar): **Gate 2 PASS olmadan başlamaz.**
+- Farklı job kartlarını tek destede karıştırmak, kahraman gücü (K6), kart kilidi, stun/uyutma/MP kesme/taunt (Faz 2 spec eki §10).
 - Spec'in ÇIKSIN listesi: Sefer, dayanıklılık, crafting, premium para/Mühür, klan, ulus savaşı, sezon/ranked, Filiz, söylenti drop'u, dünya boss'u, +9/+10, set bonusu, iksir, mobil/Steam.
-- Pixi, Harman görünümü, animasyon (K4: Gate 1 ekranı sade React).
+- Pixi, Harman görünümü, kart çizimleri, ses (K4; Faz 2'de yalnız CSS coşkusu serbest).
 - Mockup'taki ekranları (CZ, Örs, Tezgâh vb.) kodlamak.
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Faz 2 tasarımı (Claude + Yasin):** dört job, ~40–50 kart, kart kimliği, deste kurma kuralları. Önce tasarım soruları Yasin'le netleşir, sonra spec eki + uygulama planı yazılır. Doğrulama raporu §6'daki 6 bulgu zorunlu girdi.
+**Tek görev (Claude, yeni oturum):** Faz 2a uygulama planını yaz (`superpowers:writing-plans`), girdi: `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md` + motor fizibilite özeti (spec §11). Plan Yasin onayından sonra uygulanır.
+- Önerilen uygulama sırası (fizibilite analizi): (1) çoklu job altyapısı + ortak kartlar + deste doğrulama, (2) `cardsPlayedThisTurn` + Zincir, (3) yeni statüler (Donma → Zehir/Gizli/Lanet) + `statusScore`, (4) Warrior + Rogue içeriği + hazır desteler, (5) AI tur planı, (6) sim job matrisi + açılış metrikleri, (7) client: job/yol seçimi, deste kurma, coşku, Gate formu alanları.
+- Riskler: AI–denge bağımlılığı (AI planı olmadan denge verisi geçersiz), statü çerçevesi genişlerken tur başı sırası hataları, `savas-degerleri.md`/şema/`Job` literal'inin aynı anda değişmesi.
 - Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
 
 Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
@@ -187,7 +205,9 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
 - `reports/gate-1/2026-10-06-gate-1b-raporu.md`: Gate 1B raporu (öneri CONDITIONAL PASS)
-- `reports/gate-1/2026-10-06-dogrulama-raporu.md`: doğrulama maçları raporu (öneri PASS, karar bekleniyor)
+- `reports/gate-1/2026-10-06-dogrulama-raporu.md`: doğrulama maçları raporu (Gate 1 PASS)
+- `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md`: Faz 2 tasarımı (onaylı)
+- `docs/research/06-ko-skilleri.md`: KO sınıf skilleri, argo ve kombo kalıpları
 - `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarımı (onaylandı, uygulandı; alternatifler v0.3 adayı)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
