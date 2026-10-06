@@ -1,7 +1,8 @@
 # KOIdLe — Devam Notu (oturum devri)
 
-> Son güncelleme: 2026-10-05 · Bir sonraki oturum buradan başlar.
-> **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor). Araştırma raporlarıyla (01–05) çelişen her noktada spec geçerlidir.
+> Son güncelleme: 2026-10-06 · Bir sonraki oturum buradan başlar.
+> **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
+> **Geçerli uygulama planı:** `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md`. Araştırma raporlarıyla (01–05) çelişen her noktada spec geçerlidir.
 > GitHub: https://github.com/yasinmantal-oss/KOIdLe
 
 ## Proje tek cümlede
@@ -10,7 +11,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 ## Durum
 - Sadeleştirme turu **tamamlandı** (Yasin ile, spec v0.1).
 - Spec self-review edildi, Yasin'in kararlarıyla **v0.2** yazıldı: Faz 5'te hafif backend + bot oyuncular · saldıran da CZ'de olmalı, slot içi seçim + "Savaş Ara" · baskın kalkanı + saldıranın riski · tüm job kartları baştan açık · item desteye kart eklemez · taşıma kapasitesi · EXP risk dışı.
-- **Yasin'in v0.2 onayı bekleniyor. Onay gelince writing-plans skill'ine geçilecek.**
+- **Yasin v0.2'yi onayladı (2026-10-06).**
+- **Faz 0–1 uygulama planı yazıldı** (12 görev, hedef GATE 1). Planın §0'ında Yasin onayı bekleyen 7 küçük karar var (K1–K7: Kalkan kalıcı mı, deste bitince ne olur, ilk oyuncu telafisi, Faz 1 UI'ı DOM, Warrior aynası, kahraman gücü yok, iki statü).
 - **Henüz kod yazılmadı.**
 
 ## Kesinleşen kararlar (özet; ayrıntı spec'te)
@@ -33,8 +35,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## Sıradaki adımlar
-1. Yasin v0.2'yi onaylasın.
-2. writing-plans skill'i ile Faz 0–1 uygulama planı (P0.2 test değerleri tablosu, P1.1 monorepo, P1.2 rules, P1.3 Warrior, P1.4 AI, P1.5 savaş UI). İlk hedef **GATE 1**: Hero-vs-Hero savaşı tek başına eğlenceli mi?
+1. Yasin plan §0'daki K1–K7 kararlarını onaylasın ya da değiştirsin.
+2. Planı Görev 1'den başlayarak uygula (Görev 1: `docs/test-degerleri.md`, Görev 2: monorepo iskeleti …).
+3. Görev 12 sonunda GATE 1: Yasin `docs/gate-1.md` protokolüyle en az 10 maç oynar.
 
 ## Çalışma düzeni
 - Claude ana ajan. Mekanik işler yerel Qwen'e (qwen3:8b) ve Gemini'ye verilebilir. Yaratıcı isimlendirme ve kod devredilmez.
@@ -42,5 +45,6 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## Dosyalar
 - `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md`: geçerli spec (v0.1: tarihçe)
+- `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md`: Faz 0–1 uygulama planı
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
