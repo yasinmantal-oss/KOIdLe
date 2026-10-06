@@ -1,6 +1,6 @@
 # Combat v0.2 — Tasarım Önerisi (Claude)
 
-> Tarih: 2026-10-06 · **Durum: ÖNERİ.** Yasin onaylamadan uygulanmaz. Kod, JSON ve sim değişmedi.
+> Tarih: 2026-10-06 · **Durum: ONAYLANDI VE UYGULANDI** (Yasin, 2026-10-06; commit `bee48ef`). Aşağıdaki "Önerilen TEK paket" birebir uygulandı. Alternatifler (A2, A3, B2, B3, C2, C3) v0.3 adayı olarak duruyor.
 > Girdi: `reports/gate-1/2026-10-06-gate-1-final-raporu.md` + Copilot'un son notu (Gate önerisi FAIL / ITERATE).
 > Hedef: "Her tur yalnızca daha zor seçimler yaptırmak değil, oyuncuya birkaç hamlelik küçük planlar kurdurmak."
 

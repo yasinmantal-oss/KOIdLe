@@ -67,4 +67,16 @@ Kaynak: `reports/sim/latest.md` (`pnpm sim`, 900 maç). Hiçbir ölçütün otom
 _(Yasin'in testinden sonra doldurulacak.)_
 
 - 2026-10-06: Test tamamlandı (11 maç: aggressive 5, balanced 3, defensive 3). Claude analizi ve öneri: `reports/gate-1/2026-10-06-gate-1-final-raporu.md` (öneri: FAIL / ITERATE).
-- **Nihai karar bekliyor:** Yasin + Copilot + Claude.
+- **Karar (Yasin, 2026-10-06): FAIL / ITERATE.** Hero vs Hero başarısız sayılmadı; minion yok; Faz 2 yok. Copilot da aynı öneriyi verdi.
+- Uygulanan iterasyon: **Combat v0.2** (`docs/combat-v0.2-oneri.md`, commit `bee48ef`). Sıradaki: **Gate 1B**.
+
+## E. Gate 1B (Combat v0.2 testi)
+
+- Aynı sayfa ve aynı form. Kayıtlar yeni `configHash` ile ayrışır.
+- En az **6 maç**, her profile karşı en az **2**.
+- Gate 1 ile karşılaştırılacaklar:
+  - eğlence medyanı (Gate 1: 3; son 4 maç: 5)
+  - sonucu değiştiren karar hatırlama (Gate 1: 0/11)
+  - "kombo yok" ve "kartlar çabuk bitti" notları
+- Ek gözlem: Yıkım elde ölü kart gibi hissettirdi mi? AI saçma oynadı mı?
+- Geçme ölçütü değişmedi: eğlence medyanı ≥ 4 ve bariz sorun yok.

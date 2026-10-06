@@ -11,7 +11,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## MEVCUT DURUM
 - **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
-- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Test **tamamlandı**: 11 maç (aggressive 5 · balanced 3 · defensive 3). Final analiz: `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Claude ve Copilot'un **önerisi FAIL / ITERATE**: Hero vs Hero başarısız sayılmıyor, minion yok, Faz 2 yok. **Yasin'in nihai onayı bekleniyor.** Değer değişmedi.
+- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. **Gate 1 kararı: FAIL / ITERATE** (Yasin, 2026-10-06). Test: 11 maç, rapor `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Hero vs Hero başarısız sayılmadı; minion yok, Faz 2 yok.
+- **Gate 1B:** PENDING. Combat v0.2 uygulandı ve sayfaya yayınlandı; Yasin'in testi bekleniyor (`docs/gate-1.md` §E: ≥ 6 maç, her profile ≥ 2).
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -23,7 +24,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - `apps/client`: React savaş ekranı + Gate 1 formu.
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
-- **Tamamlanmayan:** Gate 1 nihai kararı (Yasin) ve Combat v0.2 paket seçimi. Öneri: `docs/combat-v0.2-oneri.md`.
+- **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
+- **Tamamlanmayan:** Gate 1B testi ve değerlendirmesi.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -32,6 +34,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Core loop | Karakter → CZ → slot → AFK farm → EXP/gold/item → equip/merchant → upgrade → daha güçlü slot → baskın/PvP → kart savaşı → ganimeti koru → kasaba |
 | Dünya | 2 ulus (Ulus A / Ulus B, mekanik farkları yok), 4 job, kısa level süreci (level yeni slotları açar) |
 | Statlar ve ekipman | HP + Power. Weapon + Armor + Accessory. Rarity: Common / Magic / Rare / Unique. ~15–20 item. Bazı item'lar kart davranışını değiştirir; item desteye kart eklemez. |
+| Savaş değerleri (v0.2) | MP tavanı **6**. Ağır Darbe: Güç varsa +3. Yarıp Geç: rakip Zayıfsa +3. Yıkım: rakip HP ≤ 15 ise 14, değilse 7. Tek kaynak `docs/savas-degerleri.md`. |
 | Upgrade | +0 → +8. Yanma yok, üst seviyelerde −1 düşme. Tek pity: Örs Isısı (item bazında). **Maliyet yalnız altın.** |
 | CZ | Oyunun ana dünyası. **6 kapasiteli** farm slotu, AFK farm, taşınan ganimet (Carried Loot, tavanlı). Kasabaya dönünce ganimet güvenceye alınır. EXP risk dışı. |
 | Baskın | Karşı ulusa saldırı; saldıran da CZ'de olmalı. Savunan offline ise AI onun destesini oynar. Equipped item asla çalınmaz. Baskın kalkanı + saldıranın riski. |
@@ -47,6 +50,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## BUGÜN ALINAN KARARLAR (2026-10-06)
+- **Gate 1 = FAIL / ITERATE (Yasin).** Neden: eğlence medyanı 3 < 4; P0 maç içi plan/kombo yok. Çekirdek ölü değil (düşünerek oynanan son 4 maçta medyan 5).
+- **Combat v0.2 onaylandı ve uygulandı (Yasin).** Neden: kart saklama ve kurulum kararı doğsun, yeni kavram eklenmesin. Ayrıntı: `docs/combat-v0.2-oneri.md`.
 - **Copilot geçici olarak devre dışı (Yasin, 2026-10-06).** Neden: süreç kafa karıştırıyordu. Copilot'un son katkısı: Gate önerisi FAIL / ITERATE ve Combat v0.2 hedefi ("oyuncuya birkaç hamlelik küçük planlar kurdurmak"; `mp.max` 8 → 6 destekleniyor ama P0'ın tek çözümü değil). Bundan sonra karar yalnız Yasin'de.
 - Spec v0.2 Yasin tarafından onaylandı. Faz 0–1 planı rev. 2 (K1–K7 Yasin, N1–N7 Claude + Copilot + Yasin onayı, C1–C8 Copilot).
 - **Oturum kapanış/senkronizasyon protokolü** benimsendi (`docs/kapanis-protokolu.md`). Neden: GitHub, repo dokümanı ve vault birbirinden kopmasın; hiçbir karar yalnız sohbet geçmişinde kalmasın.
@@ -58,6 +63,11 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 ## DEĞİŞTİRİLEN KARARLAR
 - **Kalkan (K1, plan rev. 1 → rev. 2):** ÖNCE: kalıcı, Hearthstone zırhı gibi birikir. SONRA: sahibinin sonraki tur başında sıfırlanır. NEDEN: savunma sınırsız stok değil, zamanlama kararı olsun. Eski davranış config ile hâlâ seçilebilir (`shield.persistence`).
 - **Deste bitince (K2, rev. 1 → rev. 2):** ÖNCE: ıskarta her bitişte karıştırılıp yeni deste olur, Yorgunluk yok, bitirici yalnız Arena Çöküşü. SONRA: savaş başına 1 karıştırma, sonra artan Yorgunluk hasarı (1, 2, 3…). NEDEN: deste bitince ikinci bir bitirici olsun. Not: sim'de Yorgunluk %0 görülüyor, Gate 1'de yorumlanacak.
+- **MP tavanı (Combat v0.2).** ÖNCE: 8. SONRA: 6. NEDEN: toplam MP (36) deste maliyetini (28) aşıyordu, her kart oynanıyordu; kart saklamanın anlamı yoktu.
+- **Ağır Darbe.** ÖNCE: 7 hasar. SONRA: 7 hasar, Güç varsa +3. NEDEN: Savaş Narası → Ağır Darbe kurulum hattı.
+- **Yarıp Geç.** ÖNCE: kalkanı yok sayarak 6. SONRA: aynı, rakip Zayıfsa +3. NEDEN: Gözdağı'nı savunmada mı yoksa kombo için mi harcayacağın ikilemi.
+- **Yıkım.** ÖNCE: 6 MP, 14 hasar (sim'de %99 "otomatik"). SONRA: rakip HP ≤ 15 ise 14, değilse 7. NEDEN: zamanlama kararı, bitirici rolü.
+- **Çalışma düzeni.** ÖNCE: Claude uygular, Copilot inceler, Yasin karar verir. SONRA: Copilot geçici olarak devre dışı. NEDEN: süreç Yasin'in kafasını karıştırıyordu.
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)
 
 ## TEST / SİMÜLASYON
@@ -72,11 +82,24 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - eğlence 3, karar 5
   - işe yaramayan kart sınırlandırdı: evet
   - not: "Strateji kurma süreci yok."
+- **Combat v0.2 sim** (900 maç, `reports/sim/latest.md`):
+  - raunt 8,28 (6–12)
+  - ilk oyuncu kazanma **%39,3** (v0.1: %47,7)
+  - Arena görülen %71, Arena ile bitiş %21 · Yorgunluk %0,3
+  - kullanılmayan MP 0,32/tur (v0.1: 0,34)
+  - profiller %43–57 arası
+  - Yıkım hâlâ %97,7 oynanıyor: açgözlü AI 7 hasarı da oynuyor, bu beklenen bir AI sınırı
 - **Henüz sonuç çıkarılmamalı:** Tek maç ve AI-vs-AI sim, denge ya da eğlence kararı için yeterli değil. Değerlere Gate 1 değerlendirmesinden önce dokunulmaz.
 
 ## AÇIK KONULAR
 - Sim gözlemleri Gate 1'de yorumlanacak: Yorgunluk hiç görülmüyor, Yıkım baskın, saldırgan AI zayıf, Arena %19 bitiriyor.
-- Gate 1 bulguları (rapor §8, henüz karar değil):
+- **Yasin'in endişesi (2026-10-06):** "Kartlar çok basit ve temel, skill gibi değil. Item'lı/item'sız karakter gücüne nasıl çevrileceği meçhul."
+  - Spec'teki yol: job havuzu 12'den büyük olacak ve oyuncu destesini kurar; item'lar Power/HP verir ve bazı kartların davranışını değiştirir (spec §3).
+  - v0.2'deki koşullu bonus yapısı, item'ın kart davranışını değiştirmesi için de kullanılabilir.
+  - Ama kart kimliği (skill hissi) ve item/güç bağlantısı henüz tasarlanmadı. **Açık tasarım konusu, Gate 1B'den sonra ele alınacak.**
+- **İlk oyuncu dezavantajı:** v0.2 sim'de ilk oyuncu %39,3 kazanıyor. Gate 1B'de izlenecek; değer değişmedi.
+- **AI sınırı:** AI açgözlü ve tek hamlelik; kombo kurmaz, Yıkım'ı erken harcayabilir. AI kodu değişikliği ayrı karar gerektirir.
+- Gate 1 bulguları (rapor §8):
   - P0: maç içi plan / kombo yok. Yasin teyit etti: kastı maç içi plan.
   - P1: MP fazlası, kartlar çabuk bitiyor.
   - P1: savunma kartı fazlası.
@@ -101,7 +124,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Gate 1 = FAIL / ITERATE kararını onaylamak ve `docs/combat-v0.2-oneri.md`'deki paketi onaylamak ya da değiştirmek. **Onay gelmeden Claude değer veya kod değiştirmez.** Onaydan sonra Claude paketi uygular (test + sim + sayfa), Yasin Gate 1B maçlarını oynar.
+**Tek görev (Yasin):** Gate 1B: sayfada en az 6 maç (her AI profiline ≥ 2), her maçtan sonra form. Not alanına özellikle kombo kurup kuramadığını yaz.
+**Sonra Claude:** Gate 1B kayıtlarını (yeni `configHash`) okuyup Gate 1 ile karşılaştırır ve rapor yazar. Değerlendirme gelmeden değer değişmez.
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
@@ -138,7 +162,7 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 - `docs/gate-1.md`: Gate 1 protokolü
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
-- `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarım önerisi (onay bekliyor)
+- `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarımı (onaylandı, uygulandı; alternatifler v0.3 adayı)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
