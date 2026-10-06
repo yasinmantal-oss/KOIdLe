@@ -11,7 +11,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## MEVCUT DURUM
 - **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
-- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Kayıt (2026-10-06 sonu): **6 / en az 10 maç** (aggressive 5 · defensive 1 · balanced 0; her AI profiline ≥ 3 gerekir). Protokol tamamlanmadı. Kayıtların ham analizi Copilot incelemesinde; tasarım kararı yok.
+- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Kayıt (2026-10-06 sonu): **10 / en az 10 maç** (aggressive 5 · defensive 3 · balanced 2; balanced'ta ≥ 3 için 1 maç eksik). Kayıtların ham analizi Copilot incelemesinde; tasarım kararı yok.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -23,7 +23,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - `apps/client`: React savaş ekranı + Gate 1 formu.
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
-- **Tamamlanmayan:** Gate 1 testi (en az 4 maç daha: balanced ≥ 3, defensive ≥ 2), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
+- **Tamamlanmayan:** Gate 1 testi (balanced'a karşı 1 maç), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -94,7 +94,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Gate 1 protokolünü tamamlamak: balanced'a karşı en az 3, defensive'e karşı en az 2 maç daha (toplam ≥ 10), her maçtan sonra form.
+**Tek görev (Yasin):** Balanced'a karşı 1 maç daha (protokol tamamlanır); ardından Yasin + Copilot + Claude Gate 1 değerlendirmesi.
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
