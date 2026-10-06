@@ -37,6 +37,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
+- **Kart yeniden tasarımı (Yasin, 2026-10-07):** ilk Faz 2a kartları reddedildi. Lanet/Gizli/Zincir kaldırıldı; Güç tek seferlik, Kritik ve Kaçınma eklendi, Zehir azalır; kartlar KO skill etkisine göre, adlar İngilizce, metin Türkçe + kart altı sözlük. Ayrıntı: spec eki "Revizyon 1". Sim yeniden üretildi (`reports/sim/latest.md`).
 - **Tamamlanmayan:** Faz 2a uygulama planı ve kodu; Faz 2b; Gate 2.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)

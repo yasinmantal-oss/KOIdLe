@@ -260,6 +260,23 @@ Tur başına toplam efekt süresi ~1 saniyeyi geçmez.
   - Zincir, Ateş ve Gizli tetiklenme oranları
 - Mevcut metrikler devam eder: ilk oyuncu, Arena, Yorgunluk.
 
+## Revizyon 1 (Yasin, 2026-10-07)
+
+> **Bu bölüm §2 (Statüler), §3 (Yeni kart kavramları), §4.2–4.3 (Warrior ve Rogue kartları) ve §4.6 (hazır desteler) ile çelişen her yerde geçerlidir.** Yasin ilk kart tasarımını reddetti. **Kural: kart mekaniği KO'daki skill etkisine karşılık gelir** (`docs/research/06-ko-skilleri.md`). Kart adları İngilizce, kart metni Türkçe ve kendi kendini açıklar; metindeki her anahtar kelime kartın altında tek satırlık sözlükle açıklanır.
+
+**Kaldırıldı:** Lanet, Gizli, Zincir (`cardsPlayedAtLeast`, `CHAIN_TRIGGERED`), süreli Güç. `cardsPlayedThisTurn` yalnız UI sayacı olarak kaldı.
+
+**Statüler (5):**
+- **Güç X** (kendine): sonraki hasar veren kartın **ilk vuruşuna** X ekler, sonra tamamı harcanır. Toplanır, en fazla 5; süresi yok. Hell Blade (`strengthMultiplier: 2`) Güç'ü iki kat sayar; kullanılırsa "KOMBO!".
+- **Kritik** (kendine, yalnız Critical Point): sonraki hasar veren kartın **her vuruşu** iki kat (Güç/Zayıflık sonrası, Kalkandan önce), sonra harcanır.
+- **Kaçınma** (kendine): rakibin sonraki hasar veren kartının ilk vuruşu 0 hasar verir, sonra harcanır; kullanılmazsa sahibinin sonraki turunun başında düşer. Zehir/Arena/Yorgunluğu durdurmaz.
+- **Zayıflık X** (rakibe): değişmedi (kart hasarı −X, 2 tur, K7).
+- **Zehir X** (rakibe): sahibinin tur başında X hasar (Kalkanı yok sayar), sonra 2 azalır; toplanır, en fazla 6.
+
+**Yeni efektler:** `gainMp` (bu tur MP, maks MP'yi aşabilir), `selfDamage` (Kalkanı yok sayar), `strengthMultiplier`. Değerler `content/battle-config.json` (`statuses.strength.max`, `poison.max/decay`, `weak.duration`); AI statü değerleri `content/ai-profiles.json` (`criticalValue`, `evadeValue`).
+
+**Kart listesi (33):** güncel liste ve değerler `docs/savas-degerleri.md` §2 (üretilir; kaynak `content/cards/*.json`). Ortak 6, Warrior 10, Rogue ortak 3, Asas 7, Okçu 7; Ağır: Wall of Iron, Sword Dancing, Hell Blade, Scaled Skin, Critical Point, Beast Hiding, Arrow Shower, Power Shot. Hazır desteler `content/decks/*.json`. Bu liste §4.2–4.3 ve §4.6'nın yerini alır.
+
 ## 9. Gate 2 (Faz 2b sonunda)
 
 **Sim:**
