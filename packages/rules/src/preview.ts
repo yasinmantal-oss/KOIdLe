@@ -14,12 +14,16 @@ export function previewCard(state: BattleState, p: PlayerIndex, cardId: string):
   if (!def) throw new Error(`Unknown card: ${cardId}`);
   let damage: number | null = null;
   let bonusActive: boolean | null = null;
+  // Efektler sırayla çözülür: kartın önce verdiği Kalkan, sonraki Kalkan hasarına sayılır.
+  let shieldGained = state.players[p].shieldGainedThisTurn;
   for (const e of def.effects) {
     if (e.kind === 'damage') {
       damage = (damage ?? 0) + cardDamage(state, p, baseDamage(state, p, e));
       if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
     } else if (e.kind === 'damageFromShieldGainedThisTurn') {
-      damage = (damage ?? 0) + cardDamage(state, p, state.players[p].shieldGainedThisTurn);
+      damage = (damage ?? 0) + cardDamage(state, p, shieldGained);
+    } else if (e.kind === 'shield') {
+      shieldGained += e.amount;
     }
   }
   return { damage, bonusActive };

@@ -63,7 +63,7 @@ describe('chooseAction', () => {
       type: 'END_TURN',
       player: poor.me,
     });
-    const useless = withHand(1, ['kalkan-darbesi'], 2); // bu tur Kalkan yok → 0 hasar
+    const useless = withHand(1, ['ikinci-nefes'], 2); // HP dolu → iyileşme 0
     expect(chooseAction(useless.state, useless.me, profiles.aggressive).type).toBe('END_TURN');
   });
 

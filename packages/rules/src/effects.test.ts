@@ -252,6 +252,17 @@ describe('previewCard (UI önizlemesi, saf)', () => {
     expect(previewCard(s, me, 'wall')).toEqual({ damage: null, bonusActive: null });
   });
 
+  it('counts shield the card itself grants before its shield-based damage', () => {
+    const { state, me } = setup([]);
+    addCard(state, 'selfbash', 2, [
+      { kind: 'shield', amount: 4 },
+      { kind: 'damageFromShieldGainedThisTurn' },
+    ]);
+    expect(previewCard(state, me, 'selfbash')).toEqual({ damage: 4, bonusActive: null });
+    state.players[me].shieldGainedThisTurn = 7;
+    expect(previewCard(state, me, 'selfbash')).toEqual({ damage: 11, bonusActive: null });
+  });
+
   it('does not mutate state', () => {
     const { state, me } = setup(['hit']);
     const before = JSON.stringify(state);

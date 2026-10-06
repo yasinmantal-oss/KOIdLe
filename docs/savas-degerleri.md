@@ -52,7 +52,7 @@
 | `kalkan-kaldir` | Kalkan Kaldır | Defense | 1 | 4 Kalkan kazan. |
 | `gozdagi` | Gözdağı | Debuff | 1 | Rakibe Zayıflık 2 ver. |
 | `hazirlik` | Hazırlık | Skill | 1 | 1 kart çek. 2 Kalkan kazan. |
-| `kalkan-darbesi` | Kalkan Darbesi | Attack | 2 | Bu tur kazandığın Kalkan kadar hasar ver. |
+| `kalkan-darbesi` | Kalkan Darbesi | Attack | 2 | 4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver. |
 | `savas-narasi` | Savaş Narası | Buff | 2 | Kendine Güç 2 ver. |
 | `siper` | Siper | Defense | 2 | 7 Kalkan kazan. |
 | `ikinci-nefes` | İkinci Nefes | Heal | 2 | 6 HP iyileş. |

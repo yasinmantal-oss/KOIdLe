@@ -41,8 +41,8 @@
     "job": "warrior",
     "type": "attack",
     "cost": 2,
-    "effects": [{ "kind": "damageFromShieldGainedThisTurn" }],
-    "text": "Bu tur kazandığın Kalkan kadar hasar ver."
+    "effects": [{ "kind": "shield", "amount": 4 }, { "kind": "damageFromShieldGainedThisTurn" }],
+    "text": "4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver."
   },
   {
     "id": "savas-narasi",
