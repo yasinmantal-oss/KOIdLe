@@ -1,6 +1,6 @@
 # KOIdLe
 
-Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. Faz 1 (savaş sandbox'ı) kodu var; Gate 1 testi bekleniyor.
+Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. Faz 1 (savaş sandbox'ı) kodu var; Gate 1 testi bitti (öneri FAIL / ITERATE), Combat v0.2 önerisi Yasin onayı bekliyor.
 
 - **Her oturuma `docs/devam-notu.md` ile başla.** Kararlar, Yasin'in revizyonları ve sıradaki adımlar orada.
 - Dil: Türkçe. Hitap: Yasin. Ton samimi ve net.
