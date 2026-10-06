@@ -9,6 +9,7 @@ import { isHeavy } from '@koidle/rules';
 import { useMemo, useState } from 'react';
 import type { LoadedContent } from '../content';
 import { readSavedDeck, saveDeck } from '../deck';
+import { glossaryLine } from '../format';
 import { CardText } from './CardText';
 
 interface Props {
@@ -90,6 +91,9 @@ export function DeckBuilder({ content, archetypeId, onBack, onConfirm }: Props) 
               <span className="pick__text">
                 <CardText text={c.text} />
               </span>
+              {glossaryLine(c.text, config) && (
+                <span className="card__gloss">{glossaryLine(c.text, config)}</span>
+              )}
             </button>
           );
         })}

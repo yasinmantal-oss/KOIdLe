@@ -1,6 +1,6 @@
 import type { BattleConfig, PlayerState } from '@koidle/rules';
 import type { CSSProperties, ReactNode } from 'react';
-import { STATUS_TR } from '../format';
+import { statusLabel } from '../format';
 
 export interface PopView {
   key: string;
@@ -49,10 +49,8 @@ export function HeroPanel({ player: p, config, title, active, showHandCount, hit
               : p.statuses.map((s, i) => (
                   <span key={s.id}>
                     {i > 0 && ', '}
-                    <span className={`kw kw--${s.id}`}>
-                      {STATUS_TR[s.id]} {s.amount}
-                    </span>{' '}
-                    · {s.turnsLeft} tur
+                    <span className={`kw kw--${s.id}`}>{statusLabel(s.id, s.amount)}</span>
+                    {s.turnsLeft !== null && ` · ${s.turnsLeft} tur`}
                   </span>
                 ))
           }

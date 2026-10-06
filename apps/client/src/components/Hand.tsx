@@ -1,5 +1,5 @@
 import { type BattleState, isHeavy, previewCard, validateAction } from '@koidle/rules';
-import { HUMAN } from '../format';
+import { glossaryLine, HUMAN } from '../format';
 import { CardText } from './CardText';
 
 const TYPE_TR = {
@@ -21,6 +21,7 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
         const playable =
           validateAction(state, { type: 'PLAY_CARD', player: HUMAN, iid: c.iid }) === null;
         const preview = previewCard(state, HUMAN, c.cardId);
+        const glossary = glossaryLine(def.text, state.config);
         return (
           <button
             type="button"
@@ -40,6 +41,7 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
             <span className="card__text">
               <CardText text={def.text} />
             </span>
+            {glossary && <span className="card__gloss">{glossary}</span>}
             {preview.damage !== null && (
               <span className="card__dmg">
                 Şu an: <strong>{preview.damage}</strong> hasar

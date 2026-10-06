@@ -1,7 +1,7 @@
 import { loadBattleConfig } from '@koidle/content-schema';
 import type { CardDef } from '@koidle/rules';
 import { describe, expect, it } from 'vitest';
-import { formatEvent, keywordParts, rulesSummary } from './format';
+import { formatEvent, glossaryLine, keywordParts, rulesSummary } from './format';
 
 const testConfigForSummary = loadBattleConfig();
 
@@ -18,14 +18,34 @@ const cards: Record<string, CardDef> = {
 };
 
 describe('formatEvent', () => {
-  it('describes the chain', () => {
-    expect(formatEvent({ type: 'CHAIN_TRIGGERED', player: 0, chain: 2 }, cards)).toBe('Zincir ×2!');
+  it('describes Kritik, Kaçınma, Güç and MP gain', () => {
+    expect(formatEvent({ type: 'CRIT_USED', player: 0 }, cards)).toBe(
+      'Sen: Kritik! Kartın her vuruşu iki kat.',
+    );
+    expect(formatEvent({ type: 'EVADED', player: 1, attacker: 0 }, cards)).toBe(
+      'Rakip: Kaçınma! Sen kartının ilk vuruşu 0 hasar verdi.',
+    );
+    expect(formatEvent({ type: 'STRENGTH_USED', player: 0, amount: 3, multiplier: 1 }, cards)).toBe(
+      'Güç: ilk vuruşa +3 hasar.',
+    );
+    expect(formatEvent({ type: 'STRENGTH_USED', player: 0, amount: 6, multiplier: 2 }, cards)).toBe(
+      'Güç iki kat sayıldı: ilk vuruşa +6 hasar.',
+    );
+    expect(formatEvent({ type: 'MP_GAINED', player: 0, amount: 2 }, cards)).toBe(
+      'Sen: bu tur +2 MP.',
+    );
   });
 
-  it('describes stealth', () => {
-    expect(formatEvent({ type: 'STEALTH_USED', player: 0, amount: 3 }, cards)).toBe(
-      'Gizli: +3 hasar, Kalkanı yok sayar.',
-    );
+  it('describes self damage and valueless statuses', () => {
+    expect(
+      formatEvent({ type: 'DAMAGE_DEALT', source: 0, target: 0, amount: 2, absorbed: 0 }, cards),
+    ).toBe('Sen kendine 2 hasar verdi.');
+    expect(
+      formatEvent(
+        { type: 'STATUS_APPLIED', player: 0, status: 'evade', amount: 1, duration: null },
+        cards,
+      ),
+    ).toBe('Sen: Kaçınma.');
   });
 
   it('names poison damage', () => {
@@ -97,19 +117,34 @@ describe('keywordParts', () => {
 });
 
 describe('keywordParts (Faz 2)', () => {
-  it('marks Lanet, Zehir, Gizli and Zincir with their own colors', () => {
+  it('marks Zehir, Kritik and Kaçınma with their own colors', () => {
     const kws = (t: string) => keywordParts(t).flatMap((p) => (p.kw ? [p.kw] : []));
-    expect(kws('Kendine Gizli 3 ver.')).toEqual(['stealth']);
-    expect(kws('Rakibe Zehir 4 ver.')).toEqual(['poison']);
-    expect(kws('Kendine Güç 3 ve Lanet 2 ver.')).toEqual(['strength', 'curse']);
-    expect(kws('2 hasar ver. Zincir 1: +2.')).toEqual(['chain']);
+    expect(kws('Kendine Kritik kazan.')).toEqual(['critical']);
+    expect(kws('6 hasar ver, sonra Kaçınma kazan.')).toEqual(['evade']);
+    expect(kws('Rakibe 4 Zehir ver.')).toEqual(['poison']);
+    expect(kws('3 Güç kazan. Kendine 2 hasar ver.')).toEqual(['strength']);
+  });
+});
+
+describe('glossaryLine', () => {
+  it('explains every keyword on the card in one line, null without keywords', () => {
+    expect(glossaryLine('3 hasar ver.', testConfigForSummary)).toBeNull();
+    const line = glossaryLine('2 hasar ver. Rakibe Zayıflık 2 ver.', testConfigForSummary);
+    expect(line).toContain('Zayıflık:');
+    expect(line).toContain(`${testConfigForSummary.statuses.weak.duration} tur`);
+    expect(glossaryLine('6 hasar ver. Kalkanı deler.', testConfigForSummary)).toContain('Kalkan:');
+    expect(glossaryLine('Kritik kazan.', testConfigForSummary)).toContain('Kritik:');
+    expect(glossaryLine('9 hasar ver. Güç’ün iki kat sayılır.', testConfigForSummary)).toContain(
+      'Güç:',
+    );
   });
 });
 
 describe('rulesSummary (Faz 2)', () => {
-  it('explains Lanet, Zehir, Gizli, Zincir and Ağır from config values', () => {
+  it('explains Zehir, Kritik, Kaçınma and Ağır from config values', () => {
     const text = rulesSummary(testConfigForSummary).join(' ');
-    for (const word of ['Lanet', 'Zehir', 'Gizli', 'Zincir', 'Ağır']) expect(text).toContain(word);
+    for (const word of ['Zehir', 'Kritik', 'Kaçınma', 'Ağır']) expect(text).toContain(word);
+    expect(text).not.toMatch(/Lanet|Gizli|Zincir/);
     expect(text).toContain(`en fazla ${testConfigForSummary.deckBuilding.maxHeavy}`);
   });
 });

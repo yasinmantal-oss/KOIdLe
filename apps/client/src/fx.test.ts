@@ -54,12 +54,19 @@ describe('fxFor', () => {
     expect(r.hitTargets).toEqual([]);
   });
 
-  it('callouts for chain and stealth, in event order', () => {
+  it('callouts for crit, evade and the Hell Blade combo, in event order', () => {
     const events: BattleEvent[] = [
-      { type: 'CHAIN_TRIGGERED', player: 0, chain: 3 },
-      { type: 'STEALTH_USED', player: 0, amount: 7 },
+      { type: 'STRENGTH_USED', player: 0, amount: 6, multiplier: 2 },
+      { type: 'CRIT_USED', player: 0 },
+      { type: 'EVADED', player: 1, attacker: 0 },
       dmg(13),
     ];
-    expect(fxFor(events).callouts).toEqual(['ZİNCİR ×3!', 'CRITIC!']);
+    expect(fxFor(events).callouts).toEqual(['KOMBO!', 'KRİTİK!', 'KAÇINDI!']);
+  });
+
+  it('plain Güç (multiplier 1) gives no combo callout', () => {
+    expect(
+      fxFor([{ type: 'STRENGTH_USED', player: 0, amount: 3, multiplier: 1 }]).callouts,
+    ).toEqual([]);
   });
 });

@@ -9,10 +9,15 @@ const whose = (p: PlayerIndex) => (p === HUMAN ? 'Sana' : 'Rakibe');
 export const STATUS_TR: Record<StatusId, string> = {
   strength: 'Güç',
   weak: 'Zayıflık',
-  curse: 'Lanet',
   poison: 'Zehir',
-  stealth: 'Gizli',
+  critical: 'Kritik',
+  evade: 'Kaçınma',
 };
+
+/** Statü etiketi: Kritik/Kaçınma tek seferliktir, değeri yazılmaz. */
+export function statusLabel(id: StatusId, amount: number): string {
+  return id === 'critical' || id === 'evade' ? STATUS_TR[id] : `${STATUS_TR[id]} ${amount}`;
+}
 
 const END_TR = {
   normalDamage: 'kart hasarı',
@@ -43,6 +48,7 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       if (e.source === 'arena') return `Arena çöküyor: ${whose(e.target)} ${e.amount} hasar.`;
       if (e.source === 'fatigue') return `Yorgunluk: ${whose(e.target)} ${e.amount} hasar.`;
       if (e.source === 'poison') return `Zehir: ${whose(e.target)} ${e.amount} hasar.`;
+      if (e.source === e.target) return `${who(e.target)} kendine ${e.amount} hasar verdi.`;
       return `${whose(e.target)} ${e.amount} hasar${absorbed}.`;
     }
     case 'SHIELD_GAINED':
@@ -50,15 +56,23 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
     case 'HEALED':
       return `${who(e.player)}: ${e.amount} HP iyileşti.`;
     case 'STATUS_APPLIED':
-      return `${who(e.player)}: ${STATUS_TR[e.status]} ${e.amount} (${e.duration} tur).`;
+      return `${who(e.player)}: ${statusLabel(e.status, e.amount)}${
+        e.duration === null ? '' : ` (${e.duration} tur)`
+      }.`;
     case 'STATUS_IGNORED':
-      return `${who(e.player)}: ${STATUS_TR[e.status]} ${e.amount} etkisiz (daha güçlüsü aktif).`;
+      return `${who(e.player)}: ${statusLabel(e.status, e.amount)} etkisiz (daha güçlüsü aktif).`;
     case 'STATUS_EXPIRED':
       return `${who(e.player)}: ${STATUS_TR[e.status]} sona erdi.`;
-    case 'CHAIN_TRIGGERED':
-      return `Zincir ×${e.chain}!`;
-    case 'STEALTH_USED':
-      return `Gizli: +${e.amount} hasar, Kalkanı yok sayar.`;
+    case 'MP_GAINED':
+      return `${who(e.player)}: bu tur +${e.amount} MP.`;
+    case 'STRENGTH_USED':
+      return e.multiplier > 1
+        ? `Güç iki kat sayıldı: ilk vuruşa +${e.amount} hasar.`
+        : `Güç: ilk vuruşa +${e.amount} hasar.`;
+    case 'CRIT_USED':
+      return `${who(e.player)}: Kritik! Kartın her vuruşu iki kat.`;
+    case 'EVADED':
+      return `${who(e.player)}: Kaçınma! ${who(e.attacker)} kartının ilk vuruşu 0 hasar verdi.`;
     case 'TURN_ENDED':
       return null;
     case 'BATTLE_ENDED':
@@ -67,7 +81,7 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
   }
 }
 
-export type Keyword = 'strength' | 'weak' | 'shield' | 'curse' | 'poison' | 'stealth' | 'chain';
+export type Keyword = 'strength' | 'weak' | 'shield' | 'poison' | 'critical' | 'evade';
 export interface TextPart {
   text: string;
   kw: Keyword | null;
@@ -77,11 +91,32 @@ const KEYWORDS: [RegExp, Keyword][] = [
   [/^Güç/, 'strength'],
   [/^Zayıf/, 'weak'],
   [/^Kalkan/, 'shield'],
-  [/^Lanet/, 'curse'],
   [/^Zehir/, 'poison'],
-  [/^Gizli/, 'stealth'],
-  [/^Zincir/, 'chain'],
+  [/^Kritik/, 'critical'],
+  [/^Kaçınma/, 'evade'],
 ];
+
+/** Kartın metninde geçen anahtar kelimeler (sırayla, tekrarsız). */
+export function keywordsIn(text: string): Keyword[] {
+  const out: Keyword[] = [];
+  for (const p of keywordParts(text)) if (p.kw && !out.includes(p.kw)) out.push(p.kw);
+  return out;
+}
+
+/** Kartın altındaki tek satırlık sözlük; sayılar config'den gelir. Anahtar kelime yoksa null. */
+export function glossaryLine(text: string, c: BattleConfig): string | null {
+  const s = c.statuses;
+  const defs: Record<Keyword, string> = {
+    strength: 'Güç: sonraki hasar kartının ilk vuruşuna eklenir, sonra biter',
+    critical: 'Kritik: sonraki hasar kartın her vuruşu 2 kat',
+    evade: 'Kaçınma: rakibin sonraki kartının ilk vuruşu 0 hasar verir',
+    weak: `Zayıflık: kart hasarın X azalır (${s.weak.duration} tur)`,
+    poison: `Zehir: her tur başında X hasar (Kalkanı yok sayar), sonra ${s.poison.decay} azalır`,
+    shield: "Kalkan: hasarı HP'den önce emer",
+  };
+  const kws = keywordsIn(text);
+  return kws.length === 0 ? null : `${kws.map((k) => defs[k]).join(' · ')}.`;
+}
 
 /** Kart metnindeki anahtar kelimeleri işaretler; renkler statü rozetleriyle aynı (Combat v0.2 E). */
 export function keywordParts(text: string): TextPart[] {
@@ -115,13 +150,13 @@ export function rulesSummary(c: BattleConfig): string[] {
       : 'Kalkan: hasarı HP’den önce emer ve birikir.';
   return [
     `MP: her turun başında dolar ve 1 artar, en fazla ${c.mp.max}. Kullanılmayan MP devretmez.`,
-    'Güç X: saldırıların X fazla hasar verir. Zayıf X: saldırıların X az hasar verir.',
+    `Güç X: sonraki hasar veren kartının ilk vuruşu X fazla vurur, sonra Güç biter (toplanır, en fazla ${s.strength.max}). Zayıflık X: kart hasarın X azalır (${s.weak.duration} tur).`,
     shield,
     `Arena Çöküşü: ${c.arenaCollapse.startRound}. rauntan itibaren iki taraf her tur başında artan hasar alır (${c.arenaCollapse.start}, ${c.arenaCollapse.start + c.arenaCollapse.step}, …); Kalkanı yok sayar.`,
     `Deste bitince ıskarta ${c.deck.reshuffles} kez karıştırılır. Sonra çekemediğin her kart için Yorgunluk hasarı alırsın (${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}, …).`,
-    `Lanet X: aldığın kart hasarı X artar (${s.curse.duration} tur). Zehir X: sahibinin her tur başında X hasar alır (${s.poison.duration} tur).`,
-    `Gizli X: sonraki hasar veren kartının ilk vuruşu X fazla vurur ve Kalkanı yok sayar (${s.stealth.duration} tur).`,
-    'Zincir N: bu tur, bu karttan önce en az N kart oynadıysan bonus. "Bu tur oynanan kart" sayacı Turu Bitir’in yanında.',
+    `Zehir X: sahibinin her tur başında X hasar (Kalkanı yok sayar), sonra ${s.poison.decay} azalır; toplanır, en fazla ${s.poison.max}.`,
+    'Kritik: sonraki hasar veren kartın her vuruşu iki kat vurur (Güç ve Zayıflık sonrası, Kalkandan önce). Kaçınma: rakibin sonraki hasar veren kartının ilk vuruşu 0 hasar verir; kullanılmazsa sonraki turunda biter.',
+    '"Bu tur oynanan kart" sayacı Turu Bitir’in yanında.',
     `Ağır kartlar (★): destede en fazla ${c.deckBuilding.maxHeavy}.${
       c.hand.openingGuarantee
         ? ` Açılış elinde Ağır kart gelmez, en az bir ${c.mp.start} MP'lik kart gelir.`

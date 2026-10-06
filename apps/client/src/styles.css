@@ -459,38 +459,39 @@ fieldset {
   gap: 8px;
 }
 
-/* Faz 2a: yeni anahtar kelime renkleri */
+/* Faz 2a: yeni anahtar kelime renkleri (Revizyon 1: Lanet/Gizli/Zincir kalktı) */
 :root {
-  --kw-curse: #a3324f;
   --kw-poison: #3c7a2a;
-  --kw-stealth: #2f7f7a;
-  --kw-chain: #b03a8c;
+  --kw-critical: #b03a3a;
+  --kw-evade: #2f7f7a;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --kw-curse: #f08aa6;
     --kw-poison: #8fd16f;
-    --kw-stealth: #6fd0c8;
-    --kw-chain: #e58bd0;
+    --kw-critical: #f08a8a;
+    --kw-evade: #6fd0c8;
   }
 }
 :root[data-theme="dark"] {
-  --kw-curse: #f08aa6;
   --kw-poison: #8fd16f;
-  --kw-stealth: #6fd0c8;
-  --kw-chain: #e58bd0;
-}
-.kw--curse {
-  color: var(--kw-curse);
+  --kw-critical: #f08a8a;
+  --kw-evade: #6fd0c8;
 }
 .kw--poison {
   color: var(--kw-poison);
 }
-.kw--stealth {
-  color: var(--kw-stealth);
+.kw--critical {
+  color: var(--kw-critical);
 }
-.kw--chain {
-  color: var(--kw-chain);
+.kw--evade {
+  color: var(--kw-evade);
+}
+.card__gloss {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: var(--muted);
+  margin-top: 4px;
 }
 
 /* Coşku (F2-12): yalnız CSS. Süreler BattleScreen'den (fx.ts) CSS değişkeni olarak gelir. */
@@ -514,7 +515,7 @@ fieldset {
   flex-wrap: wrap;
   gap: 8px 12px;
 }
-.chain-count {
+.played-count {
   font-variant-numeric: tabular-nums;
 }
 

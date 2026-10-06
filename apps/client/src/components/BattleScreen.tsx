@@ -81,7 +81,7 @@ export function BattleScreen({ content, setup, deck, onNew }: Props) {
       <Hand state={state} onPlay={(iid) => dispatch({ type: 'PLAY_CARD', player: HUMAN, iid })} />
       <div className="controls">
         {myTurn && (
-          <span className="chain-count">
+          <span className="played-count">
             Bu tur oynanan kart: <strong>{state.players[HUMAN].cardsPlayedThisTurn}</strong>
           </span>
         )}
@@ -99,7 +99,7 @@ export function BattleScreen({ content, setup, deck, onNew }: Props) {
           {callout}
         </div>
       )}
-      {/* Kombo metni ekran okuyucuya da gider (F2-12); kayıttaki "Zincir ×N!" satırı zaten var. */}
+      {/* Kombo metni ekran okuyucuya da gider (F2-12); kayıttaki satır zaten var. */}
       <div className="sr-only" aria-live="polite">
         {callout}
       </div>

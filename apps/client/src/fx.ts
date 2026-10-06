@@ -46,10 +46,12 @@ export function fxFor(events: readonly BattleEvent[]): FxResult {
       if (typeof e.source === 'number') cardDamage += e.amount;
       pops.push({ target: e.target, amount: e.amount });
       if (e.amount > 0 && !hitTargets.includes(e.target)) hitTargets.push(e.target);
-    } else if (e.type === 'CHAIN_TRIGGERED') {
-      callouts.push(`ZİNCİR ×${e.chain}!`);
-    } else if (e.type === 'STEALTH_USED') {
-      callouts.push('CRITIC!');
+    } else if (e.type === 'CRIT_USED') {
+      callouts.push('KRİTİK!');
+    } else if (e.type === 'EVADED') {
+      callouts.push('KAÇINDI!');
+    } else if (e.type === 'STRENGTH_USED' && e.multiplier > 1 && e.amount >= 1) {
+      callouts.push('KOMBO!');
     }
   }
   let shakePx = 0;
