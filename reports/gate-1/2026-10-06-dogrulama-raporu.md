@@ -3,7 +3,7 @@
 > Tarih: 2026-10-06 · Dal: `claude/upbeat-pasteur-k7xt1j` · Config: `9b663b36` (Combat v0.2.1: Kalkan Darbesi düzeltmesi, commit `c85cac2`)
 > Config hash'i güncel `content/` ile yeniden hesaplanıp doğrulandı.
 > Karşılaştırma: Gate 1B (`9473c565`, 8 maç), `reports/gate-1/2026-10-06-gate-1b-raporu.md`
-> **Durum: ÖNERİ.** Gate 1 kararı Yasin'de. Bu analiz sırasında kod ve değer değişmedi.
+> **KARAR (Yasin, 2026-10-06): GATE 1 PASS.** Bu analiz sırasında kod ve değer değişmedi.
 
 ## 1. Kayıt bütünlüğü
 

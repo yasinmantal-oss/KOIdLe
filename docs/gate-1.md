@@ -87,4 +87,5 @@ _(Yasin'in testinden sonra doldurulacak.)_
   - **Karar (Yasin, 2026-10-06): CONDITIONAL PASS.** Önerilen tüm düzeltmeler kabul edildi.
   - Koşul 1, Kalkan Darbesi: **uygulandı** (`c85cac2`). Kart artık önce 4 Kalkan veriyor; sim'de oynanma %57 → %94.
   - Koşul 2, ilk oyuncu dengesi: **sim ile denendi.** K3 kapalıyken ilk oyuncu %59,1 kazanıyor (açıkken %40,2); dengesizlik ters yöne dönüyor. K3 aynen kaldı. Config ile çözülmedi. **Yasin: bilinen sorun olarak Faz 2'ye taşındı.**
-  - Sıradaki: doğrulama, 3–4 maç (aynı form, config değişti). Bariz sorun yoksa Gate 1 PASS → Faz 2.
+  - Doğrulama (2026-10-06): 6 maç, config `9b663b36`. Eğlence medyanı 5, kazanma 3/6. Rapor: `reports/gate-1/2026-10-06-dogrulama-raporu.md`. Claude önerisi: PASS, deste/içerik bulguları Faz 2'ye girdi.
+  - **KARAR (Yasin, 2026-10-06): GATE 1 PASS.** Neden: savaşın yapısı tuttu; kalan sorunlar (açılış eli, kalkan fazlası, güçlü karta kolay erişim, ilk oyuncu) 12 kartlık geçici desteye ait ve Faz 2'de zaten değişiyor. → **Faz 2 açıldı.**

@@ -1,6 +1,6 @@
 # KOIdLe
 
-Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. Faz 1 (savaş sandbox'ı) kodu var; Gate 1 = FAIL / ITERATE (Yasin); Combat v0.2 uygulandı; Gate 1B = CONDITIONAL PASS (Yasin); doğrulama maçları oynandı, Gate 1 kararı bekleniyor.
+Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. Faz 1 (savaş sandbox'ı) kodu var; Gate 1 = FAIL / ITERATE (Yasin); Combat v0.2 uygulandı; Gate 1B = CONDITIONAL PASS; **Gate 1 = PASS (Yasin, 2026-10-06)**; Faz 2 (dört job) tasarımı başlıyor.
 
 - **Her oturuma `docs/devam-notu.md` ile başla.** Kararlar, Yasin'in revizyonları ve sıradaki adımlar orada.
 - Dil: Türkçe. Hitap: Yasin. Ton samimi ve net.

@@ -10,7 +10,7 @@
 KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yükselttiğin ve karşı ulusun oyuncularıyla kart tabanlı savaşlara girdiğin bir **idle PvPvE RPG**. Kartlar ürünün kendisi değil, savaş dili. MMORPG değil. Knight Online'dan esinlenir; onun isimleri kullanılmaz.
 
 ## MEVCUT DURUM
-- **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
+- **Faz:** Faz 0–1 tamam. **Gate 1 PASS (Yasin, 2026-10-06). Faz 2 (dört job) açıldı**, planı henüz yazılmadı.
 - **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. **Gate 1 kararı: FAIL / ITERATE** (Yasin, 2026-10-06). Test: 11 maç, rapor `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Hero vs Hero başarısız sayılmadı; minion yok, Faz 2 yok.
 - **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
   - Rapor: `reports/gate-1/2026-10-06-gate-1b-raporu.md`.
@@ -22,8 +22,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - Eğlence medyanı 5 (ort. 3,7; iki maç 1), kazanma 3/6, karar hatırlama 1/6.
     - Kalkan Darbesi artık "işe yaramıyor" denmiyor; bir notta "hem kalkan hem hasar saçma".
     - Yeni bulgular (deste/içerik): kötü açılış eli (2 not, ikisi eğlence 1, ikisi de defensive AI), kalkan kartı fazlası (2 not), güçlü kartlara kolay erişim / Yıkım güçlü (2 not).
-    - **Claude önerisi: Gate 1 PASS**, bulgular Faz 2'ye zorunlu girdi. Alternatif: tek JSON kolu ile bir ITERATE turu.
-    - **Gate 1 kararı Yasin'de, bekleniyor.** Faz 2 başlamadı.
+    - **Claude önerisi: Gate 1 PASS**, bulgular Faz 2'ye zorunlu girdi.
+    - **KARAR (Yasin, 2026-10-06): GATE 1 PASS.** Faz 2 açıldı.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -36,7 +36,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
-- **Tamamlanmayan:** Gate 1 kararı (PASS / ITERATE), Yasin'de.
+- **Tamamlanmayan:** Faz 2 tasarımı ve planı.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -61,6 +61,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 | Kural | Prototip bitmeden spec'teki **ÇIKSIN** listesinden hiçbir sistem kodlanmaz, önerilmez, spec'e geri eklenmez. |
 
 ## BUGÜN ALINAN KARARLAR (2026-10-06)
+- **GATE 1 PASS (Yasin, akşam).** Neden: savaşın yapısı tuttu (eğlence medyanı 1B'de 5, doğrulamada 5); kalan sorunlar 12 kartlık geçici desteye ait, Faz 2'de değişiyor. "Takıldık kaldık, ilerleyelim." Doğrulama raporu §6'daki 6 bulgu Faz 2'nin zorunlu girdisi.
 - **Gate 1 = FAIL / ITERATE (Yasin).** Neden: eğlence medyanı 3 < 4; P0 maç içi plan/kombo yok. Çekirdek ölü değil (düşünerek oynanan son 4 maçta medyan 5).
 - **Combat v0.2 onaylandı ve uygulandı (Yasin).** Neden: kart saklama ve kurulum kararı doğsun, yeni kavram eklenmesin. Ayrıntı: `docs/combat-v0.2-oneri.md`.
 - **Copilot geçici olarak devre dışı (Yasin, 2026-10-06).** Neden: süreç kafa karıştırıyordu. Copilot'un son katkısı: Gate önerisi FAIL / ITERATE ve Combat v0.2 hedefi ("oyuncuya birkaç hamlelik küçük planlar kurdurmak"; `mp.max` 8 → 6 destekleniyor ama P0'ın tek çözümü değil). Bundan sonra karar yalnız Yasin'de.
@@ -151,9 +152,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Gate 1 kararı. Rapor: `reports/gate-1/2026-10-06-dogrulama-raporu.md` §6.
-- **PASS** → Claude Faz 2 planını yazar (dört job, ~40–50 kart, kart kimliği, deste kurma). Rapor §6'daki 6 bulgu planın zorunlu girdisi.
-- **ITERATE** → Yasin tek kolu seçer (açılış eli 4 → 3 ya da bir kalkan kartını saldırıyla değiştirmek; yalnız JSON), Claude uygular, sim + 3–4 maç.
+**Faz 2 tasarımı (Claude + Yasin):** dört job, ~40–50 kart, kart kimliği, deste kurma kuralları. Önce tasarım soruları Yasin'le netleşir, sonra spec eki + uygulama planı yazılır. Doğrulama raporu §6'daki 6 bulgu zorunlu girdi.
 - Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
 
 Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
