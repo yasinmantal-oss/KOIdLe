@@ -86,5 +86,5 @@ _(Yasin'in testinden sonra doldurulacak.)_
   - Claude önerisi: **CONDITIONAL PASS**. Koşullar: Kalkan Darbesi düzeltmesi ve ilk oyuncu dengesi.
   - **Karar (Yasin, 2026-10-06): CONDITIONAL PASS.** Önerilen tüm düzeltmeler kabul edildi.
   - Koşul 1, Kalkan Darbesi: **uygulandı** (`c85cac2`). Kart artık önce 4 Kalkan veriyor; sim'de oynanma %57 → %94.
-  - Koşul 2, ilk oyuncu dengesi: **sim ile denendi.** K3 kapalıyken ilk oyuncu %59,1 kazanıyor (açıkken %40,2); dengesizlik ters yöne dönüyor. K3 aynen kaldı. Config ile çözülmedi; açık konu.
+  - Koşul 2, ilk oyuncu dengesi: **sim ile denendi.** K3 kapalıyken ilk oyuncu %59,1 kazanıyor (açıkken %40,2); dengesizlik ters yöne dönüyor. K3 aynen kaldı. Config ile çözülmedi. **Yasin: bilinen sorun olarak Faz 2'ye taşındı.**
   - Sıradaki: doğrulama, 3–4 maç (aynı form, config değişti). Bariz sorun yoksa Gate 1 PASS → Faz 2.

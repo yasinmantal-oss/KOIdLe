@@ -114,7 +114,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Ama kart kimliği (skill hissi) ve item/güç bağlantısı henüz tasarlanmadı. **Açık tasarım konusu, Gate 1B'den sonra ele alınacak.**
 - **İlk oyuncu dengesi (açık):**
   - v0.2.1 sim'de ilk oyuncu %40,2 kazanıyor; K3 kapatılınca %59,1. Config ile çözülmüyor.
-  - Seçenekler: (a) bilinen sorun olarak Faz 2'ye taşı, 4 job ile denge zaten değişecek; (b) ikinci oyuncuya tek seferlik +1 MP (kod gerektirir). Yasin kararı.
+  - **Karar (Yasin, 2026-10-06): (a) bilinen sorun olarak Faz 2'ye taşındı.** Neden: dört job gelince denge baştan değişecek; şimdi ayarlamak boşa iş olur.
+  - Faz 2 dengesinde ilk iş olarak yeniden ölçülecek. Telafi seçeneği (ikinci oyuncuya +1 MP) o zaman tekrar değerlendirilir.
 - **v0.2.1 sim izleme:**
   - Arena ile bitiş %28,6 (v0.2: %21)
   - defensive AI aggressive'e karşı %64,5
@@ -148,7 +149,6 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 **Tek görev (Yasin):** doğrulama: sayfada 3–4 maç (aynı form; yeni config otomatik ayrışır). Kalkan Darbesi'ni denemeye çalış.
 **Sonra:**
 - Claude kayıtları okur; bariz sorun yoksa Yasin Gate 1 PASS der.
-- İlk oyuncu kararı verilir: (a) Faz 2'ye taşı, ya da (b) ikinci oyuncuya +1 MP.
 - Faz 2 planı yazılır: dört job, ~40–50 kart, kart kimliği. Faz 2 Gate 1 PASS olmadan başlamaz.
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
