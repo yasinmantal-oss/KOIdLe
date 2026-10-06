@@ -1,6 +1,6 @@
 # KOIdLe — Devam Notu (oturum devri)
 
-> Son güncelleme: 2026-10-06 (öğleden sonra oturumu) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-06 (akşam oturumu: doğrulama maçları okundu) · Bir sonraki oturum buradan başlar.
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
 > **Geçerli uygulama planı:** `docs/superpowers/plans/2026-10-06-faz-0-1-savas-sandbox.md` (rev. 2). Araştırma raporlarıyla (01–05) ve mockup'larla çelişen her noktada spec geçerlidir.
 > **Oturum kapanışı:** her oturum `docs/kapanis-protokolu.md`'ye göre kapanır.
@@ -18,7 +18,12 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - **Yasin kararı: CONDITIONAL PASS** (önerilen tüm düzeltmeler kabul).
   - Kalkan Darbesi düzeltildi (`c85cac2`).
   - İlk oyuncu: K3 sim'de denendi, kapatınca %59; K3 kaldı, açık konu.
-  - **Doğrulama maçları bekleniyor.** Faz 2 başlamadı.
+  - **Doğrulama maçları oynandı** (6 maç, config `9b663b36`). Rapor: `reports/gate-1/2026-10-06-dogrulama-raporu.md`.
+    - Eğlence medyanı 5 (ort. 3,7; iki maç 1), kazanma 3/6, karar hatırlama 1/6.
+    - Kalkan Darbesi artık "işe yaramıyor" denmiyor; bir notta "hem kalkan hem hasar saçma".
+    - Yeni bulgular (deste/içerik): kötü açılış eli (2 not, ikisi eğlence 1, ikisi de defensive AI), kalkan kartı fazlası (2 not), güçlü kartlara kolay erişim / Yıkım güçlü (2 not).
+    - **Claude önerisi: Gate 1 PASS**, bulgular Faz 2'ye zorunlu girdi. Alternatif: tek JSON kolu ile bir ITERATE turu.
+    - **Gate 1 kararı Yasin'de, bekleniyor.** Faz 2 başlamadı.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -31,7 +36,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
-- **Tamamlanmayan:** doğrulama maçları (3–4) ve Gate 1 PASS kararı.
+- **Tamamlanmayan:** Gate 1 kararı (PASS / ITERATE), Yasin'de.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -146,14 +151,10 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** doğrulama: sayfada 3–4 maç (aynı form; yeni config otomatik ayrışır). Kalkan Darbesi'ni denemeye çalış.
-**Sonra:**
-- Claude kayıtları okur; bariz sorun yoksa Yasin Gate 1 PASS der.
-- Faz 2 planı yazılır: dört job, ~40–50 kart, kart kimliği. Faz 2 Gate 1 PASS olmadan başlamaz.
-Kayıtlar tamamlanınca **Claude'un ilk işi:**
-1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
-2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
-3. Gate kalırsa yalnız savaşı düzeltir (`docs/gate-1.md` §C).
+**Tek görev (Yasin):** Gate 1 kararı. Rapor: `reports/gate-1/2026-10-06-dogrulama-raporu.md` §6.
+- **PASS** → Claude Faz 2 planını yazar (dört job, ~40–50 kart, kart kimliği, deste kurma). Rapor §6'daki 6 bulgu planın zorunlu girdisi.
+- **ITERATE** → Yasin tek kolu seçer (açılış eli 4 → 3 ya da bir kalkan kartını saldırıyla değiştirmek; yalnız JSON), Claude uygular, sim + 3–4 maç.
+- Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
 
 Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 
@@ -187,6 +188,7 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
 - `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
 - `reports/gate-1/2026-10-06-gate-1b-raporu.md`: Gate 1B raporu (öneri CONDITIONAL PASS)
+- `reports/gate-1/2026-10-06-dogrulama-raporu.md`: doğrulama maçları raporu (öneri PASS, karar bekleniyor)
 - `docs/combat-v0.2-oneri.md`: Combat v0.2 tasarımı (onaylandı, uygulandı; alternatifler v0.3 adayı)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
