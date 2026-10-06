@@ -1,0 +1,1390 @@
+{
+  "name": "fatigue-and-arena",
+  "description": "Kimse kart oynamaz: el dolar, kartlar yanar, tek karıştırma, Yorgunluk ve Arena Çöküşü.",
+  "setup": {
+    "config": {
+      "hero": {
+        "hp": 30
+      },
+      "mp": {
+        "start": 1,
+        "perTurn": 1,
+        "max": 8
+      },
+      "hand": {
+        "starting": 4,
+        "limit": 8,
+        "drawPerTurn": 1,
+        "firstPlayerSkipsFirstDraw": true
+      },
+      "deck": {
+        "size": 12,
+        "reshuffles": 1
+      },
+      "fatigue": {
+        "start": 1,
+        "step": 1,
+        "ignoresShield": true
+      },
+      "shield": {
+        "persistence": "resetOnOwnTurnStart"
+      },
+      "arenaCollapse": {
+        "startRound": 8,
+        "start": 1,
+        "step": 1,
+        "ignoresShield": true
+      },
+      "statuses": {
+        "stacking": "maxAmountRefreshOnGte",
+        "tickOn": "ownerTurnEnd",
+        "strength": {
+          "duration": 2
+        },
+        "weak": {
+          "duration": 2
+        }
+      },
+      "roundCap": 20
+    },
+    "cards": [
+      {
+        "id": "hit",
+        "name": "hit",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 1,
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "text": "hit"
+      },
+      {
+        "id": "guard",
+        "name": "guard",
+        "job": "warrior",
+        "type": "defense",
+        "cost": 1,
+        "effects": [
+          {
+            "kind": "shield",
+            "amount": 4
+          }
+        ],
+        "text": "guard"
+      },
+      {
+        "id": "taunt",
+        "name": "taunt",
+        "job": "warrior",
+        "type": "debuff",
+        "cost": 1,
+        "effects": [
+          {
+            "kind": "applyStatus",
+            "target": "enemy",
+            "status": "weak",
+            "amount": 2
+          }
+        ],
+        "text": "taunt"
+      },
+      {
+        "id": "study",
+        "name": "study",
+        "job": "warrior",
+        "type": "skill",
+        "cost": 1,
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          },
+          {
+            "kind": "shield",
+            "amount": 2
+          }
+        ],
+        "text": "study"
+      },
+      {
+        "id": "bash",
+        "name": "bash",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 2,
+        "effects": [
+          {
+            "kind": "damageFromShieldGainedThisTurn"
+          }
+        ],
+        "text": "bash"
+      },
+      {
+        "id": "rally",
+        "name": "rally",
+        "job": "warrior",
+        "type": "buff",
+        "cost": 2,
+        "effects": [
+          {
+            "kind": "applyStatus",
+            "target": "self",
+            "status": "strength",
+            "amount": 2
+          }
+        ],
+        "text": "rally"
+      },
+      {
+        "id": "wall",
+        "name": "wall",
+        "job": "warrior",
+        "type": "defense",
+        "cost": 2,
+        "effects": [
+          {
+            "kind": "shield",
+            "amount": 7
+          }
+        ],
+        "text": "wall"
+      },
+      {
+        "id": "mend",
+        "name": "mend",
+        "job": "warrior",
+        "type": "heal",
+        "cost": 2,
+        "effects": [
+          {
+            "kind": "heal",
+            "amount": 6
+          }
+        ],
+        "text": "mend"
+      },
+      {
+        "id": "heavy",
+        "name": "heavy",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 3,
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 7
+          }
+        ],
+        "text": "heavy"
+      },
+      {
+        "id": "surge",
+        "name": "surge",
+        "job": "warrior",
+        "type": "skill",
+        "cost": 3,
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          },
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "text": "surge"
+      },
+      {
+        "id": "pierce",
+        "name": "pierce",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 4,
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 6,
+            "ignoreShield": true
+          }
+        ],
+        "text": "pierce"
+      },
+      {
+        "id": "ruin",
+        "name": "ruin",
+        "job": "warrior",
+        "type": "attack",
+        "cost": 6,
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 14
+          }
+        ],
+        "text": "ruin"
+      }
+    ],
+    "decks": [
+      [
+        "hit",
+        "guard",
+        "taunt",
+        "study",
+        "bash",
+        "rally",
+        "wall",
+        "mend",
+        "heavy",
+        "surge",
+        "pierce",
+        "ruin"
+      ],
+      [
+        "hit",
+        "guard",
+        "taunt",
+        "study",
+        "bash",
+        "rally",
+        "wall",
+        "mend",
+        "heavy",
+        "surge",
+        "pierce",
+        "ruin"
+      ]
+    ],
+    "names": [
+      "A",
+      "B"
+    ],
+    "seed": 7
+  },
+  "actions": [
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    },
+    {
+      "type": "END_TURN",
+      "player": 1
+    },
+    {
+      "type": "END_TURN",
+      "player": 0
+    }
+  ],
+  "expected": {
+    "events": [
+      {
+        "type": "BATTLE_STARTED",
+        "firstPlayer": 0,
+        "seed": 7
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-7",
+        "cardId": "mend"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-11",
+        "cardId": "ruin"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-6",
+        "cardId": "wall"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-8",
+        "cardId": "heavy"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-4",
+        "cardId": "bash"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-3",
+        "cardId": "study"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-7",
+        "cardId": "mend"
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-0",
+        "cardId": "hit"
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 1,
+        "maxMp": 1
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 1
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 1,
+        "maxMp": 1
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-8",
+        "cardId": "heavy"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 1
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 2,
+        "maxMp": 2
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-10",
+        "cardId": "pierce"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 2
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 2,
+        "maxMp": 2
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-11",
+        "cardId": "ruin"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 2
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 3,
+        "maxMp": 3
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-5",
+        "cardId": "rally"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 3
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 3,
+        "maxMp": 3
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-2",
+        "cardId": "taunt"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 3
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 4,
+        "maxMp": 4
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-1",
+        "cardId": "guard"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 4
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 4,
+        "maxMp": 4
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 1,
+        "iid": "p1-6",
+        "cardId": "wall"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 4
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 5,
+        "maxMp": 5
+      },
+      {
+        "type": "CARD_DRAWN",
+        "player": 0,
+        "iid": "p0-4",
+        "cardId": "bash"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 5
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 5,
+        "maxMp": 5
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-9",
+        "cardId": "surge"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 5
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 6,
+        "maxMp": 6
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-9",
+        "cardId": "surge"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 6
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 6,
+        "maxMp": 6
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-5",
+        "cardId": "rally"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 6
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 7,
+        "maxMp": 7
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-0",
+        "cardId": "hit"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 7
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 7,
+        "maxMp": 7
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-1",
+        "cardId": "guard"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 7
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 8,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 1,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-3",
+        "cardId": "study"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 8,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 1,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-10",
+        "cardId": "pierce"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 9,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 2,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-2",
+        "cardId": "taunt"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 9,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 2,
+        "absorbed": 0
+      },
+      {
+        "type": "DECK_RESHUFFLED",
+        "player": 1,
+        "count": 4,
+        "reshufflesLeft": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-9",
+        "cardId": "surge"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 10,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 3,
+        "absorbed": 0
+      },
+      {
+        "type": "DECK_RESHUFFLED",
+        "player": 0,
+        "count": 4,
+        "reshufflesLeft": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-0",
+        "cardId": "hit"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 10,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 3,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-1",
+        "cardId": "guard"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 11,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 4,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-2",
+        "cardId": "taunt"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 11,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 4,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-5",
+        "cardId": "rally"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 12,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 5,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-9",
+        "cardId": "surge"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 12,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 5,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 1,
+        "iid": "p1-10",
+        "cardId": "pierce"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 13,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 6,
+        "absorbed": 0
+      },
+      {
+        "type": "CARD_BURNED",
+        "player": 0,
+        "iid": "p0-3",
+        "cardId": "study"
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 13,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 6,
+        "absorbed": 0
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "fatigue",
+        "target": 1,
+        "amount": 1,
+        "absorbed": 0
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 1,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 0,
+        "round": 14,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 0,
+        "amount": 7,
+        "absorbed": 0
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "fatigue",
+        "target": 0,
+        "amount": 1,
+        "absorbed": 0
+      },
+      {
+        "type": "TURN_ENDED",
+        "player": 0,
+        "unusedMp": 8
+      },
+      {
+        "type": "TURN_STARTED",
+        "player": 1,
+        "round": 14,
+        "maxMp": 8
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "arena",
+        "target": 1,
+        "amount": 7,
+        "absorbed": 0
+      },
+      {
+        "type": "DAMAGE_DEALT",
+        "source": "fatigue",
+        "target": 1,
+        "amount": 2,
+        "absorbed": 0
+      },
+      {
+        "type": "BATTLE_ENDED",
+        "winner": 0,
+        "round": 14,
+        "reason": "fatigue"
+      }
+    ],
+    "finalState": {
+      "config": {
+        "hero": {
+          "hp": 30
+        },
+        "mp": {
+          "start": 1,
+          "perTurn": 1,
+          "max": 8
+        },
+        "hand": {
+          "starting": 4,
+          "limit": 8,
+          "drawPerTurn": 1,
+          "firstPlayerSkipsFirstDraw": true
+        },
+        "deck": {
+          "size": 12,
+          "reshuffles": 1
+        },
+        "fatigue": {
+          "start": 1,
+          "step": 1,
+          "ignoresShield": true
+        },
+        "shield": {
+          "persistence": "resetOnOwnTurnStart"
+        },
+        "arenaCollapse": {
+          "startRound": 8,
+          "start": 1,
+          "step": 1,
+          "ignoresShield": true
+        },
+        "statuses": {
+          "stacking": "maxAmountRefreshOnGte",
+          "tickOn": "ownerTurnEnd",
+          "strength": {
+            "duration": 2
+          },
+          "weak": {
+            "duration": 2
+          }
+        },
+        "roundCap": 20
+      },
+      "cards": {
+        "hit": {
+          "id": "hit",
+          "name": "hit",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 1,
+          "effects": [
+            {
+              "kind": "damage",
+              "amount": 3
+            }
+          ],
+          "text": "hit"
+        },
+        "guard": {
+          "id": "guard",
+          "name": "guard",
+          "job": "warrior",
+          "type": "defense",
+          "cost": 1,
+          "effects": [
+            {
+              "kind": "shield",
+              "amount": 4
+            }
+          ],
+          "text": "guard"
+        },
+        "taunt": {
+          "id": "taunt",
+          "name": "taunt",
+          "job": "warrior",
+          "type": "debuff",
+          "cost": 1,
+          "effects": [
+            {
+              "kind": "applyStatus",
+              "target": "enemy",
+              "status": "weak",
+              "amount": 2
+            }
+          ],
+          "text": "taunt"
+        },
+        "study": {
+          "id": "study",
+          "name": "study",
+          "job": "warrior",
+          "type": "skill",
+          "cost": 1,
+          "effects": [
+            {
+              "kind": "draw",
+              "count": 1
+            },
+            {
+              "kind": "shield",
+              "amount": 2
+            }
+          ],
+          "text": "study"
+        },
+        "bash": {
+          "id": "bash",
+          "name": "bash",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 2,
+          "effects": [
+            {
+              "kind": "damageFromShieldGainedThisTurn"
+            }
+          ],
+          "text": "bash"
+        },
+        "rally": {
+          "id": "rally",
+          "name": "rally",
+          "job": "warrior",
+          "type": "buff",
+          "cost": 2,
+          "effects": [
+            {
+              "kind": "applyStatus",
+              "target": "self",
+              "status": "strength",
+              "amount": 2
+            }
+          ],
+          "text": "rally"
+        },
+        "wall": {
+          "id": "wall",
+          "name": "wall",
+          "job": "warrior",
+          "type": "defense",
+          "cost": 2,
+          "effects": [
+            {
+              "kind": "shield",
+              "amount": 7
+            }
+          ],
+          "text": "wall"
+        },
+        "mend": {
+          "id": "mend",
+          "name": "mend",
+          "job": "warrior",
+          "type": "heal",
+          "cost": 2,
+          "effects": [
+            {
+              "kind": "heal",
+              "amount": 6
+            }
+          ],
+          "text": "mend"
+        },
+        "heavy": {
+          "id": "heavy",
+          "name": "heavy",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 3,
+          "effects": [
+            {
+              "kind": "damage",
+              "amount": 7
+            }
+          ],
+          "text": "heavy"
+        },
+        "surge": {
+          "id": "surge",
+          "name": "surge",
+          "job": "warrior",
+          "type": "skill",
+          "cost": 3,
+          "effects": [
+            {
+              "kind": "draw",
+              "count": 2
+            },
+            {
+              "kind": "damage",
+              "amount": 3
+            }
+          ],
+          "text": "surge"
+        },
+        "pierce": {
+          "id": "pierce",
+          "name": "pierce",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 4,
+          "effects": [
+            {
+              "kind": "damage",
+              "amount": 6,
+              "ignoreShield": true
+            }
+          ],
+          "text": "pierce"
+        },
+        "ruin": {
+          "id": "ruin",
+          "name": "ruin",
+          "job": "warrior",
+          "type": "attack",
+          "cost": 6,
+          "effects": [
+            {
+              "kind": "damage",
+              "amount": 14
+            }
+          ],
+          "text": "ruin"
+        }
+      },
+      "rng": 1575801032,
+      "round": 14,
+      "active": 1,
+      "firstPlayer": 0,
+      "players": [
+        {
+          "name": "A",
+          "hp": 1,
+          "maxHp": 30,
+          "mp": 8,
+          "maxMp": 8,
+          "shield": 0,
+          "shieldGainedThisTurn": 0,
+          "statuses": [],
+          "deck": [],
+          "hand": [
+            {
+              "iid": "p0-7",
+              "cardId": "mend"
+            },
+            {
+              "iid": "p0-11",
+              "cardId": "ruin"
+            },
+            {
+              "iid": "p0-6",
+              "cardId": "wall"
+            },
+            {
+              "iid": "p0-8",
+              "cardId": "heavy"
+            },
+            {
+              "iid": "p0-10",
+              "cardId": "pierce"
+            },
+            {
+              "iid": "p0-5",
+              "cardId": "rally"
+            },
+            {
+              "iid": "p0-1",
+              "cardId": "guard"
+            },
+            {
+              "iid": "p0-4",
+              "cardId": "bash"
+            }
+          ],
+          "discard": [
+            {
+              "iid": "p0-0",
+              "cardId": "hit"
+            },
+            {
+              "iid": "p0-2",
+              "cardId": "taunt"
+            },
+            {
+              "iid": "p0-9",
+              "cardId": "surge"
+            },
+            {
+              "iid": "p0-3",
+              "cardId": "study"
+            }
+          ],
+          "turnsTaken": 14,
+          "reshufflesLeft": 0,
+          "fatigueCount": 1
+        },
+        {
+          "name": "B",
+          "hp": 0,
+          "maxHp": 30,
+          "mp": 8,
+          "maxMp": 8,
+          "shield": 0,
+          "shieldGainedThisTurn": 0,
+          "statuses": [],
+          "deck": [],
+          "hand": [
+            {
+              "iid": "p1-4",
+              "cardId": "bash"
+            },
+            {
+              "iid": "p1-3",
+              "cardId": "study"
+            },
+            {
+              "iid": "p1-7",
+              "cardId": "mend"
+            },
+            {
+              "iid": "p1-0",
+              "cardId": "hit"
+            },
+            {
+              "iid": "p1-8",
+              "cardId": "heavy"
+            },
+            {
+              "iid": "p1-11",
+              "cardId": "ruin"
+            },
+            {
+              "iid": "p1-2",
+              "cardId": "taunt"
+            },
+            {
+              "iid": "p1-6",
+              "cardId": "wall"
+            }
+          ],
+          "discard": [
+            {
+              "iid": "p1-9",
+              "cardId": "surge"
+            },
+            {
+              "iid": "p1-1",
+              "cardId": "guard"
+            },
+            {
+              "iid": "p1-5",
+              "cardId": "rally"
+            },
+            {
+              "iid": "p1-10",
+              "cardId": "pierce"
+            }
+          ],
+          "turnsTaken": 14,
+          "reshufflesLeft": 0,
+          "fatigueCount": 2
+        }
+      ],
+      "result": {
+        "winner": 0,
+        "reason": "fatigue"
+      }
+    }
+  }
+}

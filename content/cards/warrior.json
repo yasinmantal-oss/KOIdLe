@@ -1,0 +1,110 @@
+[
+  {
+    "id": "yarma",
+    "name": "Yarma",
+    "job": "warrior",
+    "type": "attack",
+    "cost": 1,
+    "effects": [{ "kind": "damage", "amount": 3 }],
+    "text": "3 hasar ver."
+  },
+  {
+    "id": "kalkan-kaldir",
+    "name": "Kalkan Kaldır",
+    "job": "warrior",
+    "type": "defense",
+    "cost": 1,
+    "effects": [{ "kind": "shield", "amount": 4 }],
+    "text": "4 Kalkan kazan."
+  },
+  {
+    "id": "gozdagi",
+    "name": "Gözdağı",
+    "job": "warrior",
+    "type": "debuff",
+    "cost": 1,
+    "effects": [{ "kind": "applyStatus", "target": "enemy", "status": "weak", "amount": 2 }],
+    "text": "Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "hazirlik",
+    "name": "Hazırlık",
+    "job": "warrior",
+    "type": "skill",
+    "cost": 1,
+    "effects": [{ "kind": "draw", "count": 1 }, { "kind": "shield", "amount": 2 }],
+    "text": "1 kart çek. 2 Kalkan kazan."
+  },
+  {
+    "id": "kalkan-darbesi",
+    "name": "Kalkan Darbesi",
+    "job": "warrior",
+    "type": "attack",
+    "cost": 2,
+    "effects": [{ "kind": "damageFromShieldGainedThisTurn" }],
+    "text": "Bu tur kazandığın Kalkan kadar hasar ver."
+  },
+  {
+    "id": "savas-narasi",
+    "name": "Savaş Narası",
+    "job": "warrior",
+    "type": "buff",
+    "cost": 2,
+    "effects": [{ "kind": "applyStatus", "target": "self", "status": "strength", "amount": 2 }],
+    "text": "Kendine Güç 2 ver."
+  },
+  {
+    "id": "siper",
+    "name": "Siper",
+    "job": "warrior",
+    "type": "defense",
+    "cost": 2,
+    "effects": [{ "kind": "shield", "amount": 7 }],
+    "text": "7 Kalkan kazan."
+  },
+  {
+    "id": "ikinci-nefes",
+    "name": "İkinci Nefes",
+    "job": "warrior",
+    "type": "heal",
+    "cost": 2,
+    "effects": [{ "kind": "heal", "amount": 6 }],
+    "text": "6 HP iyileş."
+  },
+  {
+    "id": "agir-darbe",
+    "name": "Ağır Darbe",
+    "job": "warrior",
+    "type": "attack",
+    "cost": 3,
+    "effects": [{ "kind": "damage", "amount": 7 }],
+    "text": "7 hasar ver."
+  },
+  {
+    "id": "savas-ritmi",
+    "name": "Savaş Ritmi",
+    "job": "warrior",
+    "type": "skill",
+    "cost": 3,
+    "effects": [{ "kind": "draw", "count": 2 }, { "kind": "damage", "amount": 3 }],
+    "text": "2 kart çek. 3 hasar ver."
+  },
+  {
+    "id": "yarip-gec",
+    "name": "Yarıp Geç",
+    "job": "warrior",
+    "type": "attack",
+    "cost": 4,
+    "effects": [{ "kind": "damage", "amount": 6, "ignoreShield": true }],
+    "text": "Kalkanı yok sayarak 6 hasar ver."
+  },
+  {
+    "id": "yikim",
+    "name": "Yıkım",
+    "job": "warrior",
+    "type": "attack",
+    "cost": 6,
+    "effects": [{ "kind": "damage", "amount": 14 }],
+    "text": "14 hasar ver."
+  }
+]

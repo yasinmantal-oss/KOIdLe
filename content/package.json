@@ -1,0 +1,9 @@
+{
+  "name": "@koidle/content",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oyun verisi (yalnız JSON). Tek kural kaynağı.",
+  "exports": {
+    "./*": "./*"
+  }
+}
