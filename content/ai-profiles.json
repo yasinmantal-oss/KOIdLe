@@ -1,0 +1,26 @@
+{
+  "aggressive": {
+    "enemyDamage": 3,
+    "selfDamage": 1,
+    "shield": 0.5,
+    "enemyShield": 1,
+    "status": 1.5,
+    "hand": 0.5
+  },
+  "balanced": {
+    "enemyDamage": 2,
+    "selfDamage": 2,
+    "shield": 1,
+    "enemyShield": 1,
+    "status": 1,
+    "hand": 0.5
+  },
+  "defensive": {
+    "enemyDamage": 1.5,
+    "selfDamage": 3,
+    "shield": 1.5,
+    "enemyShield": 0.5,
+    "status": 1,
+    "hand": 0.5
+  }
+}
