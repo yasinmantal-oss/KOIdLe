@@ -23,7 +23,7 @@
 | K6 | Kahraman gücü | Yok. Gate 1 başarısız olursa denenecek kollardan biri; kendiliğinden eklenmez. | Onaylandı |
 | K7 | Statüler | Yalnız Güç ve Zayıflık. Üst üste binmez: gelen değer **büyük veya eşitse** değer onunla değişir ve süre yenilenir; küçükse hiçbir şey olmaz. Süre config'de, sayaç etkilenen kahramanın **kendi tur sonunda** düşer. | Onaylandı |
 
-### 0.2 Claude'un bu revizyonda verdiği küçük kararlar (Yasin/Copilot onayı istenir)
+### 0.2 Claude'un küçük kararları (N1–N7 Copilot incelemesi ve Yasin onayıyla kabul edildi)
 
 | # | Konu | Karar | Gerekçe |
 |---|---|---|---|
@@ -35,8 +35,18 @@
 | N6 | Gate 1 formu nereye yazılır | `pnpm dev` sırasında yalnız geliştirme ortamında çalışan küçük bir Vite eklentisi formu `docs/gate-1/oturumlar.jsonl` dosyasına ekler. Ayrıca tarayıcıda yedek tutulur ve "JSON indir" düğmesi var. | Sonuçlar seed ile repo'da metin olarak durur; backend yok. |
 | N7 | Okunabilir değer tablosu | `docs/savas-degerleri.md`, `pnpm values` komutuyla `content/` JSON'larından **üretilir**. Dosya JSON'la uyuşmazsa test kırılır. | Tek kaynak JSON, tek okunabilir tablo; ikisi asla ayrışmaz. |
 
-### 0.3 Kart etkisi notu (K1 sonrası)
-Kalkan tur başında sıfırlandığı için **Kalkan Darbesi** yalnız o tur içinde (ya da rakibin turundan artakalan değil, kendi turunda kazanılmış) Kalkanı sayar. Siper + Kalkan Darbesi = 4 MP'ye 7 Kalkan + 7 hasar. Bu kombinasyon simülasyonda izlenecek.
+### 0.3 Copilot incelemesi ek kararları (Yasin onaylı, 2026-10-06)
+
+| # | Karar |
+|---|---|
+| C1 | N3 sırası korunur. **Her sistem kaynaklı hasardan (Arena, Yorgunluk) ve her geçişten sonra savaş bitti mi kontrol edilir.** Arena oyuncuyu öldürürse çekme ve aksiyon aşaması olmaz. |
+| C2 | Tek kaynak `content/` JSON'larıdır. `docs/savas-degerleri.md` yalnız üretilen görünümdür; MD düzenlenerek oyun değeri değişmez. |
+| C3 | Kalkan Darbesi nerf almaz; Siper + Kalkan Darbesi Gate 1'de test edilir. Metin mekanikle birebir: **"Bu tur kazandığın Kalkan kadar hasar ver."** State'te açık alan: `PlayerState.shieldGainedThisTurn` (sahibinin tur başında 0'lanır). Efekt: `damageFromShieldGainedThisTurn`. |
+| C4 | Yarıp Geç ve Yıkım değerlerine dokunulmaz; Gate 1 ve simde özellikle izlenir. |
+| C5 | Sim raporuna `bothArenaAndFatigueReachedRate` ve `endReason` dağılımı (`normalDamage`, `fatigue`, `arenaCollapse`, `roundCap`) eklenir. **Otomatik kabul/red eşiği yok**; Gate 1'de yorumlanır. `BATTLE_ENDED` olayı `reason` taşır. |
+| C6 | AI gizli bilgi değişikliği onaylı, testle korunur. |
+| C7 | 12 Warrior kartı mevcut sayılarla girer; erken denge değişikliği yok. |
+| C8 | `design/mockups/ekranlar-v0.1.html` Faz 1'i bloke etmez; Harman/polish aşamasında Yasin iletecek. |
 
 ---
 
@@ -223,7 +233,7 @@ export type StatusId = 'strength' | 'weak';
 
 export type Effect =
   | { kind: 'damage'; amount: number; ignoreShield?: boolean }
-  | { kind: 'damageFromShield' }
+  | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number }
   | { kind: 'draw'; count: number }
@@ -255,6 +265,7 @@ export interface PlayerState {
   name: string; hp: number; maxHp: number; mp: number; maxMp: number; shield: number;
   statuses: Status[]; deck: CardInstance[]; hand: CardInstance[]; discard: CardInstance[];
   turnsTaken: number; reshufflesLeft: number; fatigueCount: number;
+  shieldGainedThisTurn: number; // C3
 }
 
 export interface BattleState {
@@ -273,6 +284,7 @@ export type Action =
   | { type: 'END_TURN'; player: PlayerIndex };
 
 export type DamageSource = PlayerIndex | 'arena' | 'fatigue';
+export type EndReason = 'normalDamage' | 'fatigue' | 'arenaCollapse' | 'roundCap';
 
 export type BattleEvent =
   | { type: 'BATTLE_STARTED'; firstPlayer: PlayerIndex; seed: number }
@@ -289,7 +301,7 @@ export type BattleEvent =
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number } // K7: küçük değer
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
   | { type: 'TURN_ENDED'; player: PlayerIndex; unusedMp: number }
-  | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number };
+  | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number; reason: EndReason };
 
 export interface BattleSetup {
   config: BattleConfig; cards: CardDef[]; decks: [string[], string[]]; names: [string, string]; seed: number;
@@ -337,7 +349,7 @@ export function apply(state: BattleState, action: Action): { state: BattleState;
 - **K7:** Güç 2 aktifken Güç 1 → değişmez (`STATUS_IGNORED`); Güç 2 → süre yenilenir; Güç 3 → değer 3, süre yenilenir. Kendine verilen 2 turluk Güç: verildiği tur + bir sonraki kendi turu; ikinci tur sonunda `STATUS_EXPIRED`. Rakibe verilen 2 turluk Zayıflık: rakibin sonraki iki turu.
 - **Arena:** `startRound − 1`'de hasar yok; `startRound`'da `start`, sonraki rauntta `start + step`; Kalkan 10 olsa da HP düşer.
 - **K2/N4:** deste bitince bir kez karıştırma; ikinci bitişte Yorgunluk 1, sonra 2; ıskarta boşken hak harcanmaz.
-- Arena ya da Yorgunluk HP'yi 0'a indirirse `BATTLE_ENDED` (kazanan rakip); sonraki her aksiyon `BATTLE_OVER`.
+- C1: Arena ya da Yorgunluk HP'yi 0'a indirirse `BATTLE_ENDED` (kazanan rakip, `reason` `arenaCollapse`/`fatigue`) ve tur başının kalanı (çekme) çalışmaz; sonraki her aksiyon `BATTLE_OVER`. `roundCap` → `reason: 'roundCap'`, kart hasarı → `normalDamage`.
 - `roundCap` aşılınca berabere.
 - Oyuncu başına deste + el + ıskarta = `deck.size`.
 
@@ -357,7 +369,7 @@ Her efekt tek küçük fonksiyon. Efektler sırayla çözülür; biri savaşı b
 - `damage 3`, rakip Kalkan 2 → `absorbed 2`, HP −1, Kalkan 0.
 - Güç 2 → 5; Zayıflık 2 → 1; Zayıflık 5 + `damage 3` → 0.
 - `ignoreShield` → Kalkan yerinde, HP tam düşer.
-- `damageFromShield` → kendi Kalkanın kadar hasar (Güç/Zayıflık uygulanır), kendi Kalkan değişmez.
+- `damageFromShieldGainedThisTurn` → bu tur kazanılan Kalkan kadar hasar (Güç/Zayıflık uygulanır), kendi Kalkan değişmez; önceki turdan kalan Kalkan (persistent varyantında) sayılmaz. `shieldGainedThisTurn` her Kalkan efektinde artar, sahibinin tur başında 0 olur.
 - `heal` maks HP'yi geçmez, olaydaki `amount` gerçek iyileşme; Kalkanı etkilemez.
 - `draw` K2 kurallarıyla çeker; el doluysa yanar; boş destede Yorgunluk verir.
 - `applyStatus` süreyi config'den alır, `target: 'enemy'` rakibe gider.
@@ -435,11 +447,13 @@ Commit: `feat(ai): score-based ai, three profiles, hidden-info redaction`
 **Dosyalar:** `tools/sim/src/{run.ts,stats.ts,report.ts,cli.ts,sim.test.ts}`, `reports/sim/{latest.md,latest.json,latest.csv}`
 
 - `run.ts` (saf): profil eşleşmesi × seed listesi → maç kayıtları. 3×3 eşleşme × 100 seed = **900 maç**. Her maç `legalActions` + `chooseAction` + `apply` ile, gerçek içerikle.
-- Maç kaydı (CSV satırı): `seed, p0Profile, p1Profile, firstPlayer, winner, rounds, arenaSeen, fatigueSeen, reshuffleSeen, unusedMpP0, unusedMpP1, turnsP0, turnsP1, cardsPlayedP0, cardsPlayedP1`.
+- Maç kaydı (CSV satırı): `seed, p0Profile, p1Profile, firstPlayer, winner, endReason, rounds, arenaSeen, fatigueSeen, reshuffleSeen, unusedMpP0, unusedMpP1, turnsP0, turnsP1, cardsPlayedP0, cardsPlayedP1`.
 - `report.ts` → `latest.md` (okunabilir tablolar) ve `latest.json` (tüm toplamlar + config/kart özeti):
   - raunt: ortalama / medyan / min / maks
   - ilk oyuncunun kazanma oranı, berabere oranı
-  - Arena Çöküşü görülen maç oranı, Yorgunluk görülen maç oranı, karıştırma görülen maç oranı
+  - Arena Çöküşü görülen maç oranı, Yorgunluk görülen maç oranı, ikisinin de görüldüğü maç oranı (`bothArenaAndFatigueReachedRate`), karıştırma görülen maç oranı
+  - bitiş nedeni dağılımı (`endReason`: normalDamage / fatigue / arenaCollapse / roundCap)
+  - Yarıp Geç ve Yıkım ayrıca izlenir (C4). Hiçbir metriğe otomatik kabul/red eşiği konmaz (C5).
   - 3×3 profil kazanma tablosu
   - kart başına: oynandığı maç oranı, maç başı ortalama oynanma, oynayan oyuncunun o maçlarda kazanma oranı (hiç oynanmayan / her maç oynanan kartlar işaretlenir)
   - tur başına ortalama kullanılmadan kalan MP (toplam ve profil başına)

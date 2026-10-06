@@ -2,7 +2,7 @@
 
 > **Tek okunabilir savaş değer tablosu.** Doğru denge değil, başlangıç değerleri.
 > Kaynak: `content/battle-config.json` + `content/cards/warrior.json` (Görev 9'da oluşturulacak).
-> Görev 9'dan sonra bu dosya `pnpm values` ile JSON'dan **üretilir**; elle düzenlenmez. JSON'la uyuşmazsa test kırılır.
+> **Tek kaynak JSON'dur (C2).** Görev 9'dan sonra bu dosya `pnpm values` ile JSON'dan üretilir; MD düzenlenerek oyun değeri değişmez. JSON'la uyuşmazsa test kırılır.
 > Denge önerileri bu tablo üzerinden yapılır.
 
 ## 1. Kurallar
@@ -35,7 +35,7 @@
 
 **Raunt:** iki oyuncunun da birer tur oynaması. Raunt, ilk oyuncunun turu başlarken artar.
 
-**Tur başı sırası (N3):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk).
+**Tur başı sırası (N3):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Arena öldürürse çekme olmaz (C1).
 
 ### Formüller (hepsi tamsayı)
 - Maks MP (kendi N. turu) = `min(mp.start + (N − 1) × mp.perTurn, mp.max)` → 1, 2, 3, 4, 5, 6, 7, 8, 8…
@@ -52,7 +52,7 @@
 | `kalkan-kaldir` | Kalkan Kaldır | Defense | 1 | 4 Kalkan |
 | `gozdagi` | Gözdağı | Debuff | 1 | Rakibe Zayıflık 2 |
 | `hazirlik` | Hazırlık | Skill | 1 | 1 kart çek, 2 Kalkan |
-| `kalkan-darbesi` | Kalkan Darbesi | Attack | 2 | Kalkanın kadar hasar (Kalkan harcanmaz) |
+| `kalkan-darbesi` | Kalkan Darbesi | Attack | 2 | Bu tur kazandığın Kalkan kadar hasar ver (Kalkan harcanmaz) |
 | `savas-narasi` | Savaş Narası | Buff | 2 | Kendine Güç 2 |
 | `siper` | Siper | Defense | 2 | 7 Kalkan |
 | `ikinci-nefes` | İkinci Nefes | Heal | 2 | 6 HP iyileş |
@@ -63,7 +63,7 @@
 
 Maliyet dağılımı: 1 MP ×4 · 2 MP ×4 · 3 MP ×2 · 4 MP ×1 · 6 MP ×1. Kart türleri: Attack 5 · Defense 2 · Skill 2 · Buff 1 · Debuff 1 · Heal 1.
 
-Not (K1 sonrası): Kalkan tur başında sıfırlandığı için Kalkan Darbesi pratikte aynı tur kazanılan Kalkanı sayar. Siper + Kalkan Darbesi = 4 MP'ye 7 Kalkan + 7 hasar. Simülasyonda izlenecek.
+Gözlem listesi (C3, C4): Siper + Kalkan Darbesi (4 MP'ye 7 Kalkan + 7 hasar), Yarıp Geç ve Yıkım. Gate 1 ve simülasyonda izlenir; şimdilik değer değişikliği yok.
 
 ## 3. AI profilleri (AI ayarı, kural değeri değil)
 
