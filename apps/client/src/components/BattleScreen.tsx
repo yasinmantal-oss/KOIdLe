@@ -1,6 +1,7 @@
-import type { AiProfile } from '@koidle/ai';
+import { ARCHETYPES } from '@koidle/content-schema';
 import type { LoadedContent } from '../content';
 import { HUMAN } from '../format';
+import type { MatchSetup } from '../match';
 import { useBattle } from '../useBattle';
 import { ArenaInfo } from './ArenaInfo';
 import { BattleLog } from './BattleLog';
@@ -11,13 +12,14 @@ import { RulesSummary } from './RulesSummary';
 
 interface Props {
   content: LoadedContent;
-  seed: number;
-  profile: AiProfile;
+  setup: MatchSetup;
+  deck: string[];
   onNew: () => void;
 }
 
-export function BattleScreen({ content, seed, profile, onNew }: Props) {
-  const { state, log, startedAt, endedAt, dispatch, restart } = useBattle(content, seed, profile);
+export function BattleScreen({ content, setup, deck, onNew }: Props) {
+  const { seed, profile, mine, ai } = setup;
+  const { state, log, startedAt, endedAt, dispatch, restart } = useBattle(content, setup, deck);
   const myTurn = !state.result && state.active === HUMAN;
   const foe = HUMAN === 0 ? 1 : 0;
   return (
@@ -25,7 +27,7 @@ export function BattleScreen({ content, seed, profile, onNew }: Props) {
       <HeroPanel
         player={state.players[foe]}
         config={state.config}
-        title={`Rakip · AI ${profile}`}
+        title={`Rakip · ${ARCHETYPES[ai].name} · AI ${profile}`}
         active={!state.result && state.active === foe}
         showHandCount
       />
@@ -35,7 +37,7 @@ export function BattleScreen({ content, seed, profile, onNew }: Props) {
       <HeroPanel
         player={state.players[HUMAN]}
         config={state.config}
-        title="Sen · Warrior"
+        title={`Sen · ${ARCHETYPES[mine].name}`}
         active={myTurn}
         showHandCount={false}
       />

@@ -1,15 +1,15 @@
-import type { AiProfile } from '@koidle/ai';
 import { useState } from 'react';
 import { BattleScreen } from './components/BattleScreen';
+import { DeckBuilder } from './components/DeckBuilder';
 import { SetupScreen } from './components/SetupScreen';
 import { loadContent } from './content';
+import type { MatchSetup } from './match';
 
 const loaded = loadContent();
 
 export function App() {
-  const [match, setMatch] = useState<{ seed: number; profile: AiProfile; key: number } | null>(
-    null,
-  );
+  const [setup, setSetup] = useState<MatchSetup | null>(null);
+  const [battle, setBattle] = useState<{ deck: string[]; key: number } | null>(null);
 
   if (!loaded.ok) {
     return (
@@ -20,18 +20,27 @@ export function App() {
       </main>
     );
   }
-  if (!match) {
+  if (!setup) return <SetupScreen onStart={setSetup} />;
+  if (!battle) {
     return (
-      <SetupScreen onStart={(seed, profile) => setMatch({ seed, profile, key: Date.now() })} />
+      <DeckBuilder
+        content={loaded.content}
+        archetypeId={setup.mine}
+        onBack={() => setSetup(null)}
+        onConfirm={(deck) => setBattle({ deck, key: Date.now() })}
+      />
     );
   }
   return (
     <BattleScreen
-      key={match.key}
+      key={battle.key}
       content={loaded.content}
-      seed={match.seed}
-      profile={match.profile}
-      onNew={() => setMatch(null)}
+      setup={setup}
+      deck={battle.deck}
+      onNew={() => {
+        setBattle(null);
+        setSetup(null);
+      }}
     />
   );
 }
