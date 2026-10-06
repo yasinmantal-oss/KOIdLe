@@ -3,7 +3,7 @@ import {
   loadAiProfiles,
   loadAllCards,
   loadBattleConfig,
-  loadPresetDeck,
+  loadPresetDecks,
 } from '@koidle/content-schema';
 import type { SimInput } from './run';
 
@@ -11,7 +11,7 @@ export function loadSimInput(): SimInput {
   return {
     config: loadBattleConfig(),
     cards: loadAllCards(),
-    deck: loadPresetDeck('warrior'),
+    decks: loadPresetDecks(),
     profiles: loadAiProfiles(),
     planner: loadAiPlanner(),
   };

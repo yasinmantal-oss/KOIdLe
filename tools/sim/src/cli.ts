@@ -1,23 +1,38 @@
-// pnpm sim → reports/sim/latest.{md,json,csv}. İsteğe bağlı: pnpm sim -- <seedSayısı>
+// pnpm sim → reports/sim/latest.{md,json,csv}. İsteğe bağlı: pnpm sim -- <jobSeedSayısı=100> <profilSeedSayısı=10>
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadSimInput } from './load-input';
 import { renderCsv, renderMarkdown, summarize } from './report';
-import { runMatrix, seedRange } from './run';
+import { runJobMatrix, runProfileMatrix, seedRange } from './run';
 
-const count = Number(process.argv[2] ?? 100);
-const seeds = seedRange(1, count);
+const args = process.argv.slice(2).filter((a) => a !== '--');
+const jobCount = Number(args[0] ?? 100);
+const profileCount = Number(args[1] ?? 10);
+const jobSeeds = seedRange(1, jobCount);
+const profileSeeds = seedRange(1, profileCount);
 const input = loadSimInput();
 const started = performance.now();
-const records = runMatrix(input, seeds);
-const summary = summarize(records, input.cards);
+const records = [...runJobMatrix(input, jobSeeds), ...runProfileMatrix(input, profileSeeds)];
+const summary = summarize(records, input);
 
 const dir = join(import.meta.dirname, '..', '..', '..', 'reports', 'sim');
 mkdirSync(dir, { recursive: true });
-writeFileSync(join(dir, 'latest.md'), renderMarkdown(summary, input.config, seeds));
+writeFileSync(
+  join(dir, 'latest.md'),
+  renderMarkdown(summary, input.config, { jobSeeds, profileSeeds, planner: input.planner }),
+);
 // Özet okunaklı, maç kayıtları satır başına bir kayıt (dosya küçük kalsın, diff okunur olsun).
 const head = JSON.stringify(
-  { seeds: { from: seeds[0], count }, config: input.config, summary },
+  {
+    seeds: {
+      job: { from: jobSeeds[0], count: jobCount },
+      profile: { from: 1, count: profileCount },
+    },
+    config: input.config,
+    planner: input.planner,
+    decks: input.decks,
+    summary,
+  },
   null,
   2,
 );
