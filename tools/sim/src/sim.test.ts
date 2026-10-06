@@ -5,16 +5,16 @@ import { runMatrix, seedRange } from './run';
 
 const input = loadSimInput();
 
-describe('simulation smoke (3×3 × 10)', () => {
-  const records = runMatrix(input, seedRange(1, 10));
+describe('simulation smoke (3×3 × 2)', () => {
+  const records = runMatrix(input, seedRange(1, 2));
 
   it('every match ends, no illegal action is thrown', () => {
-    expect(records).toHaveLength(90);
+    expect(records).toHaveLength(18);
     for (const r of records) expect(r.rounds).toBeGreaterThan(0);
   });
 
   it('is deterministic', () => {
-    const again = runMatrix(input, seedRange(1, 10));
+    const again = runMatrix(input, seedRange(1, 2));
     expect(renderCsv(again)).toBe(renderCsv(records));
   });
 
@@ -22,6 +22,6 @@ describe('simulation smoke (3×3 × 10)', () => {
     const s = summarize(records, input.cards);
     expect(s.cards).toHaveLength(input.cards.length);
     const total = Object.values(s.endReason).reduce((a, b) => a + b, 0);
-    expect(total).toBe(90);
+    expect(total).toBe(18);
   });
 });

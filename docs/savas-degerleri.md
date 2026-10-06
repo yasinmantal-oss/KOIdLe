@@ -136,3 +136,12 @@ Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, d
 | aggressive (saldırgan) | 3 | 1 | 0.5 | 1 | 1.5 | 0.5 |
 | balanced (dengeli) | 2 | 2 | 1 | 1 | 1 | 0.5 |
 | defensive (savunmacı) | 1.5 | 3 | 1.5 | 0.5 | 1 | 0.5 |
+
+## 5. AI tur planı (AI ayarı, kural değeri değil)
+
+AI kendi turunda en fazla 4 kart derinliğe, her seviyede en iyi 5 adayı tutarak bakar (ışın araması); planın ilk aksiyonunu oynar, sonra yeniden planlar. Arama gizli bilgisi silinmiş görünümde yapılır.
+
+| Parametre | Dosya | Değer |
+|---|---|---|
+| Derinlik | `content/ai-planner.json` `depth` | 4 |
+| Işın genişliği | `content/ai-planner.json` `beam` | 5 |

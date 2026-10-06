@@ -51,7 +51,9 @@ export function useBattle(content: LoadedContent, seed: number, profile: AiProfi
     const { state } = session;
     if (state.result || state.active === HUMAN) return;
     const timer = setTimeout(() => {
-      dispatch(chooseAction(state, state.active, content.profiles[profile]));
+      dispatch(
+        chooseAction(state, state.active, content.profiles[profile], { planner: content.planner }),
+      );
     }, AI_DELAY_MS);
     return () => clearTimeout(timer);
   }, [session, content, profile, dispatch]);

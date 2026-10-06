@@ -1,3 +1,4 @@
+import aiPlannerJson from '@koidle/content/ai-planner.json';
 import aiProfilesJson from '@koidle/content/ai-profiles.json';
 import battleConfigJson from '@koidle/content/battle-config.json';
 import commonJson from '@koidle/content/cards/common.json';
@@ -11,6 +12,8 @@ import type { z } from 'zod';
 import { type ArchetypeId, archetype, inPool } from './archetypes';
 import { validateDeck } from './deck';
 import {
+  type AiPlanner,
+  AiPlannerSchema,
   type AiProfiles,
   AiProfilesSchema,
   BattleConfigSchema,
@@ -75,7 +78,12 @@ export function parseAiProfiles(raw: unknown, file = 'content/ai-profiles.json')
   return parse(AiProfilesSchema, raw, file);
 }
 
+export function parseAiPlanner(raw: unknown, file = 'content/ai-planner.json'): AiPlanner {
+  return parse(AiPlannerSchema, raw, file);
+}
+
 export const loadBattleConfig = (): BattleConfig => parseBattleConfig(battleConfigJson);
+export const loadAiPlanner = (): AiPlanner => parseAiPlanner(aiPlannerJson);
 export const loadAiProfiles = (): AiProfiles => parseAiProfiles(aiProfilesJson);
 
 const CARD_FILES: { file: string; job: Job | 'common'; raw: unknown }[] = [

@@ -1,4 +1,4 @@
-import { AI_PROFILES, type AiProfile, chooseAction, type Weights } from '@koidle/ai';
+import { AI_PROFILES, type AiProfile, chooseAction, type Planner, type Weights } from '@koidle/ai';
 import {
   apply,
   type BattleConfig,
@@ -13,6 +13,7 @@ export interface SimInput {
   cards: CardDef[];
   deck: string[];
   profiles: Record<AiProfile, Weights>;
+  planner: Planner;
 }
 
 export interface MatchRecord {
@@ -42,7 +43,7 @@ export function playMatch(
   p0: AiProfile,
   p1: AiProfile,
 ): MatchRecord {
-  const { config, cards, deck, profiles } = input;
+  const { config, cards, deck, profiles, planner } = input;
   let { state, events } = createBattle({
     config,
     cards,
@@ -92,7 +93,7 @@ export function playMatch(
     if (state.result) return rec;
     if (++actions > MAX_ACTIONS) throw new Error(`seed ${seed}: ${MAX_ACTIONS} aksiyonu aştı`);
     const me = state.active;
-    ({ state, events } = apply(state, chooseAction(state, me, weights[me])));
+    ({ state, events } = apply(state, chooseAction(state, me, weights[me], { planner })));
   }
 }
 

@@ -1,13 +1,16 @@
-import type { BattleState, PlayerIndex, PlayerState } from '@koidle/rules';
+import type { BattleState, PlayerIndex, PlayerState, StatusId } from '@koidle/rules';
 import type { Weights } from './types';
 
 export const WIN_SCORE = 1_000_000;
+
+/** Sahibi için iyi statüler; diğerleri (Zayıflık, Lanet, Zehir) kötü. */
+const GOOD: readonly StatusId[] = ['strength', 'stealth'];
 
 function statusScore(p: PlayerState): number {
   let score = 0;
   for (const s of p.statuses) {
     const value = s.amount * s.turnsLeft;
-    score += s.id === 'strength' ? value : -value;
+    score += GOOD.includes(s.id) ? value : -value;
   }
   return score;
 }

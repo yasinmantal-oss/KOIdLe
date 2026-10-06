@@ -1,4 +1,5 @@
 import {
+  loadAiPlanner,
   loadAiProfiles,
   loadAllCards,
   loadBattleConfig,
@@ -12,5 +13,6 @@ export function loadSimInput(): SimInput {
     cards: loadAllCards(),
     deck: loadPresetDeck('warrior'),
     profiles: loadAiProfiles(),
+    planner: loadAiPlanner(),
   };
 }

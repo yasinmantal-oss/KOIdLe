@@ -9,12 +9,14 @@ export {
 export { type DeckStats, deckStats, validateDeck } from './deck';
 export {
   ContentError,
+  loadAiPlanner,
   loadAiProfiles,
   loadAllCards,
   loadBattleConfig,
   loadPool,
   loadPresetDeck,
   loadPresetDecks,
+  parseAiPlanner,
   parseAiProfiles,
   parseBattleConfig,
   parseCards,

@@ -1,5 +1,11 @@
 import { join } from 'node:path';
-import { loadAiProfiles, loadAllCards, loadBattleConfig, loadPresetDecks } from './load';
+import {
+  loadAiPlanner,
+  loadAiProfiles,
+  loadAllCards,
+  loadBattleConfig,
+  loadPresetDecks,
+} from './load';
 import { renderValuesTable } from './values-table';
 
 export const valuesDocPath = join(
@@ -12,4 +18,10 @@ export const valuesDocPath = join(
 );
 
 export const valuesDocText = (): string =>
-  renderValuesTable(loadBattleConfig(), loadAllCards(), loadAiProfiles(), loadPresetDecks());
+  renderValuesTable(
+    loadBattleConfig(),
+    loadAllCards(),
+    loadAiProfiles(),
+    loadPresetDecks(),
+    loadAiPlanner(),
+  );

@@ -1,4 +1,6 @@
+import type { Planner } from '@koidle/ai';
 import {
+  loadAiPlanner,
   loadAiProfiles,
   loadAllCards,
   loadBattleConfig,
@@ -11,6 +13,7 @@ export interface LoadedContent {
   cards: CardDef[];
   deck: string[];
   profiles: ReturnType<typeof loadAiProfiles>;
+  planner: Planner;
 }
 
 export type ContentResult = { ok: true; content: LoadedContent } | { ok: false; message: string };
@@ -26,6 +29,7 @@ export function loadContent(): ContentResult {
         cards,
         deck: loadPresetDeck('warrior'),
         profiles: loadAiProfiles(),
+        planner: loadAiPlanner(),
       },
     };
   } catch (e) {

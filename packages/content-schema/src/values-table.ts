@@ -1,7 +1,7 @@
 import { type BattleConfig, type CardDef, type CardType, isHeavy } from '@koidle/rules';
 import { ARCHETYPE_IDS, ARCHETYPES, type ArchetypeId } from './archetypes';
 import { deckStats } from './deck';
-import type { AiProfiles } from './schema';
+import type { AiPlanner, AiProfiles } from './schema';
 
 // docs/savas-degerleri.md üreticisi. Tek kaynak content/ JSON'larıdır (C2); bu dosya yalnız görünüm.
 
@@ -181,6 +181,7 @@ export function renderValuesTable(
   cards: CardDef[],
   ai: AiProfiles,
   decks: Record<ArchetypeId, string[]>,
+  planner: AiPlanner,
 ): string {
   const out: string[] = [];
   out.push('# Savaş Değerleri (Faz 2a)');
@@ -282,6 +283,17 @@ export function renderValuesTable(
       `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} |`,
     );
   }
+  out.push('');
+  out.push('## 5. AI tur planı (AI ayarı, kural değeri değil)');
+  out.push('');
+  out.push(
+    `AI kendi turunda en fazla ${planner.depth} kart derinliğe, her seviyede en iyi ${planner.beam} adayı tutarak bakar (ışın araması); planın ilk aksiyonunu oynar, sonra yeniden planlar. Arama gizli bilgisi silinmiş görünümde yapılır.`,
+  );
+  out.push('');
+  out.push('| Parametre | Dosya | Değer |');
+  out.push('|---|---|---|');
+  out.push(`| Derinlik | \`content/ai-planner.json\` \`depth\` | ${planner.depth} |`);
+  out.push(`| Işın genişliği | \`content/ai-planner.json\` \`beam\` | ${planner.beam} |`);
   out.push('');
   return out.join('\n');
 }

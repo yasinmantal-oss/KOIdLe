@@ -1,4 +1,4 @@
-import { clone } from './clone';
+import { cloneState } from './clone';
 import { resolveEffect } from './effects';
 import { endTurn } from './turn';
 import type { Action, ApplyResult, BattleEvent, BattleState } from './types';
@@ -28,7 +28,7 @@ export function validateAction(state: BattleState, action: Action): IllegalReaso
 export function apply(state: BattleState, action: Action): ApplyResult {
   const reason = validateAction(state, action);
   if (reason) throw new IllegalActionError(reason);
-  const next = clone(state);
+  const next = cloneState(state);
   const events: BattleEvent[] = [];
 
   if (action.type === 'END_TURN') {

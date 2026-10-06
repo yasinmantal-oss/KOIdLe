@@ -106,3 +106,11 @@ export const AiProfilesSchema = z.strictObject({
 
 export type AiWeights = z.infer<typeof AiWeightsSchema>;
 export type AiProfiles = z.infer<typeof AiProfilesSchema>;
+
+/** AI tur planı: kaç kart derinliğe, kaç aday genişliğinde bakar. AI ayarı, kural değeri değil. */
+export const AiPlannerSchema = z.strictObject({
+  depth: z.int().min(1).max(6),
+  beam: z.int().min(1).max(20),
+});
+
+export type AiPlanner = z.infer<typeof AiPlannerSchema>;

@@ -11,11 +11,19 @@ import {
   createBattle,
   legalActions,
   type PlayerIndex,
+  type StatusId,
   validateAction,
 } from '@koidle/rules';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { chooseAction, HIDDEN_CARD_ID, redactForAi, type Scorer } from './index';
+import {
+  chooseAction,
+  evaluate,
+  HIDDEN_CARD_ID,
+  type Planner,
+  redactForAi,
+  type Scorer,
+} from './index';
 
 const profiles = loadAiProfiles();
 const config = loadBattleConfig();
@@ -109,7 +117,7 @@ describe('hidden information (C6)', () => {
       state.players[me].deck = state.players[me].deck.map((c, i) =>
         i === 0 ? { ...c, cardId: topCard } : c,
       );
-      return chooseAction(state, me, profiles.balanced, cheater);
+      return chooseAction(state, me, profiles.balanced, { scorer: cheater });
     };
     expect(decide('hell-blade')).toEqual(decide('hizli-vurus'));
   });
@@ -160,12 +168,119 @@ describe('hidden information (C6)', () => {
               .reverse();
           }
           expect(chooseAction(altered, me, profiles[profile])).toEqual(original);
-          expect(chooseAction(altered, me, profiles[profile], cheater)).toEqual(
-            chooseAction(s, me, profiles[profile], cheater),
+          expect(chooseAction(altered, me, profiles[profile], { scorer: cheater })).toEqual(
+            chooseAction(s, me, profiles[profile], { scorer: cheater }),
           );
         },
       ),
       { numRuns: 150 },
+    );
+  });
+});
+
+describe('turn planner (F2-11)', () => {
+  const PLANNER: Planner = { depth: 4, beam: 5 };
+  const assassin = loadPresetDeck('assassin');
+
+  function assassinFight(seed: number, hand: string[], mp: number, foeHp: number) {
+    const state = createBattle({
+      config,
+      cards,
+      decks: [assassin, assassin],
+      names: ['A', 'B'],
+      seed,
+    }).state;
+    const me = state.active;
+    const foe: PlayerIndex = me === 0 ? 1 : 0;
+    state.players[me].hand = hand.map((cardId, i) => ({ iid: `x-${i}`, cardId }));
+    state.players[me].mp = mp;
+    state.players[me].maxMp = mp;
+    state.players[foe].hp = foeHp;
+    return { state, me };
+  }
+
+  it('finds the Stab → Thrust → Spike kill that greedy misses', () => {
+    const { state, me } = assassinFight(1, ['stab', 'thrust', 'spike'], 6, 19);
+    expect(cardOf(state, me, chooseAction(state, me, profiles.balanced))).toBe('spike');
+    expect(
+      cardOf(state, me, chooseAction(state, me, profiles.balanced, { planner: PLANNER })),
+    ).toBe('stab');
+  });
+
+  it('executing the plan action by action wins the battle', () => {
+    const fight = assassinFight(1, ['stab', 'thrust', 'spike'], 6, 19);
+    const me = fight.me;
+    let state = fight.state;
+    for (let i = 0; i < 3 && !state.result; i++) {
+      const a = chooseAction(state, me, profiles.balanced, { planner: PLANNER });
+      expect(a.type).toBe('PLAY_CARD');
+      state = apply(state, a).state;
+    }
+    expect(state.result).toEqual({ winner: me, reason: 'normalDamage' });
+  });
+
+  it('evaluate likes my Stealth and the foe Poison/Curse, dislikes the reverse', () => {
+    const tweak = (fn: (s: BattleState) => void) => {
+      const s = JSON.parse(JSON.stringify(battle(1))) as BattleState;
+      fn(s);
+      return evaluate(s, 0, profiles.balanced);
+    };
+    const add = (s: BattleState, p: PlayerIndex, id: StatusId, amount: number) => {
+      s.players[p].statuses.push({ id, amount, turnsLeft: 2 });
+    };
+    const base = tweak(() => {});
+    expect(tweak((s) => add(s, 0, 'stealth', 3))).toBeGreaterThan(base);
+    expect(tweak((s) => add(s, 1, 'poison', 4))).toBeGreaterThan(base);
+    expect(tweak((s) => add(s, 1, 'curse', 2))).toBeGreaterThan(base);
+    expect(tweak((s) => add(s, 0, 'poison', 4))).toBeLessThan(base);
+    expect(tweak((s) => add(s, 1, 'stealth', 3))).toBeLessThan(base);
+  });
+
+  it('always returns a legal action', () => {
+    fc.assert(
+      fc.property(
+        fc.nat(),
+        fc.array(fc.nat(), { maxLength: 40 }),
+        fc.constantFrom('aggressive', 'balanced', 'defensive' as const),
+        (seed, steps, profile) => {
+          const s = midBattle(seed, steps);
+          if (s.result) return;
+          const a = chooseAction(s, s.active, profiles[profile], { planner: PLANNER });
+          expect(validateAction(s, a)).toBeNull();
+        },
+      ),
+      { numRuns: 40 },
+    );
+  });
+
+  it('decision does not change when hidden cards change (planner)', () => {
+    fc.assert(
+      fc.property(fc.nat(), fc.array(fc.nat(), { maxLength: 30 }), fc.nat(), (seed, steps, k0) => {
+        const s = midBattle(seed, steps);
+        if (s.result) return;
+        const me = s.active;
+        const foe: PlayerIndex = me === 0 ? 1 : 0;
+        const altered = JSON.parse(JSON.stringify(s)) as BattleState;
+        const ids = cards.map((c) => c.id);
+        let k = k0;
+        const pick = () => {
+          k = (k * 1103515245 + 12345) >>> 0;
+          return ids[k % ids.length] as string;
+        };
+        altered.players[foe].hand = altered.players[foe].hand.map((c) => ({
+          ...c,
+          cardId: pick(),
+        }));
+        for (const p of [0, 1] as const) {
+          altered.players[p].deck = altered.players[p].deck
+            .map((c) => ({ ...c, cardId: pick() }))
+            .reverse();
+        }
+        expect(chooseAction(altered, me, profiles.balanced, { planner: PLANNER })).toEqual(
+          chooseAction(s, me, profiles.balanced, { planner: PLANNER }),
+        );
+      }),
+      { numRuns: 40 },
     );
   });
 });

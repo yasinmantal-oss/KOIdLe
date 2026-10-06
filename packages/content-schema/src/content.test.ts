@@ -10,12 +10,14 @@ import {
   type ArchetypeId,
   ContentError,
   deckStats,
+  loadAiPlanner,
   loadAiProfiles,
   loadAllCards,
   loadBattleConfig,
   loadPool,
   loadPresetDeck,
   loadPresetDecks,
+  parseAiPlanner,
   parseBattleConfig,
   parseCards,
   validateDeck,
@@ -241,5 +243,19 @@ describe('invalid content stops with a readable message', () => {
     const cfg = clone(battleConfigJson) as { shield: { persistence: string } };
     cfg.shield.persistence = 'forever';
     expect(() => parseBattleConfig(cfg)).toThrow(/battle-config\.json[\s\S]*shield\.persistence/);
+  });
+});
+
+describe('ai planner', () => {
+  it('loads within bounds', () => {
+    const p = loadAiPlanner();
+    expect(p.depth).toBeGreaterThanOrEqual(1);
+    expect(p.depth).toBeLessThanOrEqual(6);
+    expect(p.beam).toBeGreaterThanOrEqual(1);
+  });
+
+  it('rejects out of range values with a readable message', () => {
+    expect(() => parseAiPlanner({ depth: 0, beam: 5 })).toThrow(/ai-planner\.json[\s\S]*depth/);
+    expect(() => parseAiPlanner({ depth: 4, beam: 99 })).toThrow(/beam/);
   });
 });
