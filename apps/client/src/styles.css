@@ -457,3 +457,194 @@ fieldset {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Faz 2a: yeni anahtar kelime renkleri */
+:root {
+  --kw-curse: #a3324f;
+  --kw-poison: #3c7a2a;
+  --kw-stealth: #2f7f7a;
+  --kw-chain: #b03a8c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --kw-curse: #f08aa6;
+    --kw-poison: #8fd16f;
+    --kw-stealth: #6fd0c8;
+    --kw-chain: #e58bd0;
+  }
+}
+:root[data-theme="dark"] {
+  --kw-curse: #f08aa6;
+  --kw-poison: #8fd16f;
+  --kw-stealth: #6fd0c8;
+  --kw-chain: #e58bd0;
+}
+.kw--curse {
+  color: var(--kw-curse);
+}
+.kw--poison {
+  color: var(--kw-poison);
+}
+.kw--stealth {
+  color: var(--kw-stealth);
+}
+.kw--chain {
+  color: var(--kw-chain);
+}
+
+/* Coşku (F2-12): yalnız CSS. Süreler BattleScreen'den (fx.ts) CSS değişkeni olarak gelir. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.card__heavy {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.controls {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.chain-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ekran sarsıntısı: çift/tek sınıf, ardışık aksiyonlarda animasyonu yeniden başlatır. */
+.fx-shake-0 {
+  animation: shake-a var(--shake-ms) ease-out;
+}
+.fx-shake-1 {
+  animation: shake-b var(--shake-ms) ease-out;
+}
+@keyframes shake-a {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(calc(var(--shake-px) * -1)); }
+  40% { transform: translateX(var(--shake-px)); }
+  60% { transform: translateX(calc(var(--shake-px) * -0.6)); }
+  80% { transform: translateX(calc(var(--shake-px) * 0.3)); }
+  100% { transform: translateX(0); }
+}
+@keyframes shake-b {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(calc(var(--shake-px) * -1)); }
+  40% { transform: translateX(var(--shake-px)); }
+  60% { transform: translateX(calc(var(--shake-px) * -0.6)); }
+  80% { transform: translateX(calc(var(--shake-px) * 0.3)); }
+  100% { transform: translateX(0); }
+}
+
+/* Hitstop: HP çubuğu düşmeden önce kısa bir bekleme. */
+.meter__fill {
+  transition: width 200ms ease-out;
+}
+.fx-hitstop .hero--hit0 .meter__fill,
+.fx-hitstop .hero--hit1 .meter__fill {
+  transition-delay: var(--hitstop-ms);
+}
+
+/* Vuruş alan kahraman: renk flaşı. */
+.hero {
+  position: relative;
+}
+.hero--hit0 {
+  animation: hit-a calc(var(--flash-ms) * 2) ease-out;
+}
+.hero--hit1 {
+  animation: hit-b calc(var(--flash-ms) * 2) ease-out;
+}
+@keyframes hit-a {
+  0% { background: color-mix(in srgb, var(--hp) 30%, var(--panel)); }
+  100% { background: var(--panel); }
+}
+@keyframes hit-b {
+  0% { background: color-mix(in srgb, var(--hp) 30%, var(--panel)); }
+  100% { background: var(--panel); }
+}
+
+/* Hasar sayısı: 1 → 1,35 → 1 ölçek, 24 px yukarı kayıp solar. */
+.pops {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  pointer-events: none;
+}
+.pop {
+  position: absolute;
+  top: 0;
+  right: calc(var(--i, 0) * 34px);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--hp);
+  font-variant-numeric: tabular-nums;
+  animation: pop var(--pop-ms) ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+  opacity: 0;
+}
+@keyframes pop {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  20% { opacity: 1; transform: translateY(-5px) scale(1.35); }
+  40% { opacity: 1; transform: translateY(-10px) scale(1); }
+  100% { opacity: 0; transform: translateY(-24px) scale(1); }
+}
+
+/* Kombo çağrısı: girdiyi bloklamaz (pointer-events: none), toplam < 800 ms. */
+.callout {
+  position: fixed;
+  top: 22%;
+  left: 50%;
+  z-index: 50;
+  max-width: 94vw;
+  text-align: center;
+  transform: translateX(-50%);
+  font-size: clamp(1.6rem, 6vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  animation: callout var(--callout-ms) ease-out forwards;
+}
+@keyframes callout {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  15% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+  30% { opacity: 1; transform: translateX(-50%) scale(1); }
+  80% { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(1); }
+}
+@keyframes pop-fade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes callout-fade {
+  0%, 80% { opacity: 1; transform: translateX(-50%); }
+  100% { opacity: 0; transform: translateX(-50%); }
+}
+
+/* Hareket azaltma: sarsıntı, kayma ve ölçek kapanır; yerine 120 ms renk flaşı kalır. */
+@media (prefers-reduced-motion: reduce) {
+  .fx-shake-0,
+  .fx-shake-1 {
+    animation: none;
+  }
+  .hero--hit0,
+  .hero--hit1 {
+    animation-duration: var(--flash-ms);
+  }
+  .meter__fill {
+    transition: none;
+  }
+  .pop {
+    animation-name: pop-fade;
+  }
+  .callout {
+    animation-name: callout-fade;
+  }
+}

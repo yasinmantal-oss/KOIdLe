@@ -18,6 +18,9 @@ export interface BattleSession {
   log: BattleEvent[];
   startedAt: number;
   endedAt: number | null;
+  /** Son aksiyonun olayları ve sayacı: UI efektleri (fx.ts) bunlardan türer. */
+  lastEvents: BattleEvent[];
+  seq: number;
 }
 
 function start(content: LoadedContent, setup: MatchSetup, myDeck: string[]): BattleSession {
@@ -28,7 +31,7 @@ function start(content: LoadedContent, setup: MatchSetup, myDeck: string[]): Bat
     names: ['Sen', `AI (${setup.profile})`],
     seed: setup.seed,
   });
-  return { state, log: events, startedAt: Date.now(), endedAt: null };
+  return { state, log: events, startedAt: Date.now(), endedAt: null, lastEvents: [], seq: 0 };
 }
 
 export function useBattle(content: LoadedContent, setup: MatchSetup, myDeck: string[]) {
@@ -43,6 +46,8 @@ export function useBattle(content: LoadedContent, setup: MatchSetup, myDeck: str
         state: r.state,
         log: [...s.log, ...r.events],
         endedAt: r.state.result ? Date.now() : null,
+        lastEvents: r.events,
+        seq: s.seq + 1,
       };
     });
   }, []);

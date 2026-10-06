@@ -67,7 +67,7 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
   }
 }
 
-export type Keyword = 'strength' | 'weak' | 'shield';
+export type Keyword = 'strength' | 'weak' | 'shield' | 'curse' | 'poison' | 'stealth' | 'chain';
 export interface TextPart {
   text: string;
   kw: Keyword | null;
@@ -77,6 +77,10 @@ const KEYWORDS: [RegExp, Keyword][] = [
   [/^Güç/, 'strength'],
   [/^Zayıf/, 'weak'],
   [/^Kalkan/, 'shield'],
+  [/^Lanet/, 'curse'],
+  [/^Zehir/, 'poison'],
+  [/^Gizli/, 'stealth'],
+  [/^Zincir/, 'chain'],
 ];
 
 /** Kart metnindeki anahtar kelimeleri işaretler; renkler statü rozetleriyle aynı (Combat v0.2 E). */
@@ -104,6 +108,7 @@ export function keywordParts(text: string): TextPart[] {
 
 /** "?" kural özeti: değerler config'den gelir, metin elle tekrar yazılmaz. */
 export function rulesSummary(c: BattleConfig): string[] {
+  const s = c.statuses;
   const shield =
     c.shield.persistence === 'resetOnOwnTurnStart'
       ? 'Kalkan: hasarı HP’den önce emer. Kullanılmayan Kalkan senin bir sonraki turunun başında sıfırlanır.'
@@ -114,5 +119,13 @@ export function rulesSummary(c: BattleConfig): string[] {
     shield,
     `Arena Çöküşü: ${c.arenaCollapse.startRound}. rauntan itibaren iki taraf her tur başında artan hasar alır (${c.arenaCollapse.start}, ${c.arenaCollapse.start + c.arenaCollapse.step}, …); Kalkanı yok sayar.`,
     `Deste bitince ıskarta ${c.deck.reshuffles} kez karıştırılır. Sonra çekemediğin her kart için Yorgunluk hasarı alırsın (${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}, …).`,
+    `Lanet X: aldığın kart hasarı X artar (${s.curse.duration} tur). Zehir X: sahibinin her tur başında X hasar alır (${s.poison.duration} tur).`,
+    `Gizli X: sonraki hasar veren kartının ilk vuruşu X fazla vurur ve Kalkanı yok sayar (${s.stealth.duration} tur).`,
+    'Zincir N: bu tur, bu karttan önce en az N kart oynadıysan bonus. "Bu tur oynanan kart" sayacı Turu Bitir’in yanında.',
+    `Ağır kartlar (★): destede en fazla ${c.deckBuilding.maxHeavy}.${
+      c.hand.openingGuarantee
+        ? ` Açılış elinde Ağır kart gelmez, en az bir ${c.mp.start} MP'lik kart gelir.`
+        : ''
+    }`,
   ];
 }

@@ -1,4 +1,4 @@
-import { type BattleState, previewCard, validateAction } from '@koidle/rules';
+import { type BattleState, isHeavy, previewCard, validateAction } from '@koidle/rules';
 import { HUMAN } from '../format';
 import { CardText } from './CardText';
 
@@ -30,6 +30,11 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
             onClick={() => onPlay(c.iid)}
           >
             <span className="card__cost">{def.cost}</span>
+            {isHeavy(def) && (
+              <span className="card__heavy" title="Ağır kart: destede sayısı sınırlı">
+                ★
+              </span>
+            )}
             <span className="card__name">{def.name}</span>
             <span className="card__type">{TYPE_TR[def.type]}</span>
             <span className="card__text">

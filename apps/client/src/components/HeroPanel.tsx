@@ -1,6 +1,11 @@
 import type { BattleConfig, PlayerState } from '@koidle/rules';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { STATUS_TR } from '../format';
+
+export interface PopView {
+  key: string;
+  amount: number;
+}
 
 interface Props {
   player: PlayerState;
@@ -8,12 +13,24 @@ interface Props {
   title: string;
   active: boolean;
   showHandCount: boolean;
+  /** Bu aksiyonda hasar aldıysa seq çift/tek (animasyon yeniden başlasın diye), yoksa null. */
+  hit: 0 | 1 | null;
+  pops: PopView[];
 }
 
-export function HeroPanel({ player: p, config, title, active, showHandCount }: Props) {
+export function HeroPanel({ player: p, config, title, active, showHandCount, hit, pops }: Props) {
   const nextFatigue = config.fatigue.start + p.fatigueCount * config.fatigue.step;
   return (
-    <section className={`hero ${active ? 'hero--active' : ''}`}>
+    <section
+      className={`hero ${active ? 'hero--active' : ''}${hit === null ? '' : ` hero--hit${hit}`}`}
+    >
+      <div className="pops" aria-hidden="true">
+        {pops.map((pop, i) => (
+          <span key={pop.key} className="pop" style={{ '--i': i } as CSSProperties}>
+            −{pop.amount}
+          </span>
+        ))}
+      </div>
       <header>
         <h2>{title}</h2>
         {active && <span className="badge">Sıra burada</span>}

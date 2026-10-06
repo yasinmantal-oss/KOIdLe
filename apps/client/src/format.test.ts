@@ -96,6 +96,24 @@ describe('keywordParts', () => {
   });
 });
 
+describe('keywordParts (Faz 2)', () => {
+  it('marks Lanet, Zehir, Gizli and Zincir with their own colors', () => {
+    const kws = (t: string) => keywordParts(t).flatMap((p) => (p.kw ? [p.kw] : []));
+    expect(kws('Kendine Gizli 3 ver.')).toEqual(['stealth']);
+    expect(kws('Rakibe Zehir 4 ver.')).toEqual(['poison']);
+    expect(kws('Kendine Güç 3 ve Lanet 2 ver.')).toEqual(['strength', 'curse']);
+    expect(kws('2 hasar ver. Zincir 1: +2.')).toEqual(['chain']);
+  });
+});
+
+describe('rulesSummary (Faz 2)', () => {
+  it('explains Lanet, Zehir, Gizli, Zincir and Ağır from config values', () => {
+    const text = rulesSummary(testConfigForSummary).join(' ');
+    for (const word of ['Lanet', 'Zehir', 'Gizli', 'Zincir', 'Ağır']) expect(text).toContain(word);
+    expect(text).toContain(`en fazla ${testConfigForSummary.deckBuilding.maxHeavy}`);
+  });
+});
+
 describe('rulesSummary', () => {
   it('builds the short rule list from config values', () => {
     const lines = rulesSummary(testConfigForSummary);
