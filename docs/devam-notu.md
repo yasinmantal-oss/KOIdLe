@@ -11,7 +11,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## MEVCUT DURUM
 - **Faz:** Faz 0–1 (savaş sandbox'ı) kodu tamam. **Faz 2 başlamadı** ve Gate 1 PASS olmadan başlamış sayılmaz.
-- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Kayıt (2026-10-06 sonu): **10 / en az 10 maç** (aggressive 5 · defensive 3 · balanced 2; balanced'ta ≥ 3 için 1 maç eksik). Kayıtların ham analizi Copilot incelemesinde; tasarım kararı yok.
+- **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PENDING**. Test **tamamlandı**: 11 maç (aggressive 5 · balanced 3 · defensive 3). Final analiz: `reports/gate-1/2026-10-06-gate-1-final-raporu.md`. Claude'un **önerisi FAIL / ITERATE**; nihai karar Yasin + Copilot + Claude incelemesinde. Tasarım kararı yok, değer değişmedi.
 - **Tamamlanan:**
   - Spec v0.2, Yasin onayıyla (2026-10-06).
   - Faz 0–1 planı rev. 2 (K1–K7, N1–N7, C1–C8).
@@ -23,7 +23,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - `apps/client`: React savaş ekranı + Gate 1 formu.
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
-- **Tamamlanmayan:** Gate 1 testi (balanced'a karşı 1 maç), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
+- **Tamamlanmayan:** Gate 1 nihai kararı (üçlü inceleme), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -75,7 +75,13 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 
 ## AÇIK KONULAR
 - Sim gözlemleri Gate 1'de yorumlanacak: Yorgunluk hiç görülmüyor, Yıkım baskın, saldırgan AI zayıf, Arena %19 bitiriyor.
-- İlk geri bildirim "strateji kurma yok": izlenecek hipotez, henüz karar değil.
+- Gate 1 bulguları (rapor §8, henüz karar değil):
+  - P0: maç içi plan / kombo yok. Yasin teyit etti: kastı maç içi plan.
+  - P1: MP fazlası, kartlar çabuk bitiyor.
+  - P1: savunma kartı fazlası.
+  - P1: kural okunurluğu.
+  - P2: Yorgunluk ölü kural.
+  - Önerilen ilk iterasyon: `mp.max` 8 → 6 (yalnız JSON). Onay yok, uygulanmadı.
 - PR #1'in açık/kapalı durumu bu makineden doğrulanamadı (`gh` kurulu değil). Git'e göre dal `master`'a birleşmedi.
 - **Mockup çelişkileri** (`design/mockups/ekranlar-v0.1.html`, spec v0.1'e göre çizildi; spec v0.2 ve `content/` geçerli, mockup polish aşamasında düzeltilecek):
   1. **Örs maliyeti — ÇÖZÜLDÜ:** Mockup "Kutsanmış Parşömen" + altın gösteriyor. Geçerli kural: prototipte upgrade maliyeti yalnız Gold (Yasin teyidi, 2026-10-06). Ayrıca bu isim KO'nun yasaklı "Blessed Upgrade Scroll" isminin çevirisi; kullanılmaz.
@@ -94,7 +100,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Tek görev (Yasin):** Balanced'a karşı 1 maç daha (protokol tamamlanır); ardından Yasin + Copilot + Claude Gate 1 değerlendirmesi.
+**Tek görev (Yasin):** Yasin final raporu Copilot'a iletir; Yasin + Copilot + Claude Gate 1 kararını verir (PASS / CONDITIONAL / FAIL-ITERATE) ve varsa ilk iterasyonu seçer. **Karar gelmeden Claude değer veya kod değiştirmez.**
 Kayıtlar tamamlanınca **Claude'un ilk işi:**
 1. Kayıtları okur (`ArtifactData`, `action: list`, `collection: gate1`, url yukarıda).
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
@@ -130,6 +136,7 @@ Paralel ve engellemeyen işler: Copilot incelemesi; PR #1'i `master`'a birleşti
 - `docs/test-degerleri.md`: savaş dışı P0.2 değerleri
 - `docs/gate-1.md`: Gate 1 protokolü
 - `reports/sim/latest.md`: simülasyon raporu (`pnpm sim`)
+- `reports/gate-1/2026-10-06-gate-1-final-raporu.md`: Gate 1 final analizi ve öneri (11 maç)
 - `docs/kapanis-protokolu.md`: oturum kapanış/senkronizasyon protokolü
 - `docs/research/01..05`: araştırma raporları (arka plan; spec ile çelişirse spec geçerli)
 - `design/mockups/gorsel-yonler.html`: görsel yön mockup'ı (Harman seçildi)
