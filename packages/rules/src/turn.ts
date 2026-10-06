@@ -1,10 +1,10 @@
 import { drawCard } from './draw';
 import { dealDamage, endBattle, other } from './outcome';
-import { tickStatuses } from './status';
+import { statusAmount, tickStatuses } from './status';
 import type { BattleEvent, BattleState, PlayerIndex } from './types';
 
 /**
- * Tur başı (N3): tur başlar → Kalkan sıfırlanır → MP → Arena hasarı → kart çekme.
+ * Tur başı (N3): tur başlar → Kalkan sıfırlanır → MP → Zehir → Arena hasarı → kart çekme.
  * Her sistem hasarından sonra savaş bitti mi bakılır (C1).
  */
 export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEvent[]): void {
@@ -21,6 +21,13 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
   }
   pl.shieldGainedThisTurn = 0;
   pl.mp = pl.maxMp;
+
+  // Zehir: sahibinin tur başında, Arena'dan önce. Lanet Zehir'e eklenmez (yalnız kart hasarı).
+  const poison = statusAmount(pl, 'poison');
+  if (poison > 0) {
+    dealDamage(state, 'poison', p, poison, false, events);
+    if (state.result) return;
+  }
 
   if (state.round >= arenaCollapse.startRound) {
     const amount =

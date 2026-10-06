@@ -1,6 +1,6 @@
 // Yalnız testler için: content/ JSON'una bağımlı olmadan kuralları sınamak üzere küçük bir kart seti.
 import { createBattle } from './battle';
-import type { BattleConfig, BattleState, CardDef, PlayerIndex } from './types';
+import type { BattleConfig, BattleState, CardDef, PlayerIndex, StatusId } from './types';
 
 export const testConfig: BattleConfig = {
   hero: { hp: 30 },
@@ -15,6 +15,9 @@ export const testConfig: BattleConfig = {
     tickOn: 'ownerTurnEnd',
     strength: { duration: 2 },
     weak: { duration: 2 },
+    curse: { duration: 2 },
+    poison: { duration: 2 },
+    stealth: { duration: 2 },
   },
   roundCap: 20,
 };
@@ -91,7 +94,7 @@ export function addCard(
 export function setStatus(
   state: BattleState,
   p: PlayerIndex,
-  id: 'strength' | 'weak',
+  id: StatusId,
   amount: number,
   turnsLeft = 2,
 ): void {

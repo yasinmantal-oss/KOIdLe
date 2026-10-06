@@ -20,10 +20,14 @@ export function baseDamage(
   return effect.amount + bonus;
 }
 
-/** Kart hasarı = max(0, değer + Güç − Zayıflık). */
+/** Kart hasarı = max(0, değer + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef)). */
 export function cardDamage(state: BattleState, source: PlayerIndex, base: number): number {
   const pl = state.players[source];
-  return Math.max(0, base + statusAmount(pl, 'strength') - statusAmount(pl, 'weak'));
+  const target = state.players[other(source)];
+  return Math.max(
+    0,
+    base + statusAmount(pl, 'strength') - statusAmount(pl, 'weak') + statusAmount(target, 'curse'),
+  );
 }
 
 export function resolveEffect(

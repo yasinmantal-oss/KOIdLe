@@ -101,6 +101,24 @@ function rows(c: BattleConfig): Row[] {
       `Rakibe verilince: rakibin sonraki ${c.statuses.weak.duration} turu`,
     ],
     [
+      'Lanet süresi',
+      'statuses.curse.duration',
+      c.statuses.curse.duration,
+      'Hedefin aldığı kart hasarına +değer. Rakibe ya da (Berserker bedeli) kendine verilir',
+    ],
+    [
+      'Zehir süresi',
+      'statuses.poison.duration',
+      c.statuses.poison.duration,
+      `Sahibinin tur başında değer kadar hasar; ${c.statuses.poison.duration} tur başı boyunca`,
+    ],
+    [
+      'Gizli süresi',
+      'statuses.stealth.duration',
+      c.statuses.stealth.duration,
+      'Sonraki hasar kartının ilk vuruşuna +değer ve Kalkanı yok sayma; kullanılınca düşer',
+    ],
+    [
       'Güvenlik tavanı',
       'roundCap',
       c.roundCap,
@@ -148,7 +166,7 @@ export function renderValuesTable(config: BattleConfig, cards: CardDef[], ai: Ai
   );
   out.push('');
   out.push(
-    '**Tur başı sırası (N3, C1):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Arena öldürürse çekme olmaz.',
+    '**Tur başı sırası (N3, C1):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Zehir hasarı → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Zehir ya da Arena öldürürse çekme olmaz.',
   );
   out.push('');
   out.push('### Formüller (hepsi tamsayı)');
@@ -159,7 +177,7 @@ export function renderValuesTable(config: BattleConfig, cards: CardDef[], ai: Ai
   out.push('- Arena hasarı (raunt R ≥ startRound) = `start + (R − startRound) × step`');
   out.push('- Yorgunluk (oyuncunun k. yorgunluğu) = `start + (k − 1) × step`');
   out.push(
-    "- Kart hasarı = `max(0, kart değeri + Güç − Zayıflık)`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç).",
+    "- Kart hasarı = `max(0, kart değeri + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef))`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç). Zehir hasarı Lanet'ten etkilenmez.",
   );
   out.push("- İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.");
   out.push('');

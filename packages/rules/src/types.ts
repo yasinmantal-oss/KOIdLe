@@ -1,7 +1,7 @@
 export type PlayerIndex = 0 | 1;
 export type Job = 'warrior';
 export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuff';
-export type StatusId = 'strength' | 'weak';
+export type StatusId = 'strength' | 'weak' | 'curse' | 'poison' | 'stealth';
 
 /** Combat v0.2: kartın koşullu bonusu. Koşul kart oynandığı an değerlendirilir. */
 export type Condition = { selfHas: StatusId } | { enemyHas: StatusId } | { enemyHpAtMost: number };
@@ -45,9 +45,7 @@ export interface BattleConfig {
   statuses: {
     stacking: 'maxAmountRefreshOnGte';
     tickOn: 'ownerTurnEnd';
-    strength: { duration: number };
-    weak: { duration: number };
-  };
+  } & Record<StatusId, { duration: number }>;
   roundCap: number;
 }
 
@@ -103,7 +101,7 @@ export type Action =
   | { type: 'PLAY_CARD'; player: PlayerIndex; iid: string }
   | { type: 'END_TURN'; player: PlayerIndex };
 
-export type DamageSource = PlayerIndex | 'arena' | 'fatigue';
+export type DamageSource = PlayerIndex | 'arena' | 'fatigue' | 'poison';
 
 export type BattleEvent =
   | { type: 'BATTLE_STARTED'; firstPlayer: PlayerIndex; seed: number }

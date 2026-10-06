@@ -27,11 +27,14 @@ export const BattleConfigSchema = z.strictObject({
     tickOn: z.literal('ownerTurnEnd'),
     strength: z.strictObject({ duration: positive() }),
     weak: z.strictObject({ duration: positive() }),
+    curse: z.strictObject({ duration: positive() }),
+    poison: z.strictObject({ duration: positive() }),
+    stealth: z.strictObject({ duration: positive() }),
   }),
   roundCap: positive(),
 }) satisfies z.ZodType<BattleConfig>;
 
-const StatusIdSchema = z.enum(['strength', 'weak']);
+const StatusIdSchema = z.enum(['strength', 'weak', 'curse', 'poison', 'stealth']);
 
 export const ConditionSchema = z.union([
   z.strictObject({ selfHas: StatusIdSchema }),

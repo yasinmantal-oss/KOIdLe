@@ -18,6 +18,15 @@ const cards: Record<string, CardDef> = {
 };
 
 describe('formatEvent', () => {
+  it('names poison damage', () => {
+    expect(
+      formatEvent(
+        { type: 'DAMAGE_DEALT', source: 'poison', target: 1, amount: 4, absorbed: 0 },
+        cards,
+      ),
+    ).toBe('Zehir: Rakibe 4 hasar.');
+  });
+
   it('hides the opponent draw, shows mine', () => {
     expect(formatEvent({ type: 'CARD_DRAWN', player: 1, iid: 'x', cardId: 'yarma' }, cards)).toBe(
       'Rakip bir kart çekti.',

@@ -10,7 +10,10 @@
     "stacking": "maxAmountRefreshOnGte",
     "tickOn": "ownerTurnEnd",
     "strength": { "duration": 2 },
-    "weak": { "duration": 2 }
+    "weak": { "duration": 2 },
+    "curse": { "duration": 2 },
+    "poison": { "duration": 2 },
+    "stealth": { "duration": 2 }
   },
   "roundCap": 20
 }

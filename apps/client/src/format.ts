@@ -6,7 +6,13 @@ export const HUMAN: PlayerIndex = 0;
 
 const who = (p: PlayerIndex) => (p === HUMAN ? 'Sen' : 'Rakip');
 const whose = (p: PlayerIndex) => (p === HUMAN ? 'Sana' : 'Rakibe');
-export const STATUS_TR: Record<StatusId, string> = { strength: 'Güç', weak: 'Zayıflık' };
+export const STATUS_TR: Record<StatusId, string> = {
+  strength: 'Güç',
+  weak: 'Zayıflık',
+  curse: 'Lanet',
+  poison: 'Zehir',
+  stealth: 'Gizli',
+};
 
 const END_TR = {
   normalDamage: 'kart hasarı',
@@ -36,6 +42,7 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       const absorbed = e.absorbed > 0 ? ` (${e.absorbed}'i Kalkan'a)` : '';
       if (e.source === 'arena') return `Arena çöküyor: ${whose(e.target)} ${e.amount} hasar.`;
       if (e.source === 'fatigue') return `Yorgunluk: ${whose(e.target)} ${e.amount} hasar.`;
+      if (e.source === 'poison') return `Zehir: ${whose(e.target)} ${e.amount} hasar.`;
       return `${whose(e.target)} ${e.amount} hasar${absorbed}.`;
     }
     case 'SHIELD_GAINED':

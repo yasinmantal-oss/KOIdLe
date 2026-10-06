@@ -30,18 +30,21 @@
 | Statü sayacı | `statuses.tickOn` | ownerTurnEnd | Süre, etkilenen kahramanın kendi tur sonunda 1 düşer |
 | Güç süresi | `statuses.strength.duration` | 2 | Kendine verilince: verildiği tur dahil 2 kendi turu |
 | Zayıflık süresi | `statuses.weak.duration` | 2 | Rakibe verilince: rakibin sonraki 2 turu |
+| Lanet süresi | `statuses.curse.duration` | 2 | Hedefin aldığı kart hasarına +değer. Rakibe ya da (Berserker bedeli) kendine verilir |
+| Zehir süresi | `statuses.poison.duration` | 2 | Sahibinin tur başında değer kadar hasar; 2 tur başı boyunca |
+| Gizli süresi | `statuses.stealth.duration` | 2 | Sonraki hasar kartının ilk vuruşuna +değer ve Kalkanı yok sayma; kullanılınca düşer |
 | Güvenlik tavanı | `roundCap` | 20 | Bu raunt biterse berabere. Normalde tetiklenmemeli |
 
 **Raunt:** iki oyuncunun da birer tur oynaması. Raunt, ilk oyuncunun turu başlarken artar.
 
-**Tur başı sırası (N3, C1):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Arena öldürürse çekme olmaz.
+**Tur başı sırası (N3, C1):** tur başlar → Kalkan sıfırlanır → maks MP ve MP → Zehir hasarı → Arena hasarı → kart çekme (gerekirse karıştırma veya Yorgunluk). Her sistem hasarından sonra savaş bitti mi bakılır; Zehir ya da Arena öldürürse çekme olmaz.
 
 ### Formüller (hepsi tamsayı)
 
 - Maks MP (kendi N. turu) = `min(mp.start + (N − 1) × mp.perTurn, mp.max)` → 1, 2, 3, 4, 5, 6, 6, 6, 6, 6
 - Arena hasarı (raunt R ≥ startRound) = `start + (R − startRound) × step`
 - Yorgunluk (oyuncunun k. yorgunluğu) = `start + (k − 1) × step`
-- Kart hasarı = `max(0, kart değeri + Güç − Zayıflık)`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç).
+- Kart hasarı = `max(0, kart değeri + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef))`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç). Zehir hasarı Lanet'ten etkilenmez.
 - İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.
 
 ## 2. Warrior kartları (12)
