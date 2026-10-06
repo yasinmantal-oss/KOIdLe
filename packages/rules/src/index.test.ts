@@ -3,6 +3,6 @@ import { RULES_VERSION } from './index';
 
 describe('rules', () => {
   it('exposes a version', () => {
-    expect(RULES_VERSION).toBe('0.1.0');
+    expect(RULES_VERSION).toBe('0.2.0');
   });
 });

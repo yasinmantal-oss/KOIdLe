@@ -55,6 +55,8 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       return `${who(e.player)}: ${STATUS_TR[e.status]} ${e.amount} etkisiz (daha güçlüsü aktif).`;
     case 'STATUS_EXPIRED':
       return `${who(e.player)}: ${STATUS_TR[e.status]} sona erdi.`;
+    case 'CHAIN_TRIGGERED':
+      return `Zincir ×${e.chain}!`;
     case 'STEALTH_USED':
       return `Gizli: +${e.amount} hasar, Kalkanı yok sayar.`;
     case 'TURN_ENDED':

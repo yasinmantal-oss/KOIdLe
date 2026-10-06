@@ -4,18 +4,23 @@ export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuf
 export type StatusId = 'strength' | 'weak' | 'curse' | 'poison' | 'stealth';
 
 /** Combat v0.2: kartın koşullu bonusu. Koşul kart oynandığı an değerlendirilir. */
-export type Condition = { selfHas: StatusId } | { enemyHas: StatusId } | { enemyHpAtMost: number };
+export type Condition =
+  | { selfHas: StatusId }
+  | { enemyHas: StatusId }
+  | { enemyHpAtMost: number }
+  | { selfHpAtMost: number }
+  | { cardsPlayedAtLeast: number };
 
-export interface DamageBonus {
+export interface Bonus {
   if: Condition;
   amount: number;
 }
 
 export type Effect =
-  | { kind: 'damage'; amount: number; ignoreShield?: boolean; hits?: number; bonus?: DamageBonus }
+  | { kind: 'damage'; amount: number; ignoreShield?: boolean; hits?: number; bonus?: Bonus }
   | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
-  | { kind: 'heal'; amount: number }
+  | { kind: 'heal'; amount: number; bonus?: Bonus }
   | { kind: 'draw'; count: number }
   | { kind: 'applyStatus'; target: 'self' | 'enemy'; status: StatusId; amount: number };
 
@@ -69,6 +74,8 @@ export interface PlayerState {
   shield: number;
   /** Bu tur kazanılan Kalkan; sahibinin tur başında 0 olur (Kalkan Darbesi bunu okur). */
   shieldGainedThisTurn: number;
+  /** Bu tur oynanan kart sayısı (Zincir). Sahibinin tur başında 0 olur; kart çözüldükten sonra artar. */
+  cardsPlayedThisTurn: number;
   statuses: Status[];
   deck: CardInstance[];
   hand: CardInstance[];
@@ -129,6 +136,7 @@ export type BattleEvent =
     }
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number }
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
+  | { type: 'CHAIN_TRIGGERED'; player: PlayerIndex; chain: number }
   | { type: 'STEALTH_USED'; player: PlayerIndex; amount: number }
   | { type: 'TURN_ENDED'; player: PlayerIndex; unusedMp: number }
   | { type: 'BATTLE_ENDED'; winner: PlayerIndex | null; round: number; reason: EndReason };

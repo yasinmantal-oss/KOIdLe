@@ -18,6 +18,10 @@ const cards: Record<string, CardDef> = {
 };
 
 describe('formatEvent', () => {
+  it('describes the chain', () => {
+    expect(formatEvent({ type: 'CHAIN_TRIGGERED', player: 0, chain: 2 }, cards)).toBe('Zincir ×2!');
+  });
+
   it('describes stealth', () => {
     expect(formatEvent({ type: 'STEALTH_USED', player: 0, amount: 3 }, cards)).toBe(
       'Gizli: +3 hasar, Kalkanı yok sayar.',

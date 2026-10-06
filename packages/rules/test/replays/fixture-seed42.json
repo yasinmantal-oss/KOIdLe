@@ -43,6 +43,15 @@
         },
         "weak": {
           "duration": 2
+        },
+        "curse": {
+          "duration": 2
+        },
+        "poison": {
+          "duration": 2
+        },
+        "stealth": {
+          "duration": 2
         }
       },
       "roundCap": 20
@@ -1121,6 +1130,15 @@
           },
           "weak": {
             "duration": 2
+          },
+          "curse": {
+            "duration": 2
+          },
+          "poison": {
+            "duration": 2
+          },
+          "stealth": {
+            "duration": 2
           }
         },
         "roundCap": 20
@@ -1320,6 +1338,7 @@
           "maxMp": 7,
           "shield": 0,
           "shieldGainedThisTurn": 0,
+          "cardsPlayedThisTurn": 2,
           "statuses": [],
           "deck": [
             {
@@ -1387,6 +1406,7 @@
           "maxMp": 7,
           "shield": 0,
           "shieldGainedThisTurn": 0,
+          "cardsPlayedThisTurn": 1,
           "statuses": [],
           "deck": [
             {

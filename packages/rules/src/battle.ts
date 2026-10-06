@@ -34,6 +34,7 @@ export function createBattle(setup: BattleSetup): ApplyResult {
     maxMp: 0,
     shield: 0,
     shieldGainedThisTurn: 0,
+    cardsPlayedThisTurn: 0,
     statuses: [],
     deck: decks[i].map((cardId, j) => ({ iid: `p${i}-${j}`, cardId })),
     hand: [],

@@ -54,6 +54,7 @@ export function apply(state: BattleState, action: Action): ApplyResult {
     resolveEffect(next, action.player, effect, events);
     if (next.result) break;
   }
+  pl.cardsPlayedThisTurn += 1;
   // Oynanan kart efektler çözüldükten sonra ıskartaya gider; kendi çekişiyle geri karışmaz.
   pl.discard.push(inst);
   return { state: next, events };

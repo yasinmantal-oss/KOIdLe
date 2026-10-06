@@ -20,6 +20,7 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
     pl.shield = 0;
   }
   pl.shieldGainedThisTurn = 0;
+  pl.cardsPlayedThisTurn = 0;
   pl.mp = pl.maxMp;
 
   // Zehir: sahibinin tur başında, Arena'dan önce. Lanet Zehir'e eklenmez (yalnız kart hasarı).

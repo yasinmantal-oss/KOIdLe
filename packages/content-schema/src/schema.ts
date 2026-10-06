@@ -40,7 +40,11 @@ export const ConditionSchema = z.union([
   z.strictObject({ selfHas: StatusIdSchema }),
   z.strictObject({ enemyHas: StatusIdSchema }),
   z.strictObject({ enemyHpAtMost: positive() }),
+  z.strictObject({ selfHpAtMost: positive() }),
+  z.strictObject({ cardsPlayedAtLeast: positive() }),
 ]);
+
+const BonusSchema = z.strictObject({ if: ConditionSchema, amount: positive() });
 
 export const EffectSchema = z.discriminatedUnion('kind', [
   z.strictObject({
@@ -48,11 +52,15 @@ export const EffectSchema = z.discriminatedUnion('kind', [
     amount: int(),
     ignoreShield: z.boolean().exactOptional(),
     hits: z.int().min(2).exactOptional(),
-    bonus: z.strictObject({ if: ConditionSchema, amount: positive() }).exactOptional(),
+    bonus: BonusSchema.exactOptional(),
   }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),
   z.strictObject({ kind: z.literal('shield'), amount: positive() }),
-  z.strictObject({ kind: z.literal('heal'), amount: positive() }),
+  z.strictObject({
+    kind: z.literal('heal'),
+    amount: positive(),
+    bonus: BonusSchema.exactOptional(),
+  }),
   z.strictObject({ kind: z.literal('draw'), count: positive() }),
   z.strictObject({
     kind: z.literal('applyStatus'),

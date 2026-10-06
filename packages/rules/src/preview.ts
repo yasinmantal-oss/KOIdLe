@@ -27,6 +27,8 @@ export function previewCard(state: BattleState, p: PlayerIndex, cardId: string):
         stealth = 0;
       }
       if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
+    } else if (e.kind === 'heal') {
+      if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
     } else if (e.kind === 'damageFromShieldGainedThisTurn') {
       damage = (damage ?? 0) + cardDamage(state, p, shieldGained);
     } else if (e.kind === 'shield') {

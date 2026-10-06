@@ -1,23 +1,45 @@
+import { assertNever } from './assert-never';
 import { drawCard } from './draw';
 import { dealDamage, other } from './outcome';
 import { applyStatus, removeStatus, statusAmount } from './status';
-import type { BattleEvent, BattleState, Condition, Effect, PlayerIndex } from './types';
+import type { BattleEvent, BattleState, Bonus, Condition, Effect, PlayerIndex } from './types';
 
 export function conditionMet(state: BattleState, source: PlayerIndex, cond: Condition): boolean {
   if ('selfHas' in cond) return statusAmount(state.players[source], cond.selfHas) > 0;
   if ('enemyHas' in cond) return statusAmount(state.players[other(source)], cond.enemyHas) > 0;
-  return state.players[other(source)].hp <= cond.enemyHpAtMost;
+  if ('enemyHpAtMost' in cond) return state.players[other(source)].hp <= cond.enemyHpAtMost;
+  if ('selfHpAtMost' in cond) return state.players[source].hp <= cond.selfHpAtMost;
+  if ('cardsPlayedAtLeast' in cond) {
+    return state.players[source].cardsPlayedThisTurn >= cond.cardsPlayedAtLeast;
+  }
+  return assertNever(cond);
 }
 
-/** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık hariç). */
+/** Koşul sağlanıyorsa bonus tutarı, değilse 0. */
+export function bonusValue(
+  state: BattleState,
+  source: PlayerIndex,
+  bonus: Bonus | undefined,
+): number {
+  return bonus && conditionMet(state, source, bonus.if) ? bonus.amount : 0;
+}
+
+/** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık/Lanet hariç). */
 export function baseDamage(
   state: BattleState,
   source: PlayerIndex,
   effect: Extract<Effect, { kind: 'damage' }>,
 ): number {
-  const bonus =
-    effect.bonus && conditionMet(state, source, effect.bonus.if) ? effect.bonus.amount : 0;
-  return effect.amount + bonus;
+  return effect.amount + bonusValue(state, source, effect.bonus);
+}
+
+/** İyileşme tutarı (maks HP sınırından önce). */
+export function healAmount(
+  state: BattleState,
+  source: PlayerIndex,
+  effect: Extract<Effect, { kind: 'heal' }>,
+): number {
+  return effect.amount + bonusValue(state, source, effect.bonus);
 }
 
 /** Kart hasarı = max(0, değer + Güç(kaynak) − Zayıflık(kaynak) + Lanet(hedef)). */
@@ -28,6 +50,22 @@ export function cardDamage(state: BattleState, source: PlayerIndex, base: number
     0,
     base + statusAmount(pl, 'strength') - statusAmount(pl, 'weak') + statusAmount(target, 'curse'),
   );
+}
+
+/** Zincir bonusu sağlanıyorsa "ZİNCİR ×N" olayı yazar (N = bu kartla birlikte oynanan sayısı). */
+function noteChain(
+  state: BattleState,
+  source: PlayerIndex,
+  bonus: Bonus | undefined,
+  events: BattleEvent[],
+): void {
+  if (bonus && 'cardsPlayedAtLeast' in bonus.if && conditionMet(state, source, bonus.if)) {
+    events.push({
+      type: 'CHAIN_TRIGGERED',
+      player: source,
+      chain: state.players[source].cardsPlayedThisTurn + 1,
+    });
+  }
 }
 
 export function resolveEffect(
@@ -41,6 +79,7 @@ export function resolveEffect(
   switch (effect.kind) {
     case 'damage': {
       const base = baseDamage(state, source, effect);
+      noteChain(state, source, effect.bonus, events);
       // Çoklu vuruş: her vuruş ayrı hesaplanır. Gizli yalnız ilk vuruşa girer ve Kalkanı yok sayar.
       for (let i = 0; i < (effect.hits ?? 1); i++) {
         const stealth = statusAmount(me, 'stealth');
@@ -76,7 +115,8 @@ export function resolveEffect(
       events.push({ type: 'SHIELD_GAINED', player: source, amount: effect.amount });
       return;
     case 'heal': {
-      const amount = Math.min(effect.amount, me.maxHp - me.hp);
+      noteChain(state, source, effect.bonus, events);
+      const amount = Math.min(healAmount(state, source, effect), me.maxHp - me.hp);
       me.hp += amount;
       events.push({ type: 'HEALED', player: source, amount });
       return;
@@ -96,5 +136,7 @@ export function resolveEffect(
         events,
       );
       return;
+    default:
+      return assertNever(effect);
   }
 }

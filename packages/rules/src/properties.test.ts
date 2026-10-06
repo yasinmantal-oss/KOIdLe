@@ -18,7 +18,15 @@ function checkInvariants(s: BattleState): void {
     expect(p.deck.length + p.hand.length + p.discard.length).toBe(deck.size);
     expect(p.hand.length).toBeLessThanOrEqual(s.config.hand.limit);
     iids.push(...[...p.deck, ...p.hand, ...p.discard].map((c) => c.iid));
-    for (const n of [p.hp, p.mp, p.maxMp, p.shield, p.shieldGainedThisTurn, p.fatigueCount]) {
+    for (const n of [
+      p.hp,
+      p.mp,
+      p.maxMp,
+      p.shield,
+      p.shieldGainedThisTurn,
+      p.fatigueCount,
+      p.cardsPlayedThisTurn,
+    ]) {
       expect(Number.isInteger(n)).toBe(true);
     }
   }
