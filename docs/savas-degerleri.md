@@ -11,7 +11,7 @@
 | Kahraman HP | `hero.hp` | 30 | Başlangıç ve maks HP |
 | MP başlangıcı | `mp.start` | 1 | Kendi 1. turundaki maks MP |
 | MP artışı | `mp.perTurn` | 1 | Her kendi turunda maks MP artışı |
-| MP tavanı | `mp.max` | 8 | MP her tur başında dolar, devretmez |
+| MP tavanı | `mp.max` | 6 | MP her tur başında dolar, devretmez |
 | Başlangıç eli | `hand.starting` | 4 | İki oyuncu için |
 | El sınırı | `hand.limit` | 8 | Dolu ele gelen kart yanar (ıskartaya gider) |
 | Tur başı çekiş | `hand.drawPerTurn` | 1 |  |
@@ -38,7 +38,7 @@
 
 ### Formüller (hepsi tamsayı)
 
-- Maks MP (kendi N. turu) = `min(mp.start + (N − 1) × mp.perTurn, mp.max)` → 1, 2, 3, 4, 5, 6, 7, 8, 8, 8
+- Maks MP (kendi N. turu) = `min(mp.start + (N − 1) × mp.perTurn, mp.max)` → 1, 2, 3, 4, 5, 6, 6, 6, 6, 6
 - Arena hasarı (raunt R ≥ startRound) = `start + (R − startRound) × step`
 - Yorgunluk (oyuncunun k. yorgunluğu) = `start + (k − 1) × step`
 - Kart hasarı = `max(0, kart değeri + Güç − Zayıflık)`. Önce Kalkan emer, kalanı HP'den düşer (Kalkanı yok sayan kartlar hariç).
@@ -56,10 +56,10 @@
 | `savas-narasi` | Savaş Narası | Buff | 2 | Kendine Güç 2 ver. |
 | `siper` | Siper | Defense | 2 | 7 Kalkan kazan. |
 | `ikinci-nefes` | İkinci Nefes | Heal | 2 | 6 HP iyileş. |
-| `agir-darbe` | Ağır Darbe | Attack | 3 | 7 hasar ver. |
+| `agir-darbe` | Ağır Darbe | Attack | 3 | 7 hasar ver. Güç'ün varsa +3 hasar. |
 | `savas-ritmi` | Savaş Ritmi | Skill | 3 | 2 kart çek. 3 hasar ver. |
-| `yarip-gec` | Yarıp Geç | Attack | 4 | Kalkanı yok sayarak 6 hasar ver. |
-| `yikim` | Yıkım | Attack | 6 | 14 hasar ver. |
+| `yarip-gec` | Yarıp Geç | Attack | 4 | Kalkanı yok sayarak 6 hasar ver. Rakip Zayıfsa +3 hasar. |
+| `yikim` | Yıkım | Attack | 6 | Rakibin HP'si 15 veya altındaysa 14 hasar ver; değilse 7. |
 
 Maliyet dağılımı: 1 MP ×4 · 2 MP ×4 · 3 MP ×2 · 4 MP ×1 · 6 MP ×1.
 Kart türleri: Attack ×5 · Defense ×2 · Debuff ×1 · Skill ×2 · Buff ×1 · Heal ×1.

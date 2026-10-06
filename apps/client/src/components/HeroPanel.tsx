@@ -1,4 +1,5 @@
 import type { BattleConfig, PlayerState } from '@koidle/rules';
+import type { ReactNode } from 'react';
 import { STATUS_TR } from '../format';
 
 interface Props {
@@ -22,15 +23,21 @@ export function HeroPanel({ player: p, config, title, active, showHandCount }: P
         <Meter label="MP" value={p.mp} max={p.maxMp} kind="mp" />
       </div>
       <dl className="stats">
-        <Stat label="Kalkan" value={p.shield} />
+        <Stat label="Kalkan" value={<span className="kw kw--shield">{p.shield}</span>} />
         <Stat
           label="Statüler"
           value={
             p.statuses.length === 0
               ? '—'
-              : p.statuses
-                  .map((s) => `${STATUS_TR[s.id]} ${s.amount} · ${s.turnsLeft} tur`)
-                  .join(', ')
+              : p.statuses.map((s, i) => (
+                  <span key={s.id}>
+                    {i > 0 && ', '}
+                    <span className={`kw kw--${s.id}`}>
+                      {STATUS_TR[s.id]} {s.amount}
+                    </span>{' '}
+                    · {s.turnsLeft} tur
+                  </span>
+                ))
           }
         />
         {showHandCount && <Stat label="Eldeki kart" value={p.hand.length} />}
@@ -57,7 +64,7 @@ function Meter(props: { label: string; value: number; max: number; kind: 'hp' | 
   );
 }
 
-function Stat(props: { label: string; value: string | number }) {
+function Stat(props: { label: string; value: ReactNode }) {
   return (
     <div className="stat">
       <dt>{props.label}</dt>

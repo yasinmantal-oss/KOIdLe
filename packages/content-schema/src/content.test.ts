@@ -95,6 +95,16 @@ describe('invalid content stops with a readable message', () => {
     ).toMatch(/\[0\]\.effects\[0\]\.amount/);
   });
 
+  it('unknown bonus condition', () => {
+    expect(
+      cardsError((c) => {
+        c(0).effects = [
+          { kind: 'damage', amount: 3, bonus: { if: { selfHas: 'rage' }, amount: 2 } },
+        ];
+      }),
+    ).toMatch(/\[0\]\.effects\[0\]\.bonus\.if/);
+  });
+
   it('missing field and duplicate id', () => {
     expect(
       cardsError((c) => {

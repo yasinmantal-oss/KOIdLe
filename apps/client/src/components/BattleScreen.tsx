@@ -7,6 +7,7 @@ import { BattleLog } from './BattleLog';
 import { Hand } from './Hand';
 import { HeroPanel } from './HeroPanel';
 import { ResultPanel } from './ResultPanel';
+import { RulesSummary } from './RulesSummary';
 
 interface Props {
   content: LoadedContent;
@@ -29,6 +30,7 @@ export function BattleScreen({ content, seed, profile, onNew }: Props) {
         showHandCount
       />
       <ArenaInfo state={state} seed={seed} />
+      <RulesSummary config={state.config} />
       <BattleLog log={log} cards={state.cards} />
       <HeroPanel
         player={state.players[HUMAN]}

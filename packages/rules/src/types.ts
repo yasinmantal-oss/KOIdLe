@@ -3,8 +3,16 @@ export type Job = 'warrior';
 export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuff';
 export type StatusId = 'strength' | 'weak';
 
+/** Combat v0.2: kartın koşullu bonusu. Koşul kart oynandığı an değerlendirilir. */
+export type Condition = { selfHas: StatusId } | { enemyHas: StatusId } | { enemyHpAtMost: number };
+
+export interface DamageBonus {
+  if: Condition;
+  amount: number;
+}
+
 export type Effect =
-  | { kind: 'damage'; amount: number; ignoreShield?: boolean }
+  | { kind: 'damage'; amount: number; ignoreShield?: boolean; bonus?: DamageBonus }
   | { kind: 'damageFromShieldGainedThisTurn' }
   | { kind: 'shield'; amount: number }
   | { kind: 'heal'; amount: number }

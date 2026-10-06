@@ -1,4 +1,4 @@
-import type { BattleEvent, CardDef, PlayerIndex, StatusId } from '@koidle/rules';
+import type { BattleConfig, BattleEvent, CardDef, PlayerIndex, StatusId } from '@koidle/rules';
 
 // Olayları Türkçe kayıt satırına çevirir. Oyuncu her zaman 0, AI 1. UI kural kararı vermez.
 
@@ -54,4 +54,54 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       if (e.winner === null) return `Berabere (${END_TR[e.reason]}).`;
       return `${e.winner === HUMAN ? 'Kazandın' : 'Kaybettin'} (${END_TR[e.reason]}, ${e.round}. raunt).`;
   }
+}
+
+export type Keyword = 'strength' | 'weak' | 'shield';
+export interface TextPart {
+  text: string;
+  kw: Keyword | null;
+}
+
+const KEYWORDS: [RegExp, Keyword][] = [
+  [/^Güç/, 'strength'],
+  [/^Zayıf/, 'weak'],
+  [/^Kalkan/, 'shield'],
+];
+
+/** Kart metnindeki anahtar kelimeleri işaretler; renkler statü rozetleriyle aynı (Combat v0.2 E). */
+export function keywordParts(text: string): TextPart[] {
+  const parts: TextPart[] = [];
+  let plain = '';
+  let i = 0;
+  while (i < text.length) {
+    const rest = text.slice(i);
+    const hit = KEYWORDS.find(([re]) => re.test(rest));
+    if (hit) {
+      if (plain) parts.push({ text: plain, kw: null });
+      plain = '';
+      const word = (rest.match(hit[0]) as RegExpMatchArray)[0];
+      parts.push({ text: word, kw: hit[1] });
+      i += word.length;
+    } else {
+      plain += text[i];
+      i += 1;
+    }
+  }
+  if (plain) parts.push({ text: plain, kw: null });
+  return parts;
+}
+
+/** "?" kural özeti: değerler config'den gelir, metin elle tekrar yazılmaz. */
+export function rulesSummary(c: BattleConfig): string[] {
+  const shield =
+    c.shield.persistence === 'resetOnOwnTurnStart'
+      ? 'Kalkan: hasarı HP’den önce emer. Kullanılmayan Kalkan senin bir sonraki turunun başında sıfırlanır.'
+      : 'Kalkan: hasarı HP’den önce emer ve birikir.';
+  return [
+    `MP: her turun başında dolar ve 1 artar, en fazla ${c.mp.max}. Kullanılmayan MP devretmez.`,
+    'Güç X: saldırıların X fazla hasar verir. Zayıf X: saldırıların X az hasar verir.',
+    shield,
+    `Arena Çöküşü: ${c.arenaCollapse.startRound}. rauntan itibaren iki taraf her tur başında artan hasar alır (${c.arenaCollapse.start}, ${c.arenaCollapse.start + c.arenaCollapse.step}, …); Kalkanı yok sayar.`,
+    `Deste bitince ıskarta ${c.deck.reshuffles} kez karıştırılır. Sonra çekemediğin her kart için Yorgunluk hasarı alırsın (${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}, …).`,
+  ];
 }

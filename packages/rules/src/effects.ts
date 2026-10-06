@@ -1,10 +1,27 @@
 import { drawCard } from './draw';
 import { dealDamage, other } from './outcome';
 import { applyStatus, statusAmount } from './status';
-import type { BattleEvent, BattleState, Effect, PlayerIndex } from './types';
+import type { BattleEvent, BattleState, Condition, Effect, PlayerIndex } from './types';
+
+export function conditionMet(state: BattleState, source: PlayerIndex, cond: Condition): boolean {
+  if ('selfHas' in cond) return statusAmount(state.players[source], cond.selfHas) > 0;
+  if ('enemyHas' in cond) return statusAmount(state.players[other(source)], cond.enemyHas) > 0;
+  return state.players[other(source)].hp <= cond.enemyHpAtMost;
+}
+
+/** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık hariç). */
+export function baseDamage(
+  state: BattleState,
+  source: PlayerIndex,
+  effect: Extract<Effect, { kind: 'damage' }>,
+): number {
+  const bonus =
+    effect.bonus && conditionMet(state, source, effect.bonus.if) ? effect.bonus.amount : 0;
+  return effect.amount + bonus;
+}
 
 /** Kart hasarı = max(0, değer + Güç − Zayıflık). */
-function cardDamage(state: BattleState, source: PlayerIndex, base: number): number {
+export function cardDamage(state: BattleState, source: PlayerIndex, base: number): number {
   const pl = state.players[source];
   return Math.max(0, base + statusAmount(pl, 'strength') - statusAmount(pl, 'weak'));
 }
@@ -23,7 +40,7 @@ export function resolveEffect(
         state,
         source,
         enemy,
-        cardDamage(state, source, effect.amount),
+        cardDamage(state, source, baseDamage(state, source, effect)),
         effect.ignoreShield ?? false,
         events,
       );

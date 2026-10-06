@@ -1,6 +1,9 @@
+import { loadBattleConfig } from '@koidle/content-schema';
 import type { CardDef } from '@koidle/rules';
 import { describe, expect, it } from 'vitest';
-import { formatEvent } from './format';
+import { formatEvent, keywordParts, rulesSummary } from './format';
+
+const testConfigForSummary = loadBattleConfig();
 
 const cards: Record<string, CardDef> = {
   yarma: {
@@ -58,5 +61,27 @@ describe('formatEvent', () => {
         cards,
       ),
     ).toBe('Rakip: Zayıflık 2 (2 tur).');
+  });
+});
+
+describe('keywordParts', () => {
+  it('marks Güç, Zayıf and Kalkan so the card text matches the status colors', () => {
+    expect(keywordParts("Güç'ün varsa +3. Rakip Zayıfsa. Kalkanı yok say.")).toEqual([
+      { text: 'Güç', kw: 'strength' },
+      { text: "'ün varsa +3. Rakip ", kw: null },
+      { text: 'Zayıf', kw: 'weak' },
+      { text: 'sa. ', kw: null },
+      { text: 'Kalkan', kw: 'shield' },
+      { text: 'ı yok say.', kw: null },
+    ]);
+  });
+});
+
+describe('rulesSummary', () => {
+  it('builds the short rule list from config values', () => {
+    const lines = rulesSummary(testConfigForSummary);
+    expect(lines.join('\n')).toContain('en fazla 6');
+    expect(lines.join('\n')).toContain('8. rauntan');
+    expect(lines.join('\n')).toContain('bir sonraki turunun başında sıfırlanır');
   });
 });

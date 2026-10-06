@@ -31,11 +31,20 @@ export const BattleConfigSchema = z.strictObject({
   roundCap: positive(),
 }) satisfies z.ZodType<BattleConfig>;
 
+const StatusIdSchema = z.enum(['strength', 'weak']);
+
+export const ConditionSchema = z.union([
+  z.strictObject({ selfHas: StatusIdSchema }),
+  z.strictObject({ enemyHas: StatusIdSchema }),
+  z.strictObject({ enemyHpAtMost: positive() }),
+]);
+
 export const EffectSchema = z.discriminatedUnion('kind', [
   z.strictObject({
     kind: z.literal('damage'),
     amount: int(),
     ignoreShield: z.boolean().exactOptional(),
+    bonus: z.strictObject({ if: ConditionSchema, amount: positive() }).exactOptional(),
   }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),
   z.strictObject({ kind: z.literal('shield'), amount: positive() }),
@@ -44,7 +53,7 @@ export const EffectSchema = z.discriminatedUnion('kind', [
   z.strictObject({
     kind: z.literal('applyStatus'),
     target: z.enum(['self', 'enemy']),
-    status: z.enum(['strength', 'weak']),
+    status: StatusIdSchema,
     amount: positive(),
   }),
 ]);

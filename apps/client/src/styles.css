@@ -320,3 +320,65 @@ fieldset {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Combat v0.2: kombo okuryazarlığı (anahtar kelime renkleri, canlı hasar, ✓, kural özeti) */
+:root {
+  --kw-strength: #b5651d;
+  --kw-weak: #6b4fa3;
+  --kw-shield: #2c6fa3;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --kw-strength: #f0a35a;
+    --kw-weak: #b79cf0;
+    --kw-shield: #7fb7ea;
+  }
+}
+:root[data-theme="dark"] {
+  --kw-strength: #f0a35a;
+  --kw-weak: #b79cf0;
+  --kw-shield: #7fb7ea;
+}
+.kw {
+  font-weight: 700;
+}
+.kw--strength {
+  color: var(--kw-strength);
+}
+.kw--weak {
+  color: var(--kw-weak);
+}
+.kw--shield {
+  color: var(--kw-shield);
+}
+.card__dmg {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.card__dmg strong {
+  color: var(--text);
+}
+.card__check {
+  color: var(--good);
+  font-weight: 700;
+}
+.card--combo {
+  border-color: var(--good);
+  box-shadow: 0 0 0 1px var(--good);
+}
+.rules {
+  font-size: 0.85rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+.rules summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.rules ul {
+  margin: 6px 0 2px;
+  padding-left: 1.2rem;
+}

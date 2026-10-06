@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { apply } from './engine';
+import { previewCard } from './preview';
 import { addCard, newBattle, setHand, setStatus } from './test-fixtures';
-import type { BattleState, PlayerIndex } from './types';
+import type { BattleState, CardDef, PlayerIndex } from './types';
 
 function setup(hand: string[], mp = 8) {
   const { state } = newBattle(1);
@@ -182,5 +183,79 @@ describe('shield, heal, draw, status', () => {
       amount: 2,
       duration: 2,
     });
+  });
+});
+
+describe('conditional damage bonus (Combat v0.2)', () => {
+  const bonusCard = (state: BattleState, id: string, bonus: Record<string, unknown>) =>
+    addCard(state, id, 1, [
+      { kind: 'damage', amount: 3, bonus: { if: bonus, amount: 4 } } as CardDef['effects'][0],
+    ]);
+
+  it('selfHas: adds the bonus only while the player has the status', () => {
+    const a = setup([]);
+    bonusCard(a.state, 'b', { selfHas: 'strength' });
+    setHand(a.state, a.me, ['b']);
+    expect(play(a.state, a.me, 0).state.players[a.foe].hp).toBe(27);
+
+    const b = setup([]);
+    bonusCard(b.state, 'b', { selfHas: 'strength' });
+    setHand(b.state, b.me, ['b']);
+    setStatus(b.state, b.me, 'strength', 2);
+    // 3 + 4 bonus + 2 Güç
+    expect(play(b.state, b.me, 0).state.players[b.foe].hp).toBe(21);
+  });
+
+  it('enemyHas: adds the bonus only while the enemy has the status', () => {
+    const a = setup([]);
+    bonusCard(a.state, 'b', { enemyHas: 'weak' });
+    setHand(a.state, a.me, ['b']);
+    expect(play(a.state, a.me, 0).state.players[a.foe].hp).toBe(27);
+
+    const b = setup([]);
+    bonusCard(b.state, 'b', { enemyHas: 'weak' });
+    setHand(b.state, b.me, ['b']);
+    setStatus(b.state, b.foe, 'weak', 2);
+    expect(play(b.state, b.me, 0).state.players[b.foe].hp).toBe(23);
+  });
+
+  it('enemyHpAtMost: threshold is inclusive', () => {
+    const at = setup([]);
+    bonusCard(at.state, 'b', { enemyHpAtMost: 15 });
+    setHand(at.state, at.me, ['b']);
+    at.state.players[at.foe].hp = 15;
+    expect(play(at.state, at.me, 0).state.players[at.foe].hp).toBe(8);
+
+    const above = setup([]);
+    bonusCard(above.state, 'b', { enemyHpAtMost: 15 });
+    setHand(above.state, above.me, ['b']);
+    above.state.players[above.foe].hp = 16;
+    expect(play(above.state, above.me, 0).state.players[above.foe].hp).toBe(13);
+  });
+});
+
+describe('previewCard (UI önizlemesi, saf)', () => {
+  it('shows the damage the card would deal now and whether its bonus is active', () => {
+    const { state, me } = setup([]);
+    addCard(state, 'b', 1, [
+      { kind: 'damage', amount: 3, bonus: { if: { selfHas: 'strength' }, amount: 4 } },
+    ]);
+    expect(previewCard(state, me, 'b')).toEqual({ damage: 3, bonusActive: false });
+    setStatus(state, me, 'strength', 2);
+    expect(previewCard(state, me, 'b')).toEqual({ damage: 9, bonusActive: true });
+  });
+
+  it('counts shield gained this turn for Kalkan Darbesi and ignores non-damage cards', () => {
+    const { state, me } = setup(['wall', 'bash']);
+    const s = play(state, me, 0).state;
+    expect(previewCard(s, me, 'bash')).toEqual({ damage: 7, bonusActive: null });
+    expect(previewCard(s, me, 'wall')).toEqual({ damage: null, bonusActive: null });
+  });
+
+  it('does not mutate state', () => {
+    const { state, me } = setup(['hit']);
+    const before = JSON.stringify(state);
+    previewCard(state, me, 'hit');
+    expect(JSON.stringify(state)).toBe(before);
   });
 });

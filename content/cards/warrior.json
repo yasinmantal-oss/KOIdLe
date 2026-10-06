@@ -77,8 +77,10 @@
     "job": "warrior",
     "type": "attack",
     "cost": 3,
-    "effects": [{ "kind": "damage", "amount": 7 }],
-    "text": "7 hasar ver."
+    "effects": [
+      { "kind": "damage", "amount": 7, "bonus": { "if": { "selfHas": "strength" }, "amount": 3 } }
+    ],
+    "text": "7 hasar ver. Güç'ün varsa +3 hasar."
   },
   {
     "id": "savas-ritmi",
@@ -95,8 +97,15 @@
     "job": "warrior",
     "type": "attack",
     "cost": 4,
-    "effects": [{ "kind": "damage", "amount": 6, "ignoreShield": true }],
-    "text": "Kalkanı yok sayarak 6 hasar ver."
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 6,
+        "ignoreShield": true,
+        "bonus": { "if": { "enemyHas": "weak" }, "amount": 3 }
+      }
+    ],
+    "text": "Kalkanı yok sayarak 6 hasar ver. Rakip Zayıfsa +3 hasar."
   },
   {
     "id": "yikim",
@@ -104,7 +113,9 @@
     "job": "warrior",
     "type": "attack",
     "cost": 6,
-    "effects": [{ "kind": "damage", "amount": 14 }],
-    "text": "14 hasar ver."
+    "effects": [
+      { "kind": "damage", "amount": 7, "bonus": { "if": { "enemyHpAtMost": 15 }, "amount": 7 } }
+    ],
+    "text": "Rakibin HP'si 15 veya altındaysa 14 hasar ver; değilse 7."
   }
 ]
