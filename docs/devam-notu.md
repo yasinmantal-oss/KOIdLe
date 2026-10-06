@@ -23,7 +23,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
     - `apps/client`: React savaş ekranı + Gate 1 formu.
   - Gate 1 sayfası claude.ai'de yayında, telefondan oynanabiliyor: https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT. Form kayıtları sayfanın `gate1` deposuna düşüyor.
   - `design/mockups/ekranlar-v0.1.html` repo'ya eklendi (2026-10-06). Copilot'un 8 prototip ekranı, tasarım referansı; aşağıdaki "Mockup çelişkileri"ne bak.
-- **Tamamlanmayan:** Gate 1 testi (9+ maç), Copilot'un sim/kod incelemesi, N8 onayı, Gate 1 değerlendirmesi ve DURUM RAPORU.
+- **Tamamlanmayan:** Gate 1 testi (9+ maç), Copilot'un sim/kod incelemesi, Gate 1 değerlendirmesi ve DURUM RAPORU.
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -50,6 +50,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Spec v0.2 Yasin tarafından onaylandı. Faz 0–1 planı rev. 2 (K1–K7 Yasin, N1–N7 Claude + Copilot + Yasin onayı, C1–C8 Copilot).
 - **Oturum kapanış/senkronizasyon protokolü** benimsendi (`docs/kapanis-protokolu.md`). Neden: GitHub, repo dokümanı ve vault birbirinden kopmasın; hiçbir karar yalnız sohbet geçmişinde kalmasın.
 - `ekranlar-v0.1.html` repo'ya **referans olarak** alındı, içeriği değiştirilmedi. Spec ile çeliştiği yerlerde spec geçerli.
+- **N8 ONAYLANDI (Yasin):** AI tuning ağırlıkları `content/ai-profiles.json` içinde tutulur (Zod ile doğrulanır). Neden: AI'ı da kod yazmadan ayarlamak; değerler tek yerde.
+- **Upgrade maliyeti (Yasin teyidi):** Prototipte upgrade maliyeti **yalnız Gold**. Mockup'taki upgrade parşömeni güncel kural değildir. Neden: tek para, sade ekonomi.
+- **Rakip intent (Yasin):** PvP/CZ'de rakibin eli ve sıradaki kartı **gizlidir**; mockup'taki PvP intent göstergesi güncel karar değildir. Intent sistemi ileride yalnız PvE/Boss karşılaşmalarında kullanılabilir. Neden: PvP'de gizli bilgi kararın parçası; AI da gizli bilgiyi görmüyor.
 
 ## DEĞİŞTİRİLEN KARARLAR
 - **Kalkan (K1, plan rev. 1 → rev. 2):** ÖNCE: kalıcı, Hearthstone zırhı gibi birikir. SONRA: sahibinin sonraki tur başında sıfırlanır. NEDEN: savunma sınırsız stok değil, zamanlama kararı olsun. Eski davranış config ile hâlâ seçilebilir (`shield.persistence`).
@@ -71,16 +74,15 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Henüz sonuç çıkarılmamalı:** Tek maç ve AI-vs-AI sim, denge ya da eğlence kararı için yeterli değil. Değerlere Gate 1 değerlendirmesinden önce dokunulmaz.
 
 ## AÇIK KONULAR
-- N8 onayı bekliyor: AI ağırlıkları `content/ai-profiles.json`'da.
 - Sim gözlemleri Gate 1'de yorumlanacak: Yorgunluk hiç görülmüyor, Yıkım baskın, saldırgan AI zayıf, Arena %19 bitiriyor.
 - İlk geri bildirim "strateji kurma yok": izlenecek hipotez, henüz karar değil.
 - PR #1'in açık/kapalı durumu bu makineden doğrulanamadı (`gh` kurulu değil). Git'e göre dal `master`'a birleşmedi.
 - **Mockup çelişkileri** (`design/mockups/ekranlar-v0.1.html`, spec v0.1'e göre çizildi; spec v0.2 ve `content/` geçerli, mockup polish aşamasında düzeltilecek):
-  1. **Örs maliyeti:** Mockup "Kutsanmış Parşömen" + altın gösteriyor. Spec'te maliyet yalnız altın. Ayrıca bu isim, KO'nun yasaklı "Blessed Upgrade Scroll" isminin çevirisi; kullanılmaz.
+  1. **Örs maliyeti — ÇÖZÜLDÜ:** Mockup "Kutsanmış Parşömen" + altın gösteriyor. Geçerli kural: prototipte upgrade maliyeti yalnız Gold (Yasin teyidi, 2026-10-06). Ayrıca bu isim KO'nun yasaklı "Blessed Upgrade Scroll" isminin çevirisi; kullanılmaz.
   2. **Slot kapasitesi:** Mockup 3/4, 4–5 nokta gösteriyor. Spec'te 6.
   3. **Kart değerleri:** Mockup'taki Yarma (3 MP, 6 hasar), Cehennem Darbe (5 MP) gibi değerler yer tutucu. Geçerli olan `docs/savas-degerleri.md` (ör. Yarma 1 MP, 3 hasar).
   4. **"Iskalamaz" metni:** Spec'te çıktı rastgeleliği yok, bu metin anlamsız.
-  5. **Rakip "niyet" göstergesi:** Rakibin sıradaki kartı savaş ekranında görünüyor. Spec'te intent yalnız boss için var; PvP'de gizli el kuralıyla çelişir. **Karar verilmedi**, Gate 1 sonrası konuşulacak.
+  5. **Rakip "niyet" göstergesi — ÇÖZÜLDÜ:** Mockup'ta rakibin sıradaki kartı görünüyor. Geçerli karar (Yasin, 2026-10-06): PvP/CZ'de rakibin eli ve sıradaki kartı gizli; intent ileride yalnız PvE/Boss için düşünülebilir.
   6. **Tezgâh vergisi:** "vergi düşüldü" yazıyor. Spec'te vergi, gelişmiş pazarla birlikte sonraya bırakıldı.
   7. **Push bildirimi:** Telefon kilit ekranı gösteriyor. Prototip PC/Web; mobil sonraya.
 
@@ -98,7 +100,7 @@ Kayıtlar tamamlanınca **Claude'un ilk işi:**
 2. Gate 1 değerlendirmesini ve DURUM RAPORU'nu yazar.
 3. Gate kalırsa yalnız savaşı düzeltir (`docs/gate-1.md` §C).
 
-Paralel ve engellemeyen işler: Copilot incelemesi + N8 onayı; PR #1'i `master`'a birleştirme kararı (Yasin).
+Paralel ve engellemeyen işler: Copilot incelemesi; PR #1'i `master`'a birleştirme kararı (Yasin).
 
 ## Yeni oturum nasıl başlar (Claude için)
 1. Bu dosyayı ve `CLAUDE.md`'yi oku.

@@ -33,7 +33,7 @@
 | N4 | Boş ıskartada karıştırma | Deste boş, ıskarta da boşsa karıştırma hakkı **harcanmaz**, doğrudan Yorgunluk uygulanır. | Hakkın boşa gitmesi sürpriz bir ceza olurdu. |
 | N5 | Simülasyon yeri | `tools/sim` paketi Faz 1'de açılır (spec bunu P2.2'de anıyordu). | Copilot'un istediği 900 maçlık rapor Gate 1 için şimdi lazım. Boş paket değil, bu fazın ihtiyacı. |
 | N6 | Gate 1 formu nereye yazılır | `pnpm dev` sırasında yalnız geliştirme ortamında çalışan küçük bir Vite eklentisi formu `docs/gate-1/oturumlar.jsonl` dosyasına ekler. Ayrıca tarayıcıda yedek tutulur ve "JSON indir" düğmesi var. | Sonuçlar seed ile repo'da metin olarak durur; backend yok. |
-| N8 | AI ağırlıkları nerede | `content/ai-profiles.json` (Zod ile doğrulanır). AI paketi değer içermez, ağırlığı girdi olarak alır. *(rev. 2 sonrası, Görev 9'da eklendi)* | Gate 1'de AI'ı da kod yazmadan ayarlamak; değer tablosu tek üreticiden çıkar. |
+| N8 | AI ağırlıkları nerede | `content/ai-profiles.json` (Zod ile doğrulanır). AI paketi değer içermez, ağırlığı girdi olarak alır. *(rev. 2 sonrası, Görev 9'da eklendi; **Yasin onayladı, 2026-10-06**)* | Gate 1'de AI'ı da kod yazmadan ayarlamak; değer tablosu tek üreticiden çıkar. |
 | N7 | Okunabilir değer tablosu | `docs/savas-degerleri.md`, `pnpm values` komutuyla `content/` JSON'larından **üretilir**. Dosya JSON'la uyuşmazsa test kırılır. | Tek kaynak JSON, tek okunabilir tablo; ikisi asla ayrışmaz. |
 
 ### 0.3 Copilot incelemesi ek kararları (Yasin onaylı, 2026-10-06)
