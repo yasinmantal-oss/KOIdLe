@@ -46,11 +46,9 @@ const ART: Record<string, string> = {
   // Faz 2b · Priest (iyileşme, Zayıflık, Parasite)
   healing: '💗',
   malice: '😈',
-  'light-strike': '🔆',
   massive: '🪨',
   parasite: '🦠',
   helis: '🌟',
-  restore: '🔄',
   judgement: '⚖️',
   'great-healing': '💖',
   torment: '😖',

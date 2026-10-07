@@ -11,14 +11,14 @@
 
 | Ölçüt | Değer |
 |---|---|
-| Raunt ortalama / medyan / min / maks | 11.67 / 8 / 4 / 20 |
-| İlk oyuncunun kazanma oranı | %36.0 |
-| Berabere | %26.3 |
+| Raunt ortalama / medyan / min / maks | 8.46 / 7 / 4 / 20 |
+| İlk oyuncunun kazanma oranı | %42.3 |
+| Berabere | %0.4 |
 | Arena Çöküşü görülen maç | %0.0 |
-| Yorgunluk görülen maç | %31.7 |
+| Yorgunluk görülen maç | %1.0 |
 | İkisi de görülen maç (bothArenaAndFatigueReachedRate) | %0.0 |
-| Karıştırma görülen maç | %59.2 |
-| Tur başına kullanılmayan MP (ortalama) | 2.05 |
+| Karıştırma görülen maç | %47.6 |
+| Tur başına kullanılmayan MP (ortalama) | 1.11 |
 
 ## Açılış (ilk 2 turda oynanabilir kart yok)
 
@@ -26,12 +26,12 @@ Hedef ~0 (spec §9). Oran: oyuncu-maçların kaçında ilk 2 turda bir kez bile 
 
 | Job | Ölü açılış oranı |
 |---|---|
-| Tümü | %0.0 |
+| Tümü | %0.1 |
 | Warrior | %0.0 |
 | Rogue · Asas | %0.0 |
 | Rogue · Okçu | %0.0 |
 | Mage | %0.0 |
-| Priest | %0.0 |
+| Priest | %0.5 |
 
 ## Job eşleşmeleri (satırın sütuna karşı kazanma oranı, iki koltuk birleşik)
 
@@ -39,19 +39,19 @@ Gate 2 aralığı %40–60; dışındakiler ⚠.
 
 | | Warrior | Rogue · Asas | Rogue · Okçu | Mage | Priest |
 |---|---|---|---|---|---|
-| Warrior | — | %54.5 | %60.0 | %65.5 ⚠ | %21.5 ⚠ |
-| Rogue · Asas | %45.5 | — | %43.0 | %50.0 | %0.5 ⚠ |
-| Rogue · Okçu | %40.0 | %57.0 | — | %50.0 | %22.5 ⚠ |
-| Mage | %34.5 ⚠ | %50.0 | %50.0 | — | %4.5 ⚠ |
-| Priest | %2.0 ⚠ | %2.5 ⚠ | %6.0 ⚠ | %61.5 ⚠ | — |
+| Warrior | — | %46.0 | %58.0 | %56.5 | %59.0 |
+| Rogue · Asas | %54.0 | — | %44.0 | %49.0 | %39.5 ⚠ |
+| Rogue · Okçu | %42.0 | %56.0 | — | %52.5 | %45.5 |
+| Mage | %43.5 | %51.0 | %47.5 | — | %55.0 |
+| Priest | %41.0 | %59.0 | %54.5 | %45.0 | — |
 
 ## Kombo tetiklenmeleri (oyuncu-maç başına ortalama)
 
 | Job | Kritik kullanımı | Kaçınma tetiklenmesi | Zehir hasarı |
 |---|---|---|---|
 | Warrior | 0.00 | 0.00 | 0.00 |
-| Rogue · Asas | 1.15 | 2.13 | 0.00 |
-| Rogue · Okçu | 0.00 | 0.62 | 9.68 |
+| Rogue · Asas | 1.01 | 1.89 | 0.00 |
+| Rogue · Okçu | 0.00 | 0.53 | 8.62 |
 | Mage | 0.00 | 0.00 | 0.00 |
 | Priest | 0.00 | 0.00 | 0.00 |
 
@@ -64,33 +64,33 @@ Donma/Ateş: Mage rakibe Donma uygular; Ateş kartı Donma'yı tüketip bonus ha
 | Warrior | 0.00 | 0.00 | 0.00 | 0.00 |
 | Rogue · Asas | 0.00 | 0.00 | 0.00 | 0.00 |
 | Rogue · Okçu | 0.00 | 0.00 | 0.00 | 0.00 |
-| Mage | 4.36 | 2.43 | 0.00 | 0.00 |
-| Priest | 0.00 | 0.00 | 0.00 | 22.34 |
+| Mage | 3.67 | 2.16 | 0.00 | 0.00 |
+| Priest | 0.00 | 0.00 | 13.90 | 3.54 |
 
 ## Bitiş nedeni (endReason)
 
 | Neden | Maç | Oran |
 |---|---|---|
-| normalDamage | 1733 | %69.3 |
-| fatigue | 109 | %4.4 |
+| normalDamage | 2484 | %99.4 |
+| fatigue | 7 | %0.3 |
 | arenaCollapse | 0 | %0.0 |
-| roundCap | 658 | %26.3 |
+| roundCap | 9 | %0.4 |
 
 ## Profil eşleşmeleri (satırın sütuna karşı kazanma oranı, iki koltuk birleşik)
 
 | | aggressive | balanced | defensive |
 |---|---|---|---|
-| aggressive | — | %38.0 | %35.0 |
-| balanced | %42.0 | — | %36.0 |
-| defensive | %45.0 | %44.0 | — |
+| aggressive | — | %47.0 | %48.0 |
+| balanced | %49.0 | — | %49.0 |
+| defensive | %52.0 | %50.0 | — |
 
 ## Kullanılmayan MP (tur başına, profile göre)
 
 | Profil | MP |
 |---|---|
-| aggressive | 1.71 |
-| balanced | 1.75 |
-| defensive | 1.79 |
+| aggressive | 1.28 |
+| balanced | 1.24 |
+| defensive | 1.25 |
 
 ## Kartlar (yalnız en az bir hazır destede olanlar)
 
@@ -98,51 +98,50 @@ Oynanma oranı: kartın destede olduğu oyuncu-maçların kaçında en az bir ke
 
 | Kart | MP | Destede (oyuncu-maç) | Oynanma oranı | Maç başı oynanma | Oynadığında kazanma | İşaret |
 |---|---|---|---|---|---|---|
-| Quick Strike (`quick-strike`) | 1 | 4000 | %94.8 | 1.36 | %34.4 |  |
-| Absoluteness (`absoluteness`) | 1 | 5000 | %90.0 | 1.27 | %35.1 |  |
-| Intimidate (`intimidate`) | 1 | 3000 | %80.7 | 1.00 | %42.0 |  |
-| Power Strike (`power-strike`) | 3 | 2000 | %95.7 | 1.21 | %41.7 |  |
-| Slash (`slash`) | 1 | 1000 | %94.7 | 1.16 | %50.4 |  |
-| Gain (`gain`) | 1 | 1000 | %89.6 | 1.11 | %50.1 |  |
-| Leg Cutting (`leg-cutting`) | 2 | 1000 | %83.5 | 1.04 | %51.4 |  |
-| Berserker (`berserker`) | 2 | 1000 | %13.9 | 0.14 | %99.3 | DÜŞÜK |
-| Iron Skin (`iron-skin`) | 2 | 1000 | %72.4 | 0.92 | %48.6 |  |
-| Cleave (`cleave`) | 3 | 1000 | %93.9 | 1.15 | %50.4 |  |
-| Howling Sword (`howling-sword`) | 4 | 1000 | %89.2 | 1.10 | %53.4 |  |
-| ★ Sword Dancing (`sword-dancing`) | 4 | 1000 | %89.8 | 1.11 | %50.7 |  |
-| ★ Hell Blade (`hell-blade`) | 5 | 1000 | %87.1 | 1.09 | %53.7 |  |
-| Minor Healing (`minor-healing`) | 1 | 2000 | %95.0 | 1.17 | %39.8 |  |
-| Evade (`evade`) | 1 | 2000 | %87.9 | 1.10 | %39.7 |  |
-| Stab (`stab`) | 1 | 1000 | %97.2 | 1.23 | %37.7 |  |
-| Stealth (`stealth`) | 1 | 1000 | %89.5 | 1.16 | %36.2 |  |
-| Thrust (`thrust`) | 2 | 1000 | %98.5 | 1.28 | %37.9 |  |
-| Blinding (`blinding`) | 2 | 1000 | %95.0 | 1.22 | %38.3 |  |
-| Spike (`spike`) | 3 | 1000 | %98.6 | 1.27 | %38.1 |  |
-| ★ Critical Point (`critical-point`) | 2 | 1000 | %98.3 | 1.25 | %38.1 |  |
-| ★ Beast Hiding (`beast-hiding`) | 4 | 1000 | %89.6 | 1.19 | %39.3 |  |
-| Poison Arrow (`poison-arrow`) | 1 | 1000 | %93.9 | 1.13 | %44.3 |  |
-| Perfect Arrow (`perfect-arrow`) | 1 | 1000 | %79.1 | 0.91 | %44.2 |  |
-| Multiple Shot (`multiple-shot`) | 2 | 1000 | %89.1 | 1.04 | %46.2 |  |
-| Viper (`viper`) | 2 | 1000 | %91.8 | 1.12 | %45.3 |  |
-| Blinding Strafe (`blinding-strafe`) | 2 | 1000 | %85.4 | 1.04 | %42.9 |  |
-| ★ Arrow Shower (`arrow-shower`) | 4 | 1000 | %78.8 | 0.90 | %47.0 |  |
-| ★ Power Shot (`power-shot`) | 4 | 1000 | %85.8 | 1.06 | %47.2 |  |
-| Freeze (`freeze`) | 1 | 1000 | %94.5 | 1.17 | %37.8 |  |
-| Burn (`burn`) | 1 | 1000 | %93.0 | 1.14 | %37.4 |  |
-| Chill (`chill`) | 1 | 1000 | %84.1 | 1.01 | %38.6 |  |
-| Fire Ball (`fire-ball`) | 2 | 1000 | %96.0 | 1.19 | %38.6 |  |
-| Frozen Armor (`frozen-armor`) | 2 | 1000 | %88.8 | 1.11 | %37.5 |  |
-| Lightning (`lightning`) | 2 | 1000 | %94.5 | 1.17 | %37.7 |  |
-| Ice Comet (`ice-comet`) | 3 | 1000 | %95.2 | 1.18 | %37.6 |  |
-| ★ Freezing Distance (`freezing-distance`) | 3 | 1000 | %82.0 | 1.02 | %37.7 |  |
-| ★ Meteor Fall (`meteor-fall`) | 6 | 1000 | %84.8 | 1.07 | %43.8 |  |
-| Healing (`healing`) | 1 | 1000 | %100.0 | 1.96 | %14.4 | HER MAÇ |
-| Malice (`malice`) | 1 | 1000 | %100.0 | 1.80 | %14.4 | HER MAÇ |
-| Light Strike (`light-strike`) | 1 | 1000 | %100.0 | 1.91 | %14.4 | HER MAÇ |
-| Massive (`massive`) | 2 | 1000 | %100.0 | 1.95 | %14.4 | HER MAÇ |
-| Parasite (`parasite`) | 2 | 1000 | %0.0 | 0.00 | — | HİÇ OYNANMADI |
-| Helis (`helis`) | 3 | 1000 | %100.0 | 1.96 | %14.4 | HER MAÇ |
-| Judgement (`judgement`) | 3 | 1000 | %100.0 | 1.96 | %14.4 | HER MAÇ |
-| Great Healing (`great-healing`) | 4 | 1000 | %100.0 | 1.93 | %14.4 | HER MAÇ |
-| ★ Torment (`torment`) | 3 | 1000 | %100.0 | 1.94 | %14.4 | HER MAÇ |
-| ★ Complete Heal (`complete-heal`) | 4 | 1000 | %100.0 | 1.92 | %14.4 | HER MAÇ |
+| Quick Strike (`quick-strike`) | 1 | 4000 | %92.2 | 1.06 | %50.1 |  |
+| Absoluteness (`absoluteness`) | 1 | 5000 | %87.9 | 1.00 | %48.8 |  |
+| Intimidate (`intimidate`) | 1 | 3000 | %78.3 | 0.83 | %50.7 |  |
+| Power Strike (`power-strike`) | 3 | 3000 | %96.6 | 1.16 | %49.2 |  |
+| Slash (`slash`) | 1 | 1000 | %92.0 | 0.97 | %54.3 |  |
+| Gain (`gain`) | 1 | 1000 | %86.8 | 0.90 | %54.8 |  |
+| Leg Cutting (`leg-cutting`) | 2 | 1000 | %79.0 | 0.83 | %57.1 |  |
+| Berserker (`berserker`) | 2 | 1000 | %48.0 | 0.50 | %56.9 |  |
+| Iron Skin (`iron-skin`) | 2 | 1000 | %69.4 | 0.74 | %54.0 |  |
+| Cleave (`cleave`) | 3 | 1000 | %90.1 | 0.94 | %55.7 |  |
+| Howling Sword (`howling-sword`) | 4 | 1000 | %84.3 | 0.88 | %59.0 |  |
+| ★ Sword Dancing (`sword-dancing`) | 4 | 1000 | %84.4 | 0.89 | %56.5 |  |
+| ★ Hell Blade (`hell-blade`) | 5 | 1000 | %82.8 | 0.88 | %60.9 |  |
+| Minor Healing (`minor-healing`) | 1 | 2000 | %92.8 | 1.03 | %47.4 |  |
+| Evade (`evade`) | 1 | 2000 | %85.9 | 0.96 | %46.8 |  |
+| Stab (`stab`) | 1 | 1000 | %94.8 | 1.08 | %47.3 |  |
+| Stealth (`stealth`) | 1 | 1000 | %87.2 | 1.02 | %46.0 |  |
+| Thrust (`thrust`) | 2 | 1000 | %98.1 | 1.14 | %47.6 |  |
+| Blinding (`blinding`) | 2 | 1000 | %94.3 | 1.07 | %48.0 |  |
+| Spike (`spike`) | 3 | 1000 | %98.1 | 1.15 | %47.4 |  |
+| ★ Critical Point (`critical-point`) | 2 | 1000 | %96.8 | 1.12 | %47.8 |  |
+| ★ Beast Hiding (`beast-hiding`) | 4 | 1000 | %86.8 | 1.02 | %50.9 |  |
+| Poison Arrow (`poison-arrow`) | 1 | 1000 | %93.4 | 0.99 | %48.9 |  |
+| Perfect Arrow (`perfect-arrow`) | 1 | 1000 | %75.5 | 0.78 | %49.3 |  |
+| Multiple Shot (`multiple-shot`) | 2 | 1000 | %85.9 | 0.89 | %52.7 |  |
+| Viper (`viper`) | 2 | 1000 | %91.9 | 0.97 | %51.0 |  |
+| Blinding Strafe (`blinding-strafe`) | 2 | 1000 | %81.3 | 0.86 | %47.7 |  |
+| ★ Arrow Shower (`arrow-shower`) | 4 | 1000 | %71.0 | 0.74 | %55.5 |  |
+| ★ Power Shot (`power-shot`) | 4 | 1000 | %83.5 | 0.89 | %53.5 |  |
+| Freeze (`freeze`) | 1 | 1000 | %92.1 | 0.99 | %49.5 |  |
+| Burn (`burn`) | 1 | 1000 | %87.2 | 0.93 | %50.3 |  |
+| Chill (`chill`) | 1 | 1000 | %80.5 | 0.87 | %50.7 |  |
+| Fire Ball (`fire-ball`) | 2 | 1000 | %94.4 | 1.04 | %50.5 |  |
+| Frozen Armor (`frozen-armor`) | 2 | 1000 | %88.7 | 0.97 | %50.2 |  |
+| Lightning (`lightning`) | 2 | 1000 | %92.7 | 1.00 | %50.6 |  |
+| Ice Comet (`ice-comet`) | 3 | 1000 | %92.8 | 1.01 | %50.8 |  |
+| ★ Freezing Distance (`freezing-distance`) | 3 | 1000 | %76.2 | 0.83 | %53.5 |  |
+| ★ Meteor Fall (`meteor-fall`) | 6 | 1000 | %81.1 | 0.90 | %60.2 |  |
+| Healing (`healing`) | 1 | 1000 | %97.4 | 1.25 | %48.8 |  |
+| Malice (`malice`) | 1 | 1000 | %90.6 | 1.17 | %47.7 |  |
+| Massive (`massive`) | 2 | 1000 | %93.9 | 1.22 | %47.5 |  |
+| Parasite (`parasite`) | 2 | 1000 | %98.9 | 1.28 | %49.4 |  |
+| Helis (`helis`) | 3 | 1000 | %97.6 | 1.30 | %49.6 |  |
+| Judgement (`judgement`) | 3 | 1000 | %99.3 | 1.31 | %49.6 | HER MAÇ |
+| Great Healing (`great-healing`) | 3 | 1000 | %96.6 | 1.23 | %50.2 |  |
+| ★ Torment (`torment`) | 3 | 1000 | %95.9 | 1.27 | %49.7 |  |
+| ★ Superior Parasite (`superior-parasite`) | 4 | 1000 | %95.4 | 1.25 | %48.5 |  |

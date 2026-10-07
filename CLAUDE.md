@@ -6,7 +6,7 @@ Knight Online'dan esinlenen, Hearthstone tarzı bir kart oyunu. MMORPG değil. F
 - Dil: Türkçe. Hitap: Yasin. Ton samimi ve net.
 - Knight Online'a ait isimler (uluslar, şehirler, item'lar, bosslar, NPC'ler, para birimi) kullanılmaz. Liste: `docs/research/01-ko-topluluk-ve-bagimlilik.md` başı. **Skill isimleri serbest** (Yasin, 2026-10-06); kişi adı içeren skill adı hariç.
 - Sadelik önceliklidir. Bu bir kart oyunu; Knight'taki her sistem buraya taşınmaz.
-- **2026-10-07'den itibaren uygulayıcı DeepSeek Harness; Claude geçici olarak projeden çekildi** (Yasin). Claude geri dönerse önce `docs/deepseek-devir.md` ve devam notundaki DeepSeek dönemi kayıtlarını oku.
+- **2026-10-07 gecesi uygulayıcı DeepSeek Harness'tı; Claude aynı gün geri döndü** (Yasin). DeepSeek dönemi: `docs/deepseek-devir.md` ve devam notu. Faz 2b Görev 1–2 bitti; sırada Görev 3 → Gate 2.
 - Çalışma düzeni (Claude dönemi): Claude uygular, Yasin karar verir. **Copilot 2026-10-06'dan itibaren geçici olarak devre dışı** (Yasin'in kararı); Yasin geri alana kadar Copilot onayı beklenmez. Her önemli adımın sonunda DURUM RAPORU yazılır (şablon: Faz 0–1 planı §1).
 - **Her oturumu `docs/kapanis-protokolu.md`'ye göre kapat:** devam notu, vault, commit + push, kapanış raporu. Hiçbir karar yalnız sohbette kalmaz. Gate geçmeden sonraki faz başlamaz.
 - Mockup'lar (`design/mockups/`) referanstır; spec ve `content/` ile çelişirse spec geçerli.

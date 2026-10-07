@@ -78,10 +78,10 @@
     "effects": [
       {
         "kind": "shield",
-        "amount": 7
+        "amount": 8
       }
     ],
-    "text": "7 Kalkan kazan."
+    "text": "8 Kalkan kazan."
   },
   {
     "id": "lightning",

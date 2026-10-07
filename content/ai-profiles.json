@@ -9,7 +9,7 @@
     "criticalValue": 6,
     "evadeValue": 3,
     "freezeValue": 5,
-    "wastedHeal": 10
+    "maxHpLoss": 1
   },
   "balanced": {
     "enemyDamage": 2,
@@ -21,7 +21,7 @@
     "criticalValue": 5,
     "evadeValue": 3,
     "freezeValue": 5,
-    "wastedHeal": 10
+    "maxHpLoss": 1
   },
   "defensive": {
     "enemyDamage": 1.5,
@@ -33,6 +33,6 @@
     "criticalValue": 4,
     "evadeValue": 4,
     "freezeValue": 4,
-    "wastedHeal": 10
+    "maxHpLoss": 1
   }
 }

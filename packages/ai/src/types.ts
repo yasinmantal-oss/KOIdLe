@@ -14,8 +14,8 @@ export interface Weights {
   evadeValue: number;
   /** Donma'nın AI için değeri: Ateş kombosunun kurulumu olduğu için pozitif. */
   freezeValue: number;
-  /** Boşa giden iyileşmenin cezası (tam HP'de oynanan heal kartı). */
-  wastedHeal: number;
+  /** Rakibin maks HP kaybının (Parasite) puan başına değeri; kendi kaybı eksi sayılır. */
+  maxHpLoss: number;
 }
 
 export const AI_PROFILES: readonly AiProfile[] = ['aggressive', 'balanced', 'defensive'];

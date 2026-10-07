@@ -80,15 +80,17 @@ describe('chooseAction', () => {
     expect(chooseAction(useless.state, useless.me, profiles.aggressive).type).toBe('END_TURN');
   });
 
-  it('differentiates damage taken from max-HP reduction (Parasite)', () => {
-    // Parasite maks HP'yi düşürür, hasar vermez: AI bunu "rakibe zarar" saymamalı.
+  it('values max-HP reduction (Parasite) on top of lost HP', () => {
+    // Parasite: rakip maks HP kaybı AI için artıdır; HP'yi maksa indirirse kayıp HP de artar.
     const parasite = withHand(1, [], 6);
     const foe = parasite.me === 0 ? 1 : 0;
     const before = evaluate(parasite.state, parasite.me, profiles.balanced);
     parasite.state.players[foe].maxHpReduction = 7;
     parasite.state.players[foe].maxHp = config.hero.hp - 7;
+    const capOnly = evaluate(parasite.state, parasite.me, profiles.balanced);
+    expect(capOnly).toBeGreaterThan(before);
     parasite.state.players[foe].hp = config.hero.hp - 7;
-    expect(evaluate(parasite.state, parasite.me, profiles.balanced)).toBe(before);
+    expect(evaluate(parasite.state, parasite.me, profiles.balanced)).toBeGreaterThan(capOnly);
   });
 
   it('profiles differ: aggressive attacks, defensive blocks', () => {

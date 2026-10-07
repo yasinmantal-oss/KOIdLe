@@ -301,14 +301,14 @@ export function renderValuesTable(
   out.push('Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, deste sırası).');
   out.push('');
   out.push(
-    '| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri | Donma değeri | Boşa iyileşme cezası |',
+    '| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri | Donma değeri | Maks HP kaybı değeri |',
   );
   out.push('|---|---|---|---|---|---|---|---|---|---|---|');
   const names = { aggressive: 'saldırgan', balanced: 'dengeli', defensive: 'savunmacı' } as const;
   for (const key of ['aggressive', 'balanced', 'defensive'] as const) {
     const w = ai[key];
     out.push(
-      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} | ${w.criticalValue} | ${w.evadeValue} | ${w.freezeValue} | ${w.wastedHeal} |`,
+      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} | ${w.criticalValue} | ${w.evadeValue} | ${w.freezeValue} | ${w.maxHpLoss} |`,
     );
   }
   out.push('');

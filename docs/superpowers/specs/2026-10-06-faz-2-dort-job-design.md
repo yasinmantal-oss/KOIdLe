@@ -356,3 +356,18 @@ Yalnız sayı değişti (mekanik, ad ve AI aynı). Başlangıç: Okçu, Warrior'
 - Değişmeyenler: Perfect Arrow 2, Poison Arrow 1+2 Zehir, Blinding Strafe, Beast Hiding, Stab, kalkan ve iyileşme kartları.
 
 **Sim sonucu (900 maç, balanced, hazır desteler):** ortalama 7,09 raunt (önce 8,49), Arena ile biten %15,6 (önce %40,8), ilk oyuncu %58,6, job hücreleri %42,0–58,0 (hepsi %40–60 içinde), en düşük oynanma oranı Berserker %58. Bkz. `reports/sim/latest.md`. **Ulaşılamayan hedef:** ilk oyuncu %45–55; K3 kapalı ve bonus 4 ile 300 seed'de %57,0. MP bonusu 5'te de aynı. Kalan fark kart sayısı ve zamanlama farkından geliyor; Gate 2 öncesi yeniden bakılır.
+
+### Denge turu 2 (Faz 2b, 2026-10-07)
+
+Mage ve Priest kodlandıktan sonra (Revizyon 1 kuralları: Lanet yok, Malice ve Torment Zayıflık verir; Revizyon 2'deki +1 hasar Mage'e de uygulandı). Önce AI değerlendirme hatası düzeltildi (iyileşme hasardan 5 kat değerli sayılıyordu, Parasite hiç oynanmıyordu; ayrıntı devam notu). Sonra yalnız sayı ve hazır deste değişti:
+
+- Helis: 5 → 6 hasar
+- Judgement: 3 hasar + statü başına 3 → 4 hasar + statü başına 4
+- Torment: Zayıflık 3 + 2 hasar → Zayıflık 3 + 4 hasar
+- Great Healing: 4 MP 10 HP → 3 MP 9 HP
+- Complete Heal: 15 → 12 HP
+- Frozen Armor: 7 → 8 Kalkan
+- Priest hazır destesi: Complete Heal yerine Superior Parasite, Light Strike yerine Power Strike
+- Light Strike ve Restore havuzdan çıktı (bu tabloda yoktular). Priest havuzu §4.5'teki 10 kart + ortak 5.
+
+Sonuç (2500 maç): tüm job hücreleri %40–60 (7500 maçta %40–59), berabere %21,5 → %0,4, ort. raunt 11,3 → 8,46, ilk oyuncu %42,3. Güncel değerler: `docs/savas-degerleri.md`.

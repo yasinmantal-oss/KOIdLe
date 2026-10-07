@@ -48,17 +48,16 @@ export function evaluate(state: BattleState, me: PlayerIndex, w: Weights): numbe
   }
   const mine = state.players[me];
   const theirs = state.players[me === 0 ? 1 : 0];
-  // O an oynanırsa boşa gidecek iyileşme: tam HP'de heal kartı oynamak "ölü kart"dır.
-  // (Elde duran heal cezalandırılmaz; yalnız boşa harcanan iyileşme ceza alır.)
-  const missing = Math.max(0, mine.maxHp - mine.hp);
+  const full = state.config.hero.hp;
   return (
-    // Alınan toplam hasar: maks HP azaltma (Parasite) bu terimi KÜÇÜLTMEZ, hasar gibi sayılır.
-    w.enemyDamage * theirs.damageTaken -
-    w.selfDamage * mine.damageTaken +
+    // Kayıp HP, başlangıç HP'sine göre: iyileşme bu terimi küçültür, tam HP'de iyileşme değersizdir.
+    w.enemyDamage * (full - theirs.hp) -
+    w.selfDamage * (full - mine.hp) +
+    // Maks HP kaybı (Parasite): ileride geri alınamayan iyileşme kapasitesi.
+    w.maxHpLoss * (theirs.maxHpReduction - mine.maxHpReduction) +
     w.shield * mine.shield -
     w.enemyShield * theirs.shield +
     w.status * (statusScore(state, mine, w) - statusScore(state, theirs, w)) +
-    w.hand * mine.hand.length -
-    w.wastedHeal * missing
+    w.hand * mine.hand.length
   );
 }

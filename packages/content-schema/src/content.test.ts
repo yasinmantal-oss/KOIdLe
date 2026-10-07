@@ -37,9 +37,9 @@ describe('real content', () => {
     expect(loadAiProfiles().balanced).toBeDefined();
   });
 
-  it('54 cards, ids unique across files', () => {
-    expect(cards).toHaveLength(54);
-    expect(new Set(cards.map((c) => c.id)).size).toBe(54);
+  it('52 cards, ids unique across files', () => {
+    expect(cards).toHaveLength(52);
+    expect(new Set(cards.map((c) => c.id)).size).toBe(52);
     const ids = [...commonJson, ...warriorJson, ...rogueJson, ...mageJson, ...priestJson].map(
       (c) => c.id,
     );
@@ -121,10 +121,10 @@ describe('real content', () => {
     pl.hand = [{ iid: 'c0', cardId: 'complete-heal' }];
     pl.mp = 6;
     pl.maxMp = 6;
-    pl.hp = 20;
+    pl.hp = 25;
     const s = apply(state, { type: 'PLAY_CARD', player: me, iid: 'c0' }).state;
     expect(s.players[me].hp).toBe(30);
-    expect(s.players[me].shield).toBe(5);
+    expect(s.players[me].shield).toBe(7);
   });
 
   it('Priest: Parasite kalıcı maks HP kaybı verir (gerçek içerik)', () => {

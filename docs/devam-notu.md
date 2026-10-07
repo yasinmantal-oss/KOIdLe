@@ -1,7 +1,7 @@
 # KOIdLe — Devam Notu (oturum devri)
 
 > **2026-10-07 gece: uygulayıcı DeepSeek Harness'a devredildi. Önce `docs/deepseek-devir.md`'yi oku.** Yedek etiketi: `yedek/2026-10-07-claude-devir`.
-> Son güncelleme: 2026-10-07 gece (Faz 2b Görev 1: ikinci oyuncu telafisi ekstra karta çevrildi; uygulayıcı DeepSeek) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-07 (Claude geri döndü: DeepSeek'in Mage + Priest işi gözden geçirildi, AI değerlendirme hatası düzeltildi, Denge turu 2 yapıldı) · Bir sonraki oturum buradan başlar.
 > **Sayfalar:** savaş/maç formu https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT · tasarım vitrini https://claude.ai/artifact/K1g4KKYhjHVmpaeGAyjCAP
 > **Faz 2a planı:** `docs/superpowers/plans/2026-10-06-faz-2a-warrior-rogue.md` (Görev 1–11 uygulandı; kart içeriği planın değil spec "Revizyon 1–2"nin dediği gibidir).
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
@@ -47,7 +47,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
 - **Yön kontrolü sonrası düzeltme paketi (Yasin onayı, 2026-10-07):** Sprint ve Light Feet kaldırıldı (`gainMp` efekti ve MP_GAINED olayı silindi), Evade eklendi, Okçu kısmen geri alındı, ikinci oyuncu MP bonusu, kart hasarları artırıldı. Ayrıntı: spec "Revizyon 2", rapor `reports/faz-2a/2026-10-07-yon-kontrolu.md`.
 - **Kart yeniden tasarımı (Yasin, 2026-10-07):** ilk Faz 2a kartları reddedildi. Lanet/Gizli/Zincir kaldırıldı; Güç tek seferlik, Kritik ve Kaçınma eklendi, Zehir azalır; kartlar KO skill etkisine göre, adlar İngilizce, metin Türkçe + kart altı sözlük. Ayrıntı: spec eki "Revizyon 1". Sim yeniden üretildi (`reports/sim/latest.md`).
-- **Tamamlanmayan:** Faz 2b; Gate 2. (İkinci oyuncu telafisinin ekstra karta çevrilmesi 2026-10-07 gecesi tamamlandı — DeepSeek, Faz 2b Görev 1.)
+- **Faz 2b Görev 2 (Mage + Priest) kodlandı ve dengelendi (2026-10-07).** DeepSeek kartları, Donma/Ateş, taşan iyileşme → Kalkan, maks HP azaltma (Parasite) ve debuff sayımını (Judgement) kodladı ama commit'lemedi; Claude gözden geçirdi (`91be269` = DeepSeek'in ham hali), AI hatasını düzeltti ve Denge turu 2'yi yaptı. Sim (2500 job maçı): **20 job hücresinin hepsi %40–60 içinde**, ort. raunt 8,46, berabere %0,4, ilk oyuncu %42,3. Ayrıntı: "DEĞİŞTİRİLEN KARARLAR" ve spec eki "Denge turu 2".
+- **Tamamlanmayan:** Faz 2b Görev 3 (sayfa yayını + Yasin her job ile en az 2 maç); Gate 2. (İkinci oyuncu telafisinin ekstra karta çevrilmesi 2026-10-07 gecesi tamamlandı — DeepSeek, Faz 2b Görev 1.)
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -114,6 +115,14 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Rakip intent (Yasin):** PvP/CZ'de rakibin eli ve sıradaki kartı **gizlidir**; mockup'taki PvP intent göstergesi güncel karar değildir. Intent sistemi ileride yalnız PvE/Boss karşılaşmalarında kullanılabilir. Neden: PvP'de gizli bilgi kararın parçası; AI da gizli bilgiyi görmüyor.
 
 ## DEĞİŞTİRİLEN KARARLAR
+- **AI değerlendirmesi düzeltildi (Claude, 2026-10-07, teknik karar; Yasin "dengeyi bozan yanlışları düzelt" yetkisi).** ÖNCE (DeepSeek, commit'lenmemiş): AI kahraman durumunu toplam alınan hasarla (`damageTaken`, iyileşmeyle hiç azalmaz) ölçüyordu, üstüne "eksik HP × 10" cezası vardı. Sonuç: 1 HP iyileşme 1 hasardan 5 kat değerliydi, Priest iyileşip duruyor, maçların %26'sı raunt tavanında berabere bitiyordu; Parasite AI'a 0 puan getirdiği için hiç oynanmıyordu (bunu kilitleyen bir test bile vardı). SONRA: kayıp HP başlangıç HP'sine göre ölçülür (`hero.hp − hp`), yeni ağırlık `maxHpLoss` (3 profilde 1) rakibin maks HP kaybını puanlar, `wastedHeal` silindi. NEDEN: AI kararı denge ölçümünün temeli; hatalı skorla sim verisi anlamsızdı.
+- **Denge turu 2 — Mage + Priest (Claude, 2026-10-07; Yasin yetkisi: "dengelemeleri yap").** Yalnız sayı ve hazır deste değişti, mekanik aynı. ÖNCE → SONRA:
+  - Helis: 5 → 6 hasar · Judgement: 3 + statü başına 3 → **4 + statü başına 4** · Torment: Zayıflık 3 + 2 hasar → Zayıflık 3 + **4 hasar**
+  - Great Healing: 4 MP, 10 HP → **3 MP, 9 HP** · Complete Heal: 15 → **12 HP** (hazır destede yok, havuzda)
+  - Frozen Armor (Mage): 7 → **8 Kalkan**
+  - Priest hazır destesi: Light Strike → **Power Strike**, Complete Heal → **Superior Parasite**
+  - **Light Strike ve Restore havuzdan çıkarıldı:** spec'te yoktu (DeepSeek eklemişti), Restore Great Healing'in kopyasıydı. Priest havuzu spec'teki 10 kart + 5 ortak = 15; toplam kart 52.
+  NEDEN: Priest öldüremiyordu (deste turu başına hasar < 30 HP, iyileşme 29 + Kalkan), Priest maçları raunt tavanında berabere bitiyordu (Priest aynası %89 berabere). Complete Heal hazır destede kaldıkça ayna kilitleniyordu. Sim (2500 maç): job hücreleri %39,5–59 (7500 maçta hepsi %40–59), berabere %21,5 → %0,4, ort. raunt 11,3 → 8,46. Not: DeepSeek'in diğer değerleri (Mage +1 hasarları, Malice = Zayıflık 2) Revizyon 1 (Lanet kaldırıldı) ve Revizyon 2 (+1 hasar) ile tutarlı, korundu.
 - **İkinci oyuncu telafisi: MP bonusu → ekstra kart (Yasin kararı 2026-10-07; uygulandı 2026-10-07 gece, Faz 2b Görev 1, DeepSeek).** ÖNCE: ikinci oyuncu kendi 1. turunda `mp.secondPlayerFirstTurnBonus: 4` MP alıyordu. SONRA: alan duruyor ama **0**; yerine ikinci oyuncu kendi 1. turunda `hand.secondPlayerFirstTurnExtraDraw` = **1** ekstra kart çeker (`drawPerTurn` üstüne, yalnız o tur; el sınırı, karıştırma ve Yorgunluk `drawCard` üzerinden aynen geçerli). K3 kapalı kalıyor (`firstPlayerSkipsFirstDraw: false`). NEDEN: +4 MP "oyuncu gözüyle garip"ti, ekstra kart anlaşılır. **Ölçüm (900 job maçı):** ilk oyuncu %61,3 → **%43,3**; ort. raunt 7,30 → 7,34; job hücreleri %42–58. 4500 job maçıyla doğrulama: **%42,8**, raunt 7,32, hücreler %41,9–58,1. **Hedef %45–55 yine tutmadı:** dört kombinasyon içinde hedefe en yakın ve en sade olan bu (`extra=2` → %28,4; K3 açık → %20,9 / %11,9); sıfır telafi %66,1. Not: bir kartlık fark çok büyük bir kol (~±22 puan); fazın kalanı (Mage + Priest) gelince yeniden ölçülür.
 - **`mp.secondPlayerFirstTurnBonus` alanı silinmedi (teknik karar, 2026-10-07).** ÖNCE: MP bonusu tek telafi yolu. SONRA: alan şemada ve değer tablosunda duruyor, değeri 0; eski davranış config ile hâlâ seçilebilir. NEDEN: projede `shield.persistence` ve `arenaCollapse.enabled` ile aynı gelenek — kapatılan mekaniğin kod yolu config için durur.
 - **Arena Çöküşü kaldırıldı (Yasin, 2026-10-07, düello geri bildirimi).** ÖNCE: 8. rauntan itibaren iki tarafa artan hasar (Arena bitişi %15,6). SONRA: `arenaCollapse.enabled: false` (kod yolu config için duruyor); maç Yorgunluk ve raunt tavanıyla biter. NEDEN: "Arena çökmesi diye bir şey olmamalı". Sim (1170 maç): ort. raunt 7,30, berabere %0, ilk oyuncu %61,3 (önce %58,6), job eşleşmeleri %41–59; Yorgunluk ve raunt tavanı bitişi %0. Ayar gerekmedi (ort. raunt 6,5–8,5 içinde); ilk oyuncu payı biraz yükseldi, açık konu.
@@ -133,6 +142,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)
 
 ## TEST / SİMÜLASYON
+- **Testler (2026-10-07, Claude, Denge turu 2 sonrası):** **228 test yeşil** (rules 107, content-schema 36, ai 13, client 66, sim 6), `-r typecheck` temiz, `biome check apps packages content tools` temiz (133 dosya).
+- **Denge turu 2 sim (2026-10-07).** 2500 job maçı (5×5 × 100 seed): ort. raunt **8,46**, berabere **%0,4**, ilk oyuncu **%42,3** (hedef %45–55, açık konu), Yorgunluk %1, ölü açılış %0, DÜŞÜK işaretli kart yok. 7500 maçlık doğrulama (300 seed): tüm hücreler %40–59, en zayıf Asas–Priest %40. Matris (satır kazanır): Warrior 46/58/58/58 · Asas 54/43/49/40 · Okçu 42/57/53/44 · Mage 42/51/47/51 · Priest 42/59/56/49. Denenen ve elenen ~25 varyant: Priest Zayıflığını azaltmak Asas'ı düzeltiyor ama Warrior–Priest'i %63–66'ya çıkarıyor.
 - **Testler (2026-10-07 gece, DeepSeek doğrulaması):** **191 test yeşil** (rules 93, content-schema 29, ai 12, client 53, sim 4), `-r typecheck` temiz, `biome check apps packages content tools` temiz (128 dosya).
 - **Faz 2b Görev 1 sim ölçümü (DeepSeek, 2026-10-07 gece).** Ölçüm aracı: 4 kombinasyon, 900 job + 270 profil maçı, balanced vs balanced, hazır desteler, aynı seed'ler (job 1–100, profil 1–10).
   | Kombinasyon | İlk oyuncu | Ort. raunt | Job hücreleri |
@@ -214,17 +225,11 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Faz 2b Görev 1 tamamlandı (2026-10-07 gece, DeepSeek):** ikinci oyuncu telafisi ekstra karta çevrildi; seçilen config `hand.secondPlayerFirstTurnExtraDraw: 1`, `mp.secondPlayerFirstTurnBonus: 0`, K3 kapalı. Ölçüm ve yorum: "TEST / SİMÜLASYON" + "DEĞİŞTİRİLEN KARARLAR". **İlk oyuncu %43,3 (4500 maçta %42,8)** — hedef %45–55 hâlâ tutmadı; Yasin'in kararı beklenir (kabul / kartla çözüm / yeni telafi).
+**Faz 2b Görev 2 tamamlandı (2026-10-07):** Mage + Priest kodlu ve dengeli (20/20 hücre %40–60). **Sıradaki: Görev 3** — oyun sayfasını güncelle (`corepack pnpm --filter @koidle/client artifact` → Artifact aynı url), Yasin her job ile (Warrior, Asas, Okçu, Mage, Priest) en az 2 maç oynar → **Gate 2** (ölçütler spec eki §9). Açık konu: ilk oyuncu %42,3 (hedef %45–55).
 
-**Sıradaki iş: Faz 2b Görev 2 — Mage + Priest kart havuzları** (Yasin onayıyla). Kart listesi kodlamadan önce Yasin'e tablo olarak gösterilir (ad, MP, etki, KO karşılığı); kart tasarımı Yasin'in kararı. Sonra AI/sim desteği, 5×5 job matrisi (%40–60) ve Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
-
-~~Yeni oturumun ilk işi: hangisiyle başlanacağını Yasin seçer.~~
-- **A. Eşya tasarımı sıfırdan (Yasin: OLDUKÇA ÖNEMLİ).** Yasin'le birlikte ayrı bir tasarım oturumu: item slotları, sınıf kısıtı, nadirlik, upgrade (Anvil), düelloda/CZ'de eşyanın etkisi (tavanlı stat + kart efekti), çanta/filtre, görünüm. Çıktı: kısa spec eki. Kod yok, onay sonrası.
-- **B. Faz 2b** (aşağıda).
-
-**Faz 2b (uygulayıcı: DeepSeek), sırayla:**
+**Faz 2b, sırayla:**
 1. ~~**İkinci oyuncu telafisi = ekstra kart**~~ **TAMAMLANDI (2026-10-07 gece).** `mp.secondPlayerFirstTurnBonus: 0`; ikinci oyuncu ilk turunda +1 kart (`hand.secondPlayerFirstTurnExtraDraw`). Sim: ilk oyuncu %43,3 (hedef %45–55; 4 kombinasyon içinde en yakın/en sade). K3 kapalı kaldı.
-2. **Mage + Priest** kartları, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15. **Kodlamadan önce kart listesi Yasin'e tablo olarak sunulur.**
+2. ~~**Mage + Priest**~~ **TAMAMLANDI (2026-10-07, DeepSeek kodladı, Claude dengeledi).** Kartlar, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15. **Kodlamadan önce kart listesi Yasin'e tablo olarak sunulur.**
 3. Sim (5×5 job matrisi, %40–60), sayfa yayını, Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
 - **Çalışma şekli (Yasin):** hızlı ilerle; ağır işleri ajanlara ver; ara onay için durma, sonucu getir. Uzun plan dokümanı yazma.
 - Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
@@ -242,8 +247,8 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 6. Oturum sonunda `docs/kapanis-protokolu.md`'yi uygula.
 
 ## Çalışma düzeni
-- **DeepSeek Harness:** 2026-10-07 gecesinden itibaren uygulayıcı (kod, test, commit, push).
-- **Claude:** geçici olarak çekildi (önceden tek uygulayıcıydı).
+- **Claude:** 2026-10-07'de geri döndü, uygulayıcı (Yasin: "devam edelim").
+- **DeepSeek Harness:** 2026-10-07 gecesi uygulayıcıydı (Faz 2b Görev 1–2); Yasin ona serbestlik tanıdı. Yeniden devredilirse `docs/deepseek-devir.md` geçerli.
 - **Copilot:** geçici olarak devre dışı (2026-10-06). Geri dönerse: bağımsız inceleyici; repo'yu göremez, yalnız Yasin'in ilettiğini okur.
 - **Yasin:** karar veren ve köprü.
 - Copilot önerisi repo'daki gerçek durumla çelişirse Claude uygulamadan önce yazar ve Yasin'e sorar. Copilot önerisi emir değildir.

@@ -120,8 +120,8 @@ export const AiWeightsSchema = z.strictObject({
   evadeValue: z.number().min(0),
   /** Donma'nın AI için değeri: Ateş kombosunun kurulumu. */
   freezeValue: z.number().min(0),
-  /** Boşa giden iyileşmenin cezası (tam HP'de heal). */
-  wastedHeal: z.number().min(0),
+  /** Rakibin maks HP kaybının (Parasite) puan başına değeri. */
+  maxHpLoss: z.number().min(0),
 });
 
 export const AiProfilesSchema = z.strictObject({
