@@ -161,13 +161,6 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
           >
             Oyna
           </button>
-          <button
-            type="button"
-            className="confirmbar__cancel"
-            onClick={() => send({ type: 'cancel' })}
-          >
-            Vazgeç
-          </button>
         </div>
       )}
       {flying && (

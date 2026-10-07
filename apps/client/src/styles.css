@@ -2768,6 +2768,7 @@ button.tile:hover {
   font-family: var(--t);
   font-size: 15px;
   font-weight: 900;
+  min-height: 26px;
 }
 .fighter--me .fighter__name {
   justify-content: center;
@@ -2829,7 +2830,8 @@ button.tile:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  min-height: 0;
+  min-height: 26px;
+  align-content: flex-start;
 }
 .fighter--me .fxchips {
   justify-content: center;
@@ -2903,6 +2905,8 @@ button.tile:hover {
 }
 .played-count {
   position: relative;
+  min-height: 20px;
+  font-variant-numeric: tabular-nums;
   font-size: 11px;
   color: var(--dim);
   background: rgba(0, 0, 0, 0.6);
@@ -2952,7 +2956,7 @@ button.tile:hover {
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
-  padding: 14px 4px 10px;
+  padding: 22px 4px 10px;
   margin: 0 -10px;
   padding-left: 20px;
   padding-right: 14px;
@@ -3656,6 +3660,15 @@ input[type="radio"] {
 .handwrap {
   position: relative;
 }
+.bar b,
+.mpgems b,
+.fighter__meta dd,
+.fxchip {
+  font-variant-numeric: tabular-nums;
+}
+.played-count--off {
+  visibility: hidden;
+}
 .card--selected,
 .card--selected:hover {
   transform: translateY(-14px) scale(1.04);
@@ -3669,6 +3682,14 @@ input[type="radio"] {
 }
 .confirmbar,
 .endconfirm {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 50;
+  max-width: 460px;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   flex-wrap: wrap;

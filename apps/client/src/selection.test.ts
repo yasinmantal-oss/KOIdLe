@@ -6,9 +6,9 @@ describe('selectionStep', () => {
     const r = selectionStep(NO_SELECTION, { type: 'tap', iid: 'a', playable: true });
     expect(r).toEqual({ state: { selected: 'a' }, play: null });
   });
-  it('tapping the selected card again plays it', () => {
+  it('tapping the selected card again deselects it, never plays', () => {
     const r = selectionStep({ selected: 'a' }, { type: 'tap', iid: 'a', playable: true });
-    expect(r).toEqual({ state: NO_SELECTION, play: 'a' });
+    expect(r).toEqual({ state: NO_SELECTION, play: null });
   });
   it('tapping another card moves the selection', () => {
     const r = selectionStep({ selected: 'a' }, { type: 'tap', iid: 'b', playable: true });

@@ -150,11 +150,9 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         <span className={`turnflag${myTurn ? ' turnflag--me' : ''}`}>
           {state.result ? 'Bitti' : myTurn ? 'Senin sıran' : 'Rakip düşünüyor…'}
         </span>
-        {myTurn && (
-          <span className="played-count">
-            Bu tur oynanan kart: <strong>{state.players[HUMAN].cardsPlayedThisTurn}</strong>
-          </span>
-        )}
+        <span className={`played-count${myTurn ? '' : ' played-count--off'}`}>
+          Bu tur oynanan kart: <strong>{state.players[HUMAN].cardsPlayedThisTurn}</strong>
+        </span>
         <button
           type="button"
           className="end-turn"
