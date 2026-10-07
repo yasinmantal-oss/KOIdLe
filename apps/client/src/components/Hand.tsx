@@ -31,6 +31,8 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
   const hand = state.players[HUMAN].hand;
   const [selection, setSelection] = useState(NO_SELECTION);
   const [flying, setFlying] = useState<Flying | null>(null);
+  /** "Oyna" ile onaylanıp sırası gelmeyi bekleyen kartlar (ilki hemen oynanır). */
+  const [queue, setQueue] = useState<readonly string[]>([]);
   const refs = useRef(new Map<string, HTMLButtonElement>());
   const wrapRef = useRef<HTMLDivElement>(null);
   const flyKey = useRef(0);
@@ -38,7 +40,14 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
   const playableIids = hand
     .filter((c) => validateAction(state, { type: 'PLAY_CARD', player: HUMAN, iid: c.iid }) === null)
     .map((c) => c.iid);
-  const selected = validSelection(selection, playableIids);
+  const mp = state.players[HUMAN].mp;
+  const costOf = (iid: string) => {
+    const inst = hand.find((c) => c.iid === iid);
+    return (inst && state.cards[inst.cardId]?.cost) ?? 0;
+  };
+  const selected = validSelection(selection, playableIids, mp, costOf);
+  const selectedCost = selected.reduce((sum, iid) => sum + costOf(iid), 0);
+  const busy = queue.length > 0;
 
   const play = (iid: string) => {
     const el = refs.current.get(iid);
@@ -64,8 +73,25 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
   const send = (a: SelectionAction) => {
     const r = selectionStep({ selected }, a);
     setSelection(r.state);
-    if (r.play) play(r.play);
+    const [first, ...rest] = r.play;
+    if (first) {
+      play(first);
+      setQueue(rest);
+    }
   };
+
+  // Kuyruktaki kartlar uçuş animasyonu bitince sırayla oynanır; artık oynanamayan atlanır.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: play her render'da yenilenir; tetikleyici kuyruk ve state
+  useEffect(() => {
+    if (queue.length === 0) return;
+    const t = setTimeout(() => {
+      const [next, ...rest] = queue;
+      setQueue(rest);
+      if (next && validateAction(state, { type: 'PLAY_CARD', player: HUMAN, iid: next }) === null)
+        play(next);
+    }, FLY_MS);
+    return () => clearTimeout(t);
+  }, [queue, state]);
 
   useEffect(() => {
     if (!flying) return;
@@ -74,7 +100,7 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
   }, [flying]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (selected.length === 0) return;
     const onDown = (e: Event) => {
       const t = e.target as Node;
       if (wrapRef.current?.contains(t)) return;
@@ -89,9 +115,9 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
       document.removeEventListener('pointerdown', onDown);
       document.removeEventListener('keydown', onKey);
     };
-  }, [selected]);
+  }, [selected.length]);
 
-  const selInst = hand.find((c) => c.iid === selected);
+  const selInst = selected.length === 1 ? hand.find((c) => c.iid === selected[0]) : undefined;
   const selDef = selInst ? state.cards[selInst.cardId] : undefined;
   const selPreview = selInst ? previewCard(state, HUMAN, selInst.cardId) : null;
 
@@ -102,7 +128,10 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
           const def = state.cards[c.cardId];
           if (!def) return null;
           const playable = playableIids.includes(c.iid);
-          const isSel = selected === c.iid;
+          const order = selected.indexOf(c.iid);
+          const isSel = order >= 0;
+          const fits = def.cost <= mp - selectedCost;
+          const selectable = !busy && (isSel || (playable && fits));
           const preview = previewCard(state, HUMAN, c.cardId);
           const glossary = glossaryLine(def.text, state.config);
           return (
@@ -113,12 +142,17 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
                 if (el) refs.current.set(c.iid, el);
                 else refs.current.delete(c.iid);
               }}
-              className={`card card--${def.type}${preview.bonusActive ? ' card--combo' : ''}${playable ? ' card--ready' : ''}${isSel ? ' card--selected' : ''}`}
-              disabled={!playable}
+              className={`card card--${def.type}${preview.bonusActive ? ' card--combo' : ''}${selectable && !isSel ? ' card--ready' : ''}${isSel ? ' card--selected' : ''}`}
+              disabled={!selectable}
               aria-pressed={isSel}
-              onClick={() => send({ type: 'tap', iid: c.iid, playable })}
+              onClick={() => send({ type: 'tap', iid: c.iid, playable, fits })}
             >
               <span className="card__cost">{def.cost}</span>
+              {isSel && selected.length > 1 && (
+                <span className="card__order" aria-hidden="true">
+                  {order + 1}
+                </span>
+              )}
               {isHeavy(def) && (
                 <span className="card__heavy" title="Ağır kart: destede sayısı sınırlı">
                   ★
@@ -143,14 +177,22 @@ export function Hand({ state, onPlay }: { state: BattleState; onPlay: (iid: stri
           );
         })}
       </div>
-      {selDef && selPreview && (
+      {selected.length > 0 && !busy && (
         <div className="confirmbar">
           <span className="confirmbar__info">
-            <strong>{selDef.name}</strong>
-            {selPreview.damage !== null && (
+            {selDef && selPreview ? (
               <>
-                {' '}
-                · Şu an: <strong>{selPreview.damage}</strong> hasar
+                <strong>{selDef.name}</strong>
+                {selPreview.damage !== null && (
+                  <>
+                    {' '}
+                    · Şu an: <strong>{selPreview.damage}</strong> hasar
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <strong>{selected.length} kart</strong> · {selectedCost}/{mp} MP · seçim sırasıyla
               </>
             )}
           </span>
