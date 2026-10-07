@@ -150,7 +150,12 @@ describe('rulesSummary', () => {
   it('builds the short rule list from config values', () => {
     const lines = rulesSummary(testConfigForSummary);
     expect(lines.join('\n')).toContain('en fazla 6');
-    expect(lines.join('\n')).toContain('8. rauntan');
+    expect(lines.join('\n')).not.toContain('Arena');
+    const on = rulesSummary({
+      ...testConfigForSummary,
+      arenaCollapse: { ...testConfigForSummary.arenaCollapse, enabled: true },
+    });
+    expect(on.join('\n')).toContain('8. rauntan');
     expect(lines.join('\n')).toContain('bir sonraki turunun başında sıfırlanır');
   });
 });

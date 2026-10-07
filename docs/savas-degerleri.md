@@ -26,6 +26,7 @@
 | Yorgunluk artışı | `fatigue.step` | 1 | Hasar dizisi: 1, 2, 3, 4… |
 | Yorgunluk Kalkanı yok sayar | `fatigue.ignoresShield` | evet | N1 |
 | Kalkan davranışı | `shield.persistence` | resetOnOwnTurnStart | K1. resetOnOwnTurnStart: kullanılmayan Kalkan sahibinin sonraki tur başında 0 olur. Alternatif: persistent |
+| Arena Çöküşü açık | `arenaCollapse.enabled` | hayır | Yasin kararı: kapalı. Maç Yorgunluk ve raunt sınırıyla biter. Kod yolu config için durur |
 | Arena Çöküşü başlangıcı | `arenaCollapse.startRound` | 8 | Bu rauntan itibaren her oyuncu kendi tur başında hasar alır |
 | Arena ilk hasar | `arenaCollapse.start` | 1 |  |
 | Arena artışı | `arenaCollapse.step` | 1 | 8. rauntan itibaren: 1, 2, 3, 4… |

@@ -209,6 +209,20 @@ describe('arena collapse', () => {
   });
 });
 
+describe('arena collapse flag', () => {
+  it('deals no arena damage when disabled', () => {
+    const cfg = withConfig({ arenaCollapse: { ...testConfig.arenaCollapse, enabled: false } });
+    const { state } = newBattle(1, cfg);
+    const first = state.firstPlayer;
+    const s = endTurns(state, 14).state; // 8. raunt
+    expect(s.round).toBe(8);
+    s.players[first].hp = 30;
+    s.players[first].shield = 0;
+    const r = endTurns(s, 2);
+    expect(r.events.some((e) => e.type === 'DAMAGE_DEALT' && e.source === 'arena')).toBe(false);
+  });
+});
+
 describe('deck exhaustion (K2, N4)', () => {
   it('reshuffles once, then deals growing fatigue', () => {
     const cfg = withConfig({ arenaCollapse: { ...testConfig.arenaCollapse, startRound: 99 } });

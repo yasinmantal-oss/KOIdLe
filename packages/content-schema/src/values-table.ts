@@ -94,6 +94,12 @@ function rows(c: BattleConfig): Row[] {
       'K1. resetOnOwnTurnStart: kullanılmayan Kalkan sahibinin sonraki tur başında 0 olur. Alternatif: persistent',
     ],
     [
+      'Arena Çöküşü açık',
+      'arenaCollapse.enabled',
+      a.enabled,
+      'Yasin kararı: kapalı. Maç Yorgunluk ve raunt sınırıyla biter. Kod yolu config için durur',
+    ],
+    [
       'Arena Çöküşü başlangıcı',
       'arenaCollapse.startRound',
       a.startRound,

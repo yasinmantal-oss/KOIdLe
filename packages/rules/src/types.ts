@@ -61,7 +61,13 @@ export interface BattleConfig {
   deck: { size: number; reshuffles: number };
   fatigue: { start: number; step: number; ignoresShield: boolean };
   shield: { persistence: 'resetOnOwnTurnStart' | 'persistent' };
-  arenaCollapse: { startRound: number; start: number; step: number; ignoresShield: boolean };
+  arenaCollapse: {
+    enabled: boolean;
+    startRound: number;
+    start: number;
+    step: number;
+    ignoresShield: boolean;
+  };
   statuses: {
     /** Zayıflık: K7 (büyük/eşit değer yeniler); sahibinin tur sonunda süre düşer. */
     weak: { duration: number };

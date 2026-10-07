@@ -273,7 +273,7 @@ export function renderMarkdown(s: SimSummary, config: BattleConfig, meta: Report
   );
   o.push(`> AI tur planı: derinlik ${meta.planner.depth}, ışın ${meta.planner.beam}.`);
   o.push(
-    `> Config özeti: HP ${config.hero.hp} · MP ${config.mp.start}→${config.mp.max} · el ${config.hand.starting}/${config.hand.limit} · Kalkan ${config.shield.persistence} · karıştırma ${config.deck.reshuffles} · Arena ${config.arenaCollapse.startRound}. raunt · Yorgunluk ${config.fatigue.start}+${config.fatigue.step}`,
+    `> Config özeti: HP ${config.hero.hp} · MP ${config.mp.start}→${config.mp.max} · el ${config.hand.starting}/${config.hand.limit} · Kalkan ${config.shield.persistence} · karıştırma ${config.deck.reshuffles} · Arena ${config.arenaCollapse.enabled ? `${config.arenaCollapse.startRound}. raunt` : 'kapalı'} · Yorgunluk ${config.fatigue.start}+${config.fatigue.step}`,
   );
   o.push('');
   o.push('## Genel');

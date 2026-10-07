@@ -150,7 +150,11 @@ export function rulesSummary(c: BattleConfig): string[] {
     `MP: her turun başında dolar ve 1 artar, en fazla ${c.mp.max}. Kullanılmayan MP devretmez.`,
     `Güç X: sonraki hasar veren kartının ilk vuruşu X fazla vurur, sonra Güç biter (toplanır, en fazla ${s.strength.max}). Zayıflık X: kart hasarın X azalır (${s.weak.duration} tur).`,
     shield,
-    `Arena Çöküşü: ${c.arenaCollapse.startRound}. rauntan itibaren iki taraf her tur başında artan hasar alır (${c.arenaCollapse.start}, ${c.arenaCollapse.start + c.arenaCollapse.step}, …); Kalkanı yok sayar.`,
+    ...(c.arenaCollapse.enabled
+      ? [
+          `Arena Çöküşü: ${c.arenaCollapse.startRound}. rauntan itibaren iki taraf her tur başında artan hasar alır (${c.arenaCollapse.start}, ${c.arenaCollapse.start + c.arenaCollapse.step}, …); Kalkanı yok sayar.`,
+        ]
+      : []),
     `Deste bitince ıskarta ${c.deck.reshuffles} kez karıştırılır. Sonra çekemediğin her kart için Yorgunluk hasarı alırsın (${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}, …).`,
     `Zehir X: sahibinin her tur başında X hasar (Kalkanı yok sayar), sonra ${s.poison.decay} azalır; toplanır, en fazla ${s.poison.max}.`,
     'Kritik: sonraki hasar veren kartın her vuruşu iki kat vurur (Güç ve Zayıflık sonrası, Kalkandan önce). Kaçınma: rakibin sonraki hasar veren kartının ilk vuruşu 0 hasar verir; kullanılmazsa sonraki turunda biter.',

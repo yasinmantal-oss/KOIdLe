@@ -15,7 +15,7 @@ export const testConfig: BattleConfig = {
   deck: { size: 12, reshuffles: 1 },
   fatigue: { start: 1, step: 1, ignoresShield: true },
   shield: { persistence: 'resetOnOwnTurnStart' },
-  arenaCollapse: { startRound: 8, start: 1, step: 1, ignoresShield: true },
+  arenaCollapse: { enabled: true, startRound: 8, start: 1, step: 1, ignoresShield: true },
   statuses: {
     weak: { duration: 2 },
     strength: { max: 5 },

@@ -28,6 +28,7 @@
     "persistence": "resetOnOwnTurnStart"
   },
   "arenaCollapse": {
+    "enabled": false,
     "startRound": 8,
     "start": 1,
     "step": 1,

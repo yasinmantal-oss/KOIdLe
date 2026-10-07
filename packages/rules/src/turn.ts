@@ -46,7 +46,7 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
     }
   }
 
-  if (state.round >= arenaCollapse.startRound) {
+  if (arenaCollapse.enabled && state.round >= arenaCollapse.startRound) {
     const amount =
       arenaCollapse.start + (state.round - arenaCollapse.startRound) * arenaCollapse.step;
     dealDamage(state, 'arena', p, amount, arenaCollapse.ignoresShield, events);

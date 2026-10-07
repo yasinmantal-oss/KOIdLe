@@ -32,6 +32,7 @@
         "persistence": "resetOnOwnTurnStart"
       },
       "arenaCollapse": {
+        "enabled": true,
         "startRound": 8,
         "start": 1,
         "step": 1,
@@ -1072,6 +1073,7 @@
           "persistence": "resetOnOwnTurnStart"
         },
         "arenaCollapse": {
+          "enabled": true,
           "startRound": 8,
           "start": 1,
           "step": 1,

@@ -23,6 +23,7 @@ export const BattleConfigSchema = z.strictObject({
   fatigue: z.strictObject({ start: int(), step: int(), ignoresShield: z.boolean() }),
   shield: z.strictObject({ persistence: z.enum(['resetOnOwnTurnStart', 'persistent']) }),
   arenaCollapse: z.strictObject({
+    enabled: z.boolean(),
     startRound: positive(),
     start: int(),
     step: int(),
