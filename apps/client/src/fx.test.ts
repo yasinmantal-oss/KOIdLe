@@ -71,6 +71,43 @@ describe('fxFor', () => {
     ).toEqual([]);
   });
 
+  it('calls out BUHARLAŞMA! when Donma is consumed in the same action as card damage', () => {
+    const events: BattleEvent[] = [
+      { type: 'STATUS_CONSUMED', player: 1, status: 'freeze' },
+      dmg(5),
+    ];
+    expect(fxFor(events).callouts).toEqual(['BUHARLAŞMA!']);
+    // Olay sırası ters gelirse de kombo çağrısı aynı kalır (hasar tüm yığından okunur).
+    expect(fxFor([...events].reverse()).callouts).toEqual(['BUHARLAŞMA!']);
+  });
+
+  it('no BUHARLAŞMA! without damage or without consumed Donma', () => {
+    expect(fxFor([{ type: 'STATUS_CONSUMED', player: 1, status: 'freeze' }]).callouts).toEqual([]);
+    expect(
+      fxFor([{ type: 'STATUS_CONSUMED', player: 1, status: 'poison' }, dmg(5)]).callouts,
+    ).toEqual([]);
+    // Sistem hasarı (Arena/Yorgunluk) kart hasarı sayılmaz.
+    expect(
+      fxFor([{ type: 'STATUS_CONSUMED', player: 1, status: 'freeze' }, dmg(5, 1, 'arena')])
+        .callouts,
+    ).toEqual([]);
+  });
+
+  it('calls out PARASİT! when max HP is reduced', () => {
+    expect(fxFor([{ type: 'MAX_HP_REDUCED', player: 1, amount: 4, maxHp: 26 }]).callouts).toEqual([
+      'PARASİT!',
+    ]);
+  });
+
+  it('keeps the Faz 2b callouts in event order', () => {
+    const events: BattleEvent[] = [
+      { type: 'STATUS_CONSUMED', player: 1, status: 'freeze' },
+      dmg(3),
+      { type: 'MAX_HP_REDUCED', player: 1, amount: 2, maxHp: 28 },
+    ];
+    expect(fxFor(events).callouts).toEqual(['BUHARLAŞMA!', 'PARASİT!']);
+  });
+
   it('edge flash only for big damage taken by the viewer', () => {
     expect(fxFor([dmg(FX.edgeFlashAt, 0, 1)], 0).edgeFlash).toBe(true);
     expect(fxFor([dmg(FX.edgeFlashAt - 1, 0, 1)], 0).edgeFlash).toBe(false);

@@ -40,6 +40,7 @@
   --kw-poison: #8fd16f;
   --kw-critical: #ff8a8a;
   --kw-evade: #6fd0c8;
+  --kw-freeze: #b9e6ff;
   --text: var(--ink);
   --muted: var(--dim);
   --good: var(--ok);
@@ -3152,6 +3153,9 @@ button.tile:hover {
 }
 .kw--evade {
   color: var(--kw-evade);
+}
+.kw--freeze {
+  color: var(--kw-freeze);
 }
 
 .battle__more {

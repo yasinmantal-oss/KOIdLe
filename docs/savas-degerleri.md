@@ -36,6 +36,7 @@
 | Güç üst sınırı | `statuses.strength.max` | 5 | Toplanır, bu değerde kesilir. Süresi yok; ilk hasar veren kartın ilk vuruşunda tamamı harcanır |
 | Zehir üst sınırı | `statuses.poison.max` | 6 | Toplanır, bu değerde kesilir |
 | Zehir azalması | `statuses.poison.decay` | 2 | Sahibinin tur başında değer kadar hasar (Kalkanı yok sayar), sonra değer bu kadar azalır; ≤ 0 olunca kalkar |
+| Donma süresi | `statuses.freeze.duration` | 2 | Rakibe verilince: rakibin sonraki 2 turu. Tek başına etkisi yok; Ateş kartı bonus alır ve Donma'yı tüketir. K7: gelen değer ≥ mevcut ise yenilenir |
 | Güvenlik tavanı | `roundCap` | 20 | Bu raunt biterse berabere. Normalde tetiklenmemeli |
 
 **Raunt:** iki oyuncunun da birer tur oynaması. Raunt, ilk oyuncunun turu başlarken artar.
@@ -52,9 +53,13 @@
 - Kritik: sonraki hasar veren kartın **her vuruşu** iki katı (Güç/Zayıflık sonrası, Kalkandan önce); sonra harcanır. Yalnız Critical Point verir.
 - Kaçınma: rakibin sonraki hasar veren kartının **ilk vuruşu** 0 hasar verir ve harcanır; kullanılmazsa sahibinin sonraki turunun başında düşer. Zehir, Arena ve Yorgunluğu durdurmaz.
 - MP kazanma: bu tur MP'yi (gerekirse maks MP'nin üstüne) artırır. Kendine hasar Kalkanı yok sayar.
-- İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.
+- **Ateş** (Mage): kart metnindeki bonus, rakip **Donmuşsa** taban hasara eklenir ve Donma **tüketilir** (bir Donma tek bir Ateş bonusunu besler). Güç/Zayıflık/Kritik sonrası, Kalkandan önce uygulanır.
+- **Taşan iyileşme** (Priest): maks HP'yi aşan iyileşme Kalkan olur ve o tur kazanılan Kalkan sayılır.
+- **Maks HP azaltma** (Parasite): kalıcıdır, iyileşmeyle geri gelmez; HP yeni maksı aşıyorsa maksa iner. Statü değildir, debuff sayımına girmez.
+- **Judgement**: hasar bonusu = rakipteki olumsuz statü sayısı (Zayıflık, Zehir, Donma) × `per`.
+- İyileşme (taşma kapalıysa) maks HP'yi geçmez. Kalkan iyileşme sayılmaz.
 
-## 2. Kartlar (32)
+## 2. Kartlar (54)
 
 ★ = Ağır kart (destede en fazla 2; açılış eline gelmez). Kart başına tek anahtar kelime (F2-8).
 
@@ -115,8 +120,40 @@
 | `arrow-shower` | ★ Arrow Shower | Attack | 4 | 4 kez 2 hasar ver. |
 | `power-shot` | ★ Power Shot | Attack | 4 | 6 hasar ver, Kalkanı deler. Rakibin HP'si 12 veya altındaysa +3. |
 
-Maliyet dağılımı: 1 MP ×11 · 2 MP ×10 · 3 MP ×5 · 4 MP ×5 · 5 MP ×1.
-Kart türleri: Attack ×15 · Defense ×4 · Debuff ×6 · Heal ×2 · Buff ×2 · Skill ×3.
+### Mage (10)
+
+| id | Ad | Tür | MP | Etki |
+|---|---|---|---|---|
+| `freeze` | Freeze | Debuff | 1 | 2 hasar ver. Rakibe Donma ver. |
+| `burn` | Burn | Attack | 1 | 2 hasar ver. Ateş: rakip Donmuşsa +3 hasar ve Donma biter. |
+| `chill` | Chill | Skill | 1 | Rakibe Donma ver. 1 kart çek. |
+| `fire-ball` | Fire Ball | Attack | 2 | 5 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter. |
+| `frozen-armor` | Frozen Armor | Defense | 2 | 7 Kalkan kazan. |
+| `lightning` | Lightning | Attack | 2 | Kalkanı yok sayarak 5 hasar ver. |
+| `ice-comet` | Ice Comet | Attack | 3 | 5 hasar ver. Rakibe Donma ver. |
+| `freezing-distance` | ★ Freezing Distance | Debuff | 3 | Rakibe Donma ver ve Zayıflık 3 ver. |
+| `incineration` | ★ Incineration | Attack | 4 | 8 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter. |
+| `meteor-fall` | ★ Meteor Fall | Attack | 6 | 10 hasar ver. Ateş: rakip Donmuşsa +5 hasar ve Donma biter. |
+
+### Priest (12)
+
+| id | Ad | Tür | MP | Etki |
+|---|---|---|---|---|
+| `healing` | Healing | Heal | 1 | 4 HP iyileş. Taşan iyileşme Kalkan olur. |
+| `malice` | Malice | Debuff | 1 | Rakibe Zayıflık 2 ver. |
+| `light-strike` | Light Strike | Attack | 1 | 3 hasar ver. |
+| `massive` | Massive | Debuff | 2 | Rakibe Zayıflık 3 ver. |
+| `parasite` | Parasite | Debuff | 2 | Rakibin maks HP'si kalıcı 4 azalır. İyileşmeyle geri gelmez. |
+| `helis` | Helis | Attack | 3 | Kalkanı yok sayarak 5 hasar ver. |
+| `restore` | Restore | Heal | 3 | 6 HP iyileş, sonra 3 HP daha iyileş. Taşan iyileşme Kalkan olur. |
+| `judgement` | Judgement | Attack | 3 | 3 hasar ver. Rakipteki her olumsuz statü (Zayıflık, Zehir, Donma) için +3 hasar. |
+| `great-healing` | Great Healing | Heal | 4 | 10 HP iyileş. Taşan iyileşme Kalkan olur. |
+| `torment` | ★ Torment | Debuff | 3 | Rakibe Zayıflık 3 ver. 2 hasar ver. |
+| `superior-parasite` | ★ Superior Parasite | Debuff | 4 | Rakibin maks HP'si kalıcı 7 azalır. İyileşmeyle geri gelmez. |
+| `complete-heal` | ★ Complete Heal | Heal | 4 | 15 HP iyileş. Taşan iyileşme Kalkan olur. |
+
+Maliyet dağılımı: 1 MP ×17 · 2 MP ×15 · 3 MP ×11 · 4 MP ×9 · 5 MP ×1 · 6 MP ×1.
+Kart türleri: Attack ×24 · Defense ×5 · Debuff ×13 · Heal ×6 · Buff ×2 · Skill ×4.
 
 Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-10-07). Gözlem listesi: Gain/Berserker → Hell Blade, Critical Point + büyük kart, Viper + Poison Arrow. Sim ve Yasin testinde izlenir.
 
@@ -127,16 +164,18 @@ Kart mekaniği KO'daki skill etkisine karşılık gelir (Revizyon 1, Yasin 2026-
 | Warrior | Slash, Gain, Leg Cutting, Berserker, Iron Skin, Cleave, Howling Sword, Hell Blade, Sword Dancing, Quick Strike, Intimidate, Absoluteness | 2/2 | 5 (en az 3) |
 | Rogue · Asas | Stab, Stealth, Thrust, Blinding, Spike, Critical Point, Beast Hiding, Evade, Minor Healing, Quick Strike, Absoluteness, Power Strike | 2/2 | 6 (en az 3) |
 | Rogue · Okçu | Poison Arrow, Perfect Arrow, Multiple Shot, Viper, Blinding Strafe, Arrow Shower, Power Shot, Evade, Minor Healing, Absoluteness, Intimidate, Power Strike | 2/2 | 6 (en az 3) |
+| Mage | Freeze, Chill, Burn, Fire Ball, Frozen Armor, Lightning, Ice Comet, Freezing Distance, Meteor Fall, Quick Strike, Absoluteness, Intimidate | 2/2 | 6 (en az 3) |
+| Priest | Healing, Malice, Light Strike, Massive, Parasite, Judgement, Helis, Great Healing, Torment, Complete Heal, Quick Strike, Absoluteness | 2/2 | 5 (en az 3) |
 
 ## 4. AI profilleri (AI ayarı, kural değeri değil)
 
 Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, deste sırası).
 
-| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri |
-|---|---|---|---|---|---|---|---|---|
-| aggressive (saldırgan) | 3 | 1 | 0.5 | 1 | 1.5 | 0.5 | 6 | 3 |
-| balanced (dengeli) | 2 | 2 | 1 | 1 | 1 | 0.5 | 5 | 3 |
-| defensive (savunmacı) | 1.5 | 3 | 1.5 | 0.5 | 1 | 0.5 | 4 | 4 |
+| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri | Donma değeri | Boşa iyileşme cezası |
+|---|---|---|---|---|---|---|---|---|---|---|
+| aggressive (saldırgan) | 3 | 1 | 0.5 | 1 | 1.5 | 0.5 | 6 | 3 | 5 | 10 |
+| balanced (dengeli) | 2 | 2 | 1 | 1 | 1 | 0.5 | 5 | 3 | 5 | 10 |
+| defensive (savunmacı) | 1.5 | 3 | 1.5 | 0.5 | 1 | 0.5 | 4 | 4 | 4 | 10 |
 
 ## 5. AI tur planı (AI ayarı, kural değeri değil)
 

@@ -2,10 +2,14 @@ import aiPlannerJson from '@koidle/content/ai-planner.json';
 import aiProfilesJson from '@koidle/content/ai-profiles.json';
 import battleConfigJson from '@koidle/content/battle-config.json';
 import commonJson from '@koidle/content/cards/common.json';
+import mageJson from '@koidle/content/cards/mage.json';
+import priestJson from '@koidle/content/cards/priest.json';
 import rogueJson from '@koidle/content/cards/rogue.json';
 import warriorJson from '@koidle/content/cards/warrior.json';
 import archerDeckJson from '@koidle/content/decks/archer.json';
 import assassinDeckJson from '@koidle/content/decks/assassin.json';
+import mageDeckJson from '@koidle/content/decks/mage.json';
+import priestDeckJson from '@koidle/content/decks/priest.json';
 import warriorDeckJson from '@koidle/content/decks/warrior.json';
 import type { BattleConfig, CardDef, Job } from '@koidle/rules';
 import type { z } from 'zod';
@@ -90,9 +94,11 @@ const CARD_FILES: { file: string; job: Job | 'common'; raw: unknown }[] = [
   { file: 'content/cards/common.json', job: 'common', raw: commonJson },
   { file: 'content/cards/warrior.json', job: 'warrior', raw: warriorJson },
   { file: 'content/cards/rogue.json', job: 'rogue', raw: rogueJson },
+  { file: 'content/cards/mage.json', job: 'mage', raw: mageJson },
+  { file: 'content/cards/priest.json', job: 'priest', raw: priestJson },
 ];
 
-/** Tüm kartlar (32). Dosyalar arası yinelenen id de hatadır. */
+/** Tüm kartlar (52). Dosyalar arası yinelenen id de hatadır. */
 export function loadAllCards(): CardDef[] {
   const all = CARD_FILES.flatMap((f) => parseCards(f.raw, f.file, f.job));
   const dupes = all.filter((c, i) => all.findIndex((x) => x.id === c.id) !== i);
@@ -115,6 +121,8 @@ const DECK_FILES: Record<ArchetypeId, unknown> = {
   warrior: warriorDeckJson,
   assassin: assassinDeckJson,
   archer: archerDeckJson,
+  mage: mageDeckJson,
+  priest: priestDeckJson,
 };
 
 /** Önerilen deste. `validateDeck` sorun bulursa ContentError fırlatır. */
@@ -131,5 +139,7 @@ export function loadPresetDecks(): Record<ArchetypeId, string[]> {
     warrior: loadPresetDeck('warrior'),
     assassin: loadPresetDeck('assassin'),
     archer: loadPresetDeck('archer'),
+    mage: loadPresetDeck('mage'),
+    priest: loadPresetDeck('priest'),
   };
 }

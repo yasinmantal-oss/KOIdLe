@@ -1,7 +1,7 @@
 import { assertNever } from './assert-never';
 import { drawCard } from './draw';
 import { dealDamage, other } from './outcome';
-import { applyStatus, removeStatus, statusAmount } from './status';
+import { applyStatus, consumeStatus, debuffCount, removeStatus, statusAmount } from './status';
 import type { BattleEvent, BattleState, Bonus, Condition, Effect, PlayerIndex } from './types';
 
 export function conditionMet(state: BattleState, source: PlayerIndex, cond: Condition): boolean {
@@ -9,16 +9,21 @@ export function conditionMet(state: BattleState, source: PlayerIndex, cond: Cond
   if ('enemyHas' in cond) return statusAmount(state.players[other(source)], cond.enemyHas) > 0;
   if ('enemyHpAtMost' in cond) return state.players[other(source)].hp <= cond.enemyHpAtMost;
   if ('selfHpAtMost' in cond) return state.players[source].hp <= cond.selfHpAtMost;
+  if ('enemyDebuffCount' in cond) return debuffCount(state.players[other(source)]) > 0;
   return assertNever(cond);
 }
 
-/** Koşul sağlanıyorsa bonus tutarı, değilse 0. */
+/** Koşul sağlanıyorsa bonus tutarı, değilse 0. `enemyDebuffCount` bonusu sayıyla ölçeklenir. */
 export function bonusValue(
   state: BattleState,
   source: PlayerIndex,
   bonus: Bonus | undefined,
 ): number {
-  return bonus && conditionMet(state, source, bonus.if) ? bonus.amount : 0;
+  if (!bonus) return 0;
+  if ('enemyDebuffCount' in bonus.if) {
+    return debuffCount(state.players[other(source)]) * bonus.if.enemyDebuffCount.per;
+  }
+  return conditionMet(state, source, bonus.if) ? bonus.amount : 0;
 }
 
 /** Kartın taban hasarı + koşul sağlanıyorsa bonusu (Güç/Zayıflık/Kritik hariç). */
@@ -134,6 +139,19 @@ export function resolveEffect(
     case 'damageFromShieldGainedThisTurn':
       strike(state, source, planHits(state, source, me.shieldGainedThisTurn, 1), false, events);
       return;
+    case 'damageFire': {
+      // Ateş: Donma varsa bonus eklenir ve Donma tüketilir (yalnız o kart için, çoklu vuruşta bir kez).
+      const frozen = consumeStatus(state.players[enemy], enemy, 'freeze', events);
+      const base = effect.amount + (frozen ? effect.bonus : 0);
+      strike(
+        state,
+        source,
+        planHits(state, source, base, effect.hits ?? 1),
+        effect.ignoreShield ?? false,
+        events,
+      );
+      return;
+    }
     case 'selfDamage':
       // Kendine hasar Kalkanı yok sayar.
       dealDamage(state, source, source, effect.amount, true, events);
@@ -144,9 +162,32 @@ export function resolveEffect(
       events.push({ type: 'SHIELD_GAINED', player: source, amount: effect.amount });
       return;
     case 'heal': {
-      const amount = Math.min(healAmount(state, source, effect), me.maxHp - me.hp);
-      me.hp += amount;
-      events.push({ type: 'HEALED', player: source, amount });
+      const wanted = healAmount(state, source, effect);
+      const missing = Math.max(0, me.maxHp - me.hp);
+      const healed = Math.min(wanted, missing);
+      me.hp += healed;
+      events.push({ type: 'HEALED', player: source, amount: healed });
+      // Taşan iyileşme Kalkan olur (yalnız Priest kartları).
+      const overflow = effect.overflowToShield ? wanted - healed : 0;
+      if (overflow > 0) {
+        me.shield += overflow;
+        me.shieldGainedThisTurn += overflow;
+        events.push({ type: 'SHIELD_GAINED', player: source, amount: overflow });
+      }
+      return;
+    }
+    case 'reduceMaxHp': {
+      // Kalıcı maks HP kaybı; HP yeni maksı aşıyorsa maksa iner. İyileşme bunu geri getirmez.
+      const foe = state.players[enemy];
+      foe.maxHpReduction += effect.amount;
+      foe.maxHp = Math.max(1, state.config.hero.hp - foe.maxHpReduction);
+      if (foe.hp > foe.maxHp) foe.hp = foe.maxHp;
+      events.push({
+        type: 'MAX_HP_REDUCED',
+        player: enemy,
+        amount: effect.amount,
+        maxHp: foe.maxHp,
+      });
       return;
     }
     case 'draw':

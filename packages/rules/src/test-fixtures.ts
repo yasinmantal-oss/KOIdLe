@@ -21,6 +21,7 @@ export const testConfig: BattleConfig = {
     weak: { duration: 2 },
     strength: { max: 5 },
     poison: { max: 6, decay: 2 },
+    freeze: { duration: 2 },
   },
   deckBuilding: { maxHeavy: 2, minOpeners: 3 },
   roundCap: 20,

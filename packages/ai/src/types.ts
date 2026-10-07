@@ -12,6 +12,10 @@ export interface Weights {
   hand: number;
   criticalValue: number;
   evadeValue: number;
+  /** Donma'nın AI için değeri: Ateş kombosunun kurulumu olduğu için pozitif. */
+  freezeValue: number;
+  /** Boşa giden iyileşmenin cezası (tam HP'de oynanan heal kartı). */
+  wastedHeal: number;
 }
 
 export const AI_PROFILES: readonly AiProfile[] = ['aggressive', 'balanced', 'defensive'];

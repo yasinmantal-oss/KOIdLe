@@ -3,6 +3,7 @@ import { ARCHETYPE_IDS, type ArchetypeId } from '@koidle/content-schema';
 import {
   apply,
   type BattleConfig,
+  type BattleEvent,
   type CardDef,
   createBattle,
   type EndReason,
@@ -51,12 +52,56 @@ export interface MatchRecord {
   evades: [number, number];
   /** Koltuğun Zehir'inin rakibe verdiği toplam hasar. */
   poisonDamage: [number, number];
+  /** Koltuğun rakibe uyguladığı Donma sayısı (STATUS_APPLIED + freeze). */
+  freezeApplied: [number, number];
+  /** Koltuğun Ateş kartıyla tükettiği Donma sayısı = Ateş bonusunun tetiklenme anı. */
+  fireBonus: [number, number];
+  /** Koltuğun rakibin maks HP'sinde yaptığı kalıcı azaltma toplamı (MAX_HP_REDUCED amount). */
+  maxHpReduced: [number, number];
+  /** Koltuğun taşan iyileşmesinden gelen Kalkan (SHIELD_GAINED, hemen öncesi HEALED). */
+  overhealShield: [number, number];
   /** kart id → [P0 kaç kez oynadı, P1 kaç kez oynadı]; yalnız oynanan kartlar yazılır. */
   plays: Record<string, [number, number]>;
 }
 
 /** Güvenlik sınırı: bir maçta bundan fazla aksiyon olursa AI döngüde demektir. */
 const MAX_ACTIONS = 2000;
+
+/** Faz 2b sayaçlarının olay topu başına koltuk artışları. */
+export type Faz2bDeltas = Pick<
+  MatchRecord,
+  'freezeApplied' | 'fireBonus' | 'maxHpReduced' | 'overhealShield'
+>;
+
+/**
+ * Faz 2b sayaçlarını olaylardan türetir (saf). Saldırgan sayaçlar (Donma uygulama, Ateş bonusu,
+ * maks HP azaltma) eylemi yapan koltuk adına yazılır: bu olaylarda `player` statünün/hedefin
+ * sahibidir, yapan ise rakiptir. Taşan iyileşme Kalkanı ise Kalkanı alan koltuk adına yazılır.
+ */
+export function faz2bDeltas(events: BattleEvent[]): Faz2bDeltas {
+  const d: Faz2bDeltas = {
+    freezeApplied: [0, 0],
+    fireBonus: [0, 0],
+    maxHpReduced: [0, 0],
+    overhealShield: [0, 0],
+  };
+  const foe = (p: PlayerIndex): PlayerIndex => (p === 0 ? 1 : 0);
+  for (let i = 0; i < events.length; i++) {
+    const e = events[i];
+    if (e === undefined) continue;
+    if (e.type === 'STATUS_APPLIED' && e.status === 'freeze') d.freezeApplied[foe(e.player)] += 1;
+    if (e.type === 'STATUS_CONSUMED' && e.status === 'freeze') d.fireBonus[foe(e.player)] += 1;
+    if (e.type === 'MAX_HP_REDUCED') d.maxHpReduced[foe(e.player)] += e.amount;
+    if (e.type === 'SHIELD_GAINED') {
+      // Motor taşan iyileşmenin Kalkanını HEALED olayının hemen ardından yayar
+      // (`effects.ts` heal dalı); başka bir kaynak araya giremez.
+      const prev = events[i - 1];
+      if (prev?.type === 'HEALED' && prev.player === e.player)
+        d.overhealShield[e.player] += e.amount;
+    }
+  }
+  return d;
+}
 
 export function playMatch(
   input: SimInput,
@@ -95,11 +140,22 @@ export function playMatch(
     crits: [0, 0],
     evades: [0, 0],
     poisonDamage: [0, 0],
+    freezeApplied: [0, 0],
+    fireBonus: [0, 0],
+    maxHpReduced: [0, 0],
+    overhealShield: [0, 0],
     plays: {},
   };
 
   let actions = 0;
   for (;;) {
+    const faz2b = faz2bDeltas(events);
+    for (const seat of [0, 1] as const) {
+      rec.freezeApplied[seat] += faz2b.freezeApplied[seat];
+      rec.fireBonus[seat] += faz2b.fireBonus[seat];
+      rec.maxHpReduced[seat] += faz2b.maxHpReduced[seat];
+      rec.overhealShield[seat] += faz2b.overhealShield[seat];
+    }
     for (const e of events) {
       if (e.type === 'DAMAGE_DEALT' && e.source === 'arena') rec.arenaSeen = true;
       if (e.type === 'DAMAGE_DEALT' && e.source === 'fatigue') rec.fatigueSeen = true;
@@ -142,7 +198,7 @@ export function playMatch(
   }
 }
 
-/** 3×3 job eşleşmesi (balanced vs balanced) × seed listesi. Varsayılan: 100 seed → 900 maç. */
+/** ARCHETYPE_IDS × ARCHETYPE_IDS job eşleşmesi (balanced vs balanced) × seed listesi. Varsayılan: 100 seed → 2500 maç. */
 export function runJobMatrix(input: SimInput, seeds: number[]): MatchRecord[] {
   const out: MatchRecord[] = [];
   for (const a0 of ARCHETYPE_IDS) {
@@ -163,7 +219,7 @@ export function runJobMatrix(input: SimInput, seeds: number[]): MatchRecord[] {
   return out;
 }
 
-/** 3×3 profil eşleşmesi × 3 aynalı job × seed listesi. Varsayılan: 10 seed → 270 maç. */
+/** AI_PROFILES × AI_PROFILES profil eşleşmesi × ARCHETYPE_IDS aynalı job × seed listesi. Varsayılan: 10 seed → 450 maç. */
 export function runProfileMatrix(input: SimInput, seeds: number[]): MatchRecord[] {
   const out: MatchRecord[] = [];
   for (const archetype of ARCHETYPE_IDS) {

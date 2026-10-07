@@ -1,4 +1,4 @@
-import { ARCHETYPES, type ArchetypeId } from '@koidle/content-schema';
+import { ARCHETYPE_IDS, ARCHETYPES, type ArchetypeId } from '@koidle/content-schema';
 import { useState } from 'react';
 import { Bar, fmt, ItemName, ItemTile, Panel } from '../ui/common';
 import { ARCHETYPE_ICON, type GearSlot, itemDef, RARITY_TR, SLOT_TR } from '../world/protoData';
@@ -17,16 +17,13 @@ import {
 } from '../world/world';
 import type { ScreenProps } from './types';
 
-const JOBS: { id: ArchetypeId | 'mage' | 'priest'; label: string; icon: string; note: string }[] = [
-  { id: 'warrior', label: 'Warrior', icon: '🛡️', note: 'Kalkan, Güç, ağır vuruş' },
-  { id: 'assassin', label: 'Rogue · Asas', icon: '🗡️', note: 'Kritik, Kaçınma, hızlı bıçak' },
-  { id: 'archer', label: 'Rogue · Okçu', icon: '🏹', note: 'Zehir, çoklu atış' },
-  { id: 'mage', label: 'Mage', icon: '🔮', note: 'yakında' },
-  { id: 'priest', label: 'Priest', icon: '✨', note: 'yakında' },
-];
-
-const isArchetype = (id: string): id is ArchetypeId =>
-  id === 'warrior' || id === 'assassin' || id === 'archer';
+const JOB_NOTES: Record<ArchetypeId, string> = {
+  warrior: 'Kalkan, Güç, ağır vuruş',
+  assassin: 'Kritik, Kaçınma, hızlı bıçak',
+  archer: 'Zehir, çoklu atış',
+  mage: 'Donma, Ateş patlaması',
+  priest: 'İyileşme, Zayıflık, Parasite',
+};
 
 export function KarakterScreen({
   world,
@@ -100,23 +97,20 @@ export function KarakterScreen({
 
       <h3 className="label">Job · savaş destesi</h3>
       <div className="jobs">
-        {JOBS.map((j) => {
-          const live = isArchetype(j.id);
-          const on = j.id === p.archetype;
+        {ARCHETYPE_IDS.map((id) => {
+          const on = id === p.archetype;
           return (
             <button
               type="button"
-              key={j.id}
-              className={`job${on ? ' job--on' : ''}${live ? '' : ' job--soon'}`}
-              disabled={!live || world.farm !== null}
+              key={id}
+              className={`job${on ? ' job--on' : ''}`}
+              disabled={world.farm !== null}
               aria-pressed={on}
-              onClick={() => {
-                if (isArchetype(j.id)) update((w) => setArchetype(w, j.id as ArchetypeId));
-              }}
+              onClick={() => update((w) => setArchetype(w, id))}
             >
-              <span className="job__ic">{j.icon}</span>
-              <b>{j.label}</b>
-              <small>{j.note}</small>
+              <span className="job__ic">{ARCHETYPE_ICON[id]}</span>
+              <b>{ARCHETYPES[id].name}</b>
+              <small>{JOB_NOTES[id]}</small>
             </button>
           );
         })}

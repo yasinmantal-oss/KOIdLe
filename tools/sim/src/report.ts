@@ -46,6 +46,14 @@ export interface ComboStat {
   crits: number;
   evades: number;
   poisonDamage: number;
+  /** Faz 2b: koltuğun rakibe uyguladığı Donma. */
+  freezeApplied: number;
+  /** Faz 2b: koltuğun Ateş kartıyla tükettiği Donma (Ateş bonusu tetiklenmesi). */
+  fireBonus: number;
+  /** Faz 2b: koltuğun rakibin maks HP'sinde yaptığı kalıcı azaltma. */
+  maxHpReduced: number;
+  /** Faz 2b: koltuğun taşan iyileşmesinden gelen Kalkan. */
+  overhealShield: number;
 }
 
 export interface SimSummary {
@@ -142,6 +150,10 @@ export function summarize(records: MatchRecord[], input: SummaryInput): SimSumma
   const critsBy = perArchetype(() => 0);
   const evadesBy = perArchetype(() => 0);
   const poisonBy = perArchetype(() => 0);
+  const freezeBy = perArchetype(() => 0);
+  const fireBy = perArchetype(() => 0);
+  const maxHpBy = perArchetype(() => 0);
+  const overhealBy = perArchetype(() => 0);
   for (const r of job) {
     for (const seat of SEATS) {
       const a = seatArchetype(r, seat);
@@ -150,6 +162,10 @@ export function summarize(records: MatchRecord[], input: SummaryInput): SimSumma
       critsBy[a] += r.crits[seat];
       evadesBy[a] += r.evades[seat];
       poisonBy[a] += r.poisonDamage[seat];
+      freezeBy[a] += r.freezeApplied[seat];
+      fireBy[a] += r.fireBonus[seat];
+      maxHpBy[a] += r.maxHpReduced[seat];
+      overhealBy[a] += r.overhealShield[seat];
     }
   }
   const combos = Object.fromEntries(
@@ -159,6 +175,10 @@ export function summarize(records: MatchRecord[], input: SummaryInput): SimSumma
         crits: rate(critsBy[a], seatsBy[a]),
         evades: rate(evadesBy[a], seatsBy[a]),
         poisonDamage: rate(poisonBy[a], seatsBy[a]),
+        freezeApplied: rate(freezeBy[a], seatsBy[a]),
+        fireBonus: rate(fireBy[a], seatsBy[a]),
+        maxHpReduced: rate(maxHpBy[a], seatsBy[a]),
+        overhealShield: rate(overhealBy[a], seatsBy[a]),
       },
     ]),
   ) as Record<ArchetypeId, ComboStat>;
@@ -257,7 +277,7 @@ export interface ReportMeta {
 
 export function renderMarkdown(s: SimSummary, config: BattleConfig, meta: ReportMeta): string {
   const o: string[] = [];
-  o.push('# Simülasyon Raporu (AI vs AI) — Faz 2a');
+  o.push('# Simülasyon Raporu (AI vs AI) — Faz 2 (dört job)');
   o.push('');
   o.push(
     '> `pnpm sim` ile üretilir. Simülasyon "eğlenceli mi?" kararı vermez; bariz matematik hatası ve anlamsız davranış arar. Otomatik kabul/red eşiği yoktur (C5); ⚠ ve DÜŞÜK işaretleri Gate 2 ölçütlerini (spec §9) hatırlatır.',
@@ -266,14 +286,14 @@ export function renderMarkdown(s: SimSummary, config: BattleConfig, meta: Report
     '> **Faz 1 sim sonuçları artık karşılaştırılamaz:** yeni kartlar, açılış eli kuralı ve AI tur planı (F2-11) yeni bir temel ölçüm başlattı.',
   );
   o.push(
-    `> Job geçişi: ${s.matches} maç = 3×3 job eşleşmesi × ${meta.jobSeeds.length} seed (${range(meta.jobSeeds)}), balanced vs balanced, hazır desteler. Genel, Açılış, Kombo, Bitiş nedeni ve Kartlar bölümleri yalnız bu geçişten.`,
+    `> Job geçişi: ${s.matches} maç = ${ARCHETYPE_IDS.length}×${ARCHETYPE_IDS.length} job eşleşmesi × ${meta.jobSeeds.length} seed (${range(meta.jobSeeds)}), balanced vs balanced, hazır desteler. Genel, Açılış, Kombo, Faz 2b, Bitiş nedeni ve Kartlar bölümleri yalnız bu geçişten.`,
   );
   o.push(
-    `> Profil geçişi: ${s.profileMatches} maç = 3×3 profil eşleşmesi × 3 aynalı job × ${meta.profileSeeds.length} seed (${range(meta.profileSeeds)}).`,
+    `> Profil geçişi: ${s.profileMatches} maç = ${AI_PROFILES.length}×${AI_PROFILES.length} profil eşleşmesi × ${ARCHETYPE_IDS.length} aynalı job × ${meta.profileSeeds.length} seed (${range(meta.profileSeeds)}).`,
   );
   o.push(`> AI tur planı: derinlik ${meta.planner.depth}, ışın ${meta.planner.beam}.`);
   o.push(
-    `> Config özeti: HP ${config.hero.hp} · MP ${config.mp.start}→${config.mp.max} · el ${config.hand.starting}/${config.hand.limit} · Kalkan ${config.shield.persistence} · karıştırma ${config.deck.reshuffles} · Arena ${config.arenaCollapse.enabled ? `${config.arenaCollapse.startRound}. raunt` : 'kapalı'} · Yorgunluk ${config.fatigue.start}+${config.fatigue.step}`,
+    `> Config özeti: HP ${config.hero.hp} · MP ${config.mp.start}→${config.mp.max} · el ${config.hand.starting}/${config.hand.limit} · Kalkan ${config.shield.persistence} · karıştırma ${config.deck.reshuffles} · Arena ${config.arenaCollapse.enabled ? `${config.arenaCollapse.startRound}. raunt` : 'kapalı'} · Yorgunluk ${config.fatigue.start}+${config.fatigue.step} · Donma ${config.statuses.freeze.duration} tur`,
   );
   o.push('');
   o.push('## Genel');
@@ -326,6 +346,21 @@ export function renderMarkdown(s: SimSummary, config: BattleConfig, meta: Report
     const c = s.combos[a];
     o.push(
       `| ${ARCHETYPES[a].name} | ${num(c.crits)} | ${num(c.evades)} | ${num(c.poisonDamage)} |`,
+    );
+  }
+  o.push('');
+  o.push('## Faz 2b mekanikleri (oyuncu-maç başına ortalama)');
+  o.push('');
+  o.push(
+    "Donma/Ateş: Mage rakibe Donma uygular; Ateş kartı Donma'yı tüketip bonus hasar verir. Taşan iyileşme/maks HP: Priest'in taşan iyileşmesi Kalkana döner, Parasite rakip maks HP'sini kalıcı azaltır. Sayaçlar eylemi yapan koltuk adına yazılır (taşan iyileşme Kalkanı alan koltuk adına).",
+  );
+  o.push('');
+  o.push('| Job | Donma uygulaması | Ateş bonusu | Maks HP azaltma | Taşan iyileşme Kalkanı |');
+  o.push('|---|---|---|---|---|');
+  for (const a of ARCHETYPE_IDS) {
+    const c = s.combos[a];
+    o.push(
+      `| ${ARCHETYPES[a].name} | ${num(c.freezeApplied)} | ${num(c.fireBonus)} | ${num(c.maxHpReduced)} | ${num(c.overhealShield)} |`,
     );
   }
   o.push('');
@@ -406,6 +441,14 @@ const CSV_HEADER = [
   'evadesP1',
   'poisonDamageP0',
   'poisonDamageP1',
+  'freezeAppliedP0',
+  'freezeAppliedP1',
+  'fireBonusP0',
+  'fireBonusP1',
+  'maxHpReducedP0',
+  'maxHpReducedP1',
+  'overhealShieldP0',
+  'overhealShieldP1',
 ];
 
 export function renderCsv(records: MatchRecord[]): string {
@@ -438,6 +481,14 @@ export function renderCsv(records: MatchRecord[]): string {
       r.evades[1],
       r.poisonDamage[0],
       r.poisonDamage[1],
+      r.freezeApplied[0],
+      r.freezeApplied[1],
+      r.fireBonus[0],
+      r.fireBonus[1],
+      r.maxHpReduced[0],
+      r.maxHpReduced[1],
+      r.overhealShield[0],
+      r.overhealShield[1],
     ].join(','),
   );
   return `${[CSV_HEADER.join(','), ...rows].join('\n')}\n`;

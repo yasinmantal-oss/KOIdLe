@@ -34,18 +34,21 @@ export const BattleConfigSchema = z.strictObject({
     weak: z.strictObject({ duration: positive() }),
     strength: z.strictObject({ max: positive() }),
     poison: z.strictObject({ max: positive(), decay: positive() }),
+    freeze: z.strictObject({ duration: positive() }),
   }),
   deckBuilding: z.strictObject({ maxHeavy: int(), minOpeners: int() }),
   roundCap: positive(),
 }) satisfies z.ZodType<BattleConfig>;
 
-const StatusIdSchema = z.enum(['strength', 'weak', 'poison', 'critical', 'evade']);
+const StatusIdSchema = z.enum(['strength', 'weak', 'poison', 'critical', 'evade', 'freeze']);
 
 export const ConditionSchema = z.union([
   z.strictObject({ selfHas: StatusIdSchema }),
   z.strictObject({ enemyHas: StatusIdSchema }),
   z.strictObject({ enemyHpAtMost: positive() }),
   z.strictObject({ selfHpAtMost: positive() }),
+  // Judgement: rakipteki olumsuz statü sayısı × per
+  z.strictObject({ enemyDebuffCount: z.strictObject({ per: positive() }) }),
 ]);
 
 const BonusSchema = z.strictObject({ if: ConditionSchema, amount: positive() });
@@ -61,12 +64,23 @@ export const EffectSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({ kind: z.literal('selfDamage'), amount: positive() }),
   z.strictObject({ kind: z.literal('damageFromShieldGainedThisTurn') }),
+  // Ateş: rakip Donmuşsa `bonus` eklenir ve Donma tüketilir.
+  z.strictObject({
+    kind: z.literal('damageFire'),
+    amount: int(),
+    bonus: positive(),
+    hits: z.int().min(2).exactOptional(),
+    ignoreShield: z.boolean().exactOptional(),
+  }),
   z.strictObject({ kind: z.literal('shield'), amount: positive() }),
   z.strictObject({
     kind: z.literal('heal'),
     amount: positive(),
     bonus: BonusSchema.exactOptional(),
+    overflowToShield: z.boolean().exactOptional(),
   }),
+  // Parasite: rakibin maks HP'si kalıcı azalır.
+  z.strictObject({ kind: z.literal('reduceMaxHp'), amount: positive() }),
   z.strictObject({ kind: z.literal('draw'), count: positive() }),
   z.strictObject({
     kind: z.literal('applyStatus'),
@@ -79,7 +93,7 @@ export const EffectSchema = z.discriminatedUnion('kind', [
 export const CardSchema = z.strictObject({
   id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'kebab-case olmalı (ör. leg-cutting)'),
   name: z.string().min(1),
-  job: z.enum(['common', 'warrior', 'rogue']),
+  job: z.enum(['common', 'warrior', 'rogue', 'mage', 'priest']),
   branch: z.enum(['assassin', 'archer']).exactOptional(),
   tags: z.array(z.literal('heavy')).min(1).exactOptional(),
   type: z.enum(['attack', 'skill', 'defense', 'heal', 'buff', 'debuff']),
@@ -104,6 +118,10 @@ export const AiWeightsSchema = z.strictObject({
   criticalValue: z.number().min(0),
   /** Kaçınma'nın AI için değeri (sabit puan). */
   evadeValue: z.number().min(0),
+  /** Donma'nın AI için değeri: Ateş kombosunun kurulumu. */
+  freezeValue: z.number().min(0),
+  /** Boşa giden iyileşmenin cezası (tam HP'de heal). */
+  wastedHeal: z.number().min(0),
 });
 
 export const AiProfilesSchema = z.strictObject({

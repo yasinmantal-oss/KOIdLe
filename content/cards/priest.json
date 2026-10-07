@@ -1,0 +1,201 @@
+[
+  {
+    "id": "healing",
+    "name": "Healing",
+    "job": "priest",
+    "type": "heal",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "heal",
+        "amount": 4,
+        "overflowToShield": true
+      }
+    ],
+    "text": "4 HP iyileş. Taşan iyileşme Kalkan olur."
+  },
+  {
+    "id": "malice",
+    "name": "Malice",
+    "job": "priest",
+    "type": "debuff",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 2
+      }
+    ],
+    "text": "Rakibe Zayıflık 2 ver."
+  },
+  {
+    "id": "light-strike",
+    "name": "Light Strike",
+    "job": "priest",
+    "type": "attack",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 3
+      }
+    ],
+    "text": "3 hasar ver."
+  },
+  {
+    "id": "massive",
+    "name": "Massive",
+    "job": "priest",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 3
+      }
+    ],
+    "text": "Rakibe Zayıflık 3 ver."
+  },
+  {
+    "id": "parasite",
+    "name": "Parasite",
+    "job": "priest",
+    "type": "debuff",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "reduceMaxHp",
+        "amount": 4
+      }
+    ],
+    "text": "Rakibin maks HP'si kalıcı 4 azalır. İyileşmeyle geri gelmez."
+  },
+  {
+    "id": "helis",
+    "name": "Helis",
+    "job": "priest",
+    "type": "attack",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 5,
+        "ignoreShield": true
+      }
+    ],
+    "text": "Kalkanı yok sayarak 5 hasar ver."
+  },
+  {
+    "id": "restore",
+    "name": "Restore",
+    "job": "priest",
+    "type": "heal",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "heal",
+        "amount": 6,
+        "overflowToShield": true
+      },
+      {
+        "kind": "heal",
+        "amount": 3,
+        "overflowToShield": true
+      }
+    ],
+    "text": "6 HP iyileş, sonra 3 HP daha iyileş. Taşan iyileşme Kalkan olur."
+  },
+  {
+    "id": "judgement",
+    "name": "Judgement",
+    "job": "priest",
+    "type": "attack",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 3,
+        "bonus": {
+          "if": {
+            "enemyDebuffCount": {
+              "per": 3
+            }
+          },
+          "amount": 3
+        }
+      }
+    ],
+    "text": "3 hasar ver. Rakipteki her olumsuz statü (Zayıflık, Zehir, Donma) için +3 hasar."
+  },
+  {
+    "id": "great-healing",
+    "name": "Great Healing",
+    "job": "priest",
+    "type": "heal",
+    "cost": 4,
+    "effects": [
+      {
+        "kind": "heal",
+        "amount": 10,
+        "overflowToShield": true
+      }
+    ],
+    "text": "10 HP iyileş. Taşan iyileşme Kalkan olur."
+  },
+  {
+    "id": "torment",
+    "name": "Torment",
+    "job": "priest",
+    "tags": ["heavy"],
+    "type": "debuff",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 3
+      },
+      {
+        "kind": "damage",
+        "amount": 2
+      }
+    ],
+    "text": "Rakibe Zayıflık 3 ver. 2 hasar ver."
+  },
+  {
+    "id": "superior-parasite",
+    "name": "Superior Parasite",
+    "job": "priest",
+    "tags": ["heavy"],
+    "type": "debuff",
+    "cost": 4,
+    "effects": [
+      {
+        "kind": "reduceMaxHp",
+        "amount": 7
+      }
+    ],
+    "text": "Rakibin maks HP'si kalıcı 7 azalır. İyileşmeyle geri gelmez."
+  },
+  {
+    "id": "complete-heal",
+    "name": "Complete Heal",
+    "job": "priest",
+    "tags": ["heavy"],
+    "type": "heal",
+    "cost": 4,
+    "effects": [
+      {
+        "kind": "heal",
+        "amount": 15,
+        "overflowToShield": true
+      }
+    ],
+    "text": "15 HP iyileş. Taşan iyileşme Kalkan olur."
+  }
+]

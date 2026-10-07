@@ -144,6 +144,12 @@ function rows(c: BattleConfig): Row[] {
       'Sahibinin tur başında değer kadar hasar (Kalkanı yok sayar), sonra değer bu kadar azalır; ≤ 0 olunca kalkar',
     ],
     [
+      'Donma süresi',
+      'statuses.freeze.duration',
+      c.statuses.freeze.duration,
+      `Rakibe verilince: rakibin sonraki ${c.statuses.freeze.duration} turu. Tek başına etkisi yok; Ateş kartı bonus alır ve Donma'yı tüketir. K7: gelen değer ≥ mevcut ise yenilenir`,
+    ],
+    [
       'Güvenlik tavanı',
       'roundCap',
       c.roundCap,
@@ -172,6 +178,8 @@ const SECTIONS: { title: string; keep: (c: CardDef) => boolean }[] = [
   { title: 'Rogue ortak', keep: (c) => c.job === 'rogue' && c.branch === undefined },
   { title: 'Rogue · Asas', keep: (c) => c.branch === 'assassin' },
   { title: 'Rogue · Okçu', keep: (c) => c.branch === 'archer' },
+  { title: 'Mage', keep: (c) => c.job === 'mage' },
+  { title: 'Priest', keep: (c) => c.job === 'priest' },
 ];
 
 const cardName = (c: CardDef): string => `${isHeavy(c) ? '★ ' : ''}${c.name}`;
@@ -232,7 +240,19 @@ export function renderValuesTable(
   out.push(
     "- MP kazanma: bu tur MP'yi (gerekirse maks MP'nin üstüne) artırır. Kendine hasar Kalkanı yok sayar.",
   );
-  out.push("- İyileşme maks HP'yi geçmez. Kalkan iyileşme sayılmaz.");
+  out.push(
+    '- **Ateş** (Mage): kart metnindeki bonus, rakip **Donmuşsa** taban hasara eklenir ve Donma **tüketilir** (bir Donma tek bir Ateş bonusunu besler). Güç/Zayıflık/Kritik sonrası, Kalkandan önce uygulanır.',
+  );
+  out.push(
+    "- **Taşan iyileşme** (Priest): maks HP'yi aşan iyileşme Kalkan olur ve o tur kazanılan Kalkan sayılır.",
+  );
+  out.push(
+    '- **Maks HP azaltma** (Parasite): kalıcıdır, iyileşmeyle geri gelmez; HP yeni maksı aşıyorsa maksa iner. Statü değildir, debuff sayımına girmez.',
+  );
+  out.push(
+    '- **Judgement**: hasar bonusu = rakipteki olumsuz statü sayısı (Zayıflık, Zehir, Donma) × `per`.',
+  );
+  out.push("- İyileşme (taşma kapalıysa) maks HP'yi geçmez. Kalkan iyileşme sayılmaz.");
   out.push('');
   out.push(`## 2. Kartlar (${cards.length})`);
   out.push('');
@@ -281,14 +301,14 @@ export function renderValuesTable(
   out.push('Skor = ağırlık × ölçüt toplamı. AI gizli bilgiyi görmez (rakibin eli, deste sırası).');
   out.push('');
   out.push(
-    '| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri |',
+    '| Profil | Rakibe hasar | Kendi hasarı | Kalkan | Rakip Kalkanı | Statü | El | Kritik değeri | Kaçınma değeri | Donma değeri | Boşa iyileşme cezası |',
   );
-  out.push('|---|---|---|---|---|---|---|---|---|');
+  out.push('|---|---|---|---|---|---|---|---|---|---|---|');
   const names = { aggressive: 'saldırgan', balanced: 'dengeli', defensive: 'savunmacı' } as const;
   for (const key of ['aggressive', 'balanced', 'defensive'] as const) {
     const w = ai[key];
     out.push(
-      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} | ${w.criticalValue} | ${w.evadeValue} |`,
+      `| ${key} (${names[key]}) | ${w.enemyDamage} | ${w.selfDamage} | ${w.shield} | ${w.enemyShield} | ${w.status} | ${w.hand} | ${w.criticalValue} | ${w.evadeValue} | ${w.freezeValue} | ${w.wastedHeal} |`,
     );
   }
   out.push('');

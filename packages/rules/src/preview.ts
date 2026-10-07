@@ -14,6 +14,7 @@ export function previewCard(state: BattleState, p: PlayerIndex, cardId: string):
   if (!def) throw new Error(`Unknown card: ${cardId}`);
   let damage: number | null = null;
   let bonusActive: boolean | null = null;
+  const foe = p === 0 ? 1 : 0;
   // Efektler sırayla çözülür: kartın önce verdiği Kalkan, sonraki Kalkan hasarına sayılır.
   let shieldGained = state.players[p].shieldGainedThisTurn;
   for (const e of def.effects) {
@@ -27,6 +28,11 @@ export function previewCard(state: BattleState, p: PlayerIndex, cardId: string):
       );
       damage = (damage ?? 0) + plan.hits.reduce((a, b) => a + b, 0);
       if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
+    } else if (e.kind === 'damageFire') {
+      const frozen = state.players[foe].statuses.some((s) => s.id === 'freeze');
+      const plan = planHits(state, p, e.amount + (frozen ? e.bonus : 0), e.hits ?? 1);
+      damage = (damage ?? 0) + plan.hits.reduce((a, b) => a + b, 0);
+      bonusActive = frozen;
     } else if (e.kind === 'heal') {
       if (e.bonus) bonusActive = conditionMet(state, p, e.bonus.if);
     } else if (e.kind === 'damageFromShieldGainedThisTurn') {

@@ -1,7 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { loadBattleConfig } from '@koidle/content-schema';
 import type { CardDef } from '@koidle/rules';
 import { describe, expect, it } from 'vitest';
-import { formatEvent, glossaryLine, keywordParts, rulesSummary } from './format';
+import { formatEvent, glossaryLine, type Keyword, keywordParts, rulesSummary } from './format';
 
 const testConfigForSummary = loadBattleConfig();
 
@@ -98,6 +99,37 @@ describe('formatEvent', () => {
       ),
     ).toBe('Rakip: Zayıflık 2 (2 tur).');
   });
+
+  it('writes Donma without a value and marks its consumption as the Ateş combo', () => {
+    expect(
+      formatEvent(
+        { type: 'STATUS_APPLIED', player: 1, status: 'freeze', amount: 1, duration: 2 },
+        cards,
+      ),
+    ).toBe('Rakip: Donma (2 tur).');
+    expect(
+      formatEvent(
+        { type: 'STATUS_APPLIED', player: 0, status: 'freeze', amount: 1, duration: null },
+        cards,
+      ),
+    ).toBe('Sen: Donma.');
+    expect(formatEvent({ type: 'STATUS_CONSUMED', player: 1, status: 'freeze' }, cards)).toBe(
+      'Rakip: Donma tükendi (Ateş kombosu).',
+    );
+    // Olay tipi genele açık: Donma dışında bir statü tüketilirse kombo notu düşmez.
+    expect(formatEvent({ type: 'STATUS_CONSUMED', player: 0, status: 'poison' }, cards)).toBe(
+      'Sen: Zehir tükendi.',
+    );
+  });
+
+  it('describes the permanent max HP loss of Parasite', () => {
+    expect(formatEvent({ type: 'MAX_HP_REDUCED', player: 1, amount: 4, maxHp: 26 }, cards)).toBe(
+      'Rakip: maks HP 4 azaldı (yeni maks 26).',
+    );
+    expect(formatEvent({ type: 'MAX_HP_REDUCED', player: 0, amount: 7, maxHp: 23 }, cards)).toBe(
+      'Sen: maks HP 7 azaldı (yeni maks 23).',
+    );
+  });
 });
 
 describe('keywordParts', () => {
@@ -123,6 +155,19 @@ describe('keywordParts (Faz 2)', () => {
   });
 });
 
+describe('keywordParts (Faz 2b)', () => {
+  it('marks Donma in the Ateş card texts', () => {
+    const kws = (t: string) => keywordParts(t).flatMap((p) => (p.kw ? [p.kw] : []));
+    expect(kws('Rakibe Donma ver.')).toEqual(['freeze']);
+    expect(kws('5 hasar ver. Rakibe Donma ver.')).toEqual(['freeze']);
+    expect(kws('8 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter.')).toEqual(['freeze']);
+    // "Ateş" anahtar kelime değil (statü değil, kart etiketi); renk almaz.
+    expect(keywordParts('Ateş: rakip Donmuşsa +3 hasar.')).toEqual([
+      { text: 'Ateş: rakip Donmuşsa +3 hasar.', kw: null },
+    ]);
+  });
+});
+
 describe('glossaryLine', () => {
   it('explains every keyword on the card in one line, null without keywords', () => {
     expect(glossaryLine('3 hasar ver.', testConfigForSummary)).toBeNull();
@@ -135,6 +180,18 @@ describe('glossaryLine', () => {
       'Güç:',
     );
   });
+
+  it('explains Donma from config values and that Ateş consumes it', () => {
+    const line = glossaryLine(
+      '5 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter.',
+      testConfigForSummary,
+    );
+    expect(line).toContain('Donma:');
+    expect(line).toContain('tek başına etkisi yok');
+    expect(line).toContain(`${testConfigForSummary.statuses.freeze.duration} tur`);
+    expect(line).toContain('Ateş');
+    expect(line).toMatch(/Donma.?yı tüketir/);
+  });
 });
 
 describe('rulesSummary (Faz 2)', () => {
@@ -143,6 +200,50 @@ describe('rulesSummary (Faz 2)', () => {
     for (const word of ['Zehir', 'Kritik', 'Kaçınma', 'Ağır']) expect(text).toContain(word);
     expect(text).not.toMatch(/Lanet|Gizli|Zincir/);
     expect(text).toContain(`en fazla ${testConfigForSummary.deckBuilding.maxHeavy}`);
+  });
+});
+
+describe('rulesSummary (Faz 2b)', () => {
+  const lines = rulesSummary(testConfigForSummary);
+  const freezeLine = lines.find((l) => l.startsWith('Donma')) ?? '';
+
+  it('explains Donma and its Ateş combo with the config duration', () => {
+    expect(freezeLine).toContain('tek başına etkisi yok');
+    expect(freezeLine).toContain(`${testConfigForSummary.statuses.freeze.duration} tur`);
+    expect(freezeLine).toContain('Ateş');
+    expect(freezeLine).toMatch(/Donma.?yı tüketir/);
+  });
+
+  it('does not promise a stun or a turn skip: Donma alone has no effect', () => {
+    expect(freezeLine).not.toMatch(/durur|durdurur|atlar|sırasını geç/);
+  });
+
+  it('explains Parasite and Judgement', () => {
+    const text = lines.join(' ');
+    expect(text).toContain('Parasite');
+    expect(text).toContain('kalıcı azalır');
+    expect(text).toContain('Judgement');
+    expect(text).not.toMatch(/Lanet|Gizli|Zincir/);
+  });
+});
+
+describe('anahtar kelime renkleri', () => {
+  it('every keyword has a card-text/badge color in styles.css', () => {
+    // Kart metni (CardText) ve statü rozetleri (HeroPanel) aynı sınıfları kullanır.
+    const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
+    const keywords: Keyword[] = [
+      'strength',
+      'weak',
+      'shield',
+      'poison',
+      'critical',
+      'evade',
+      'freeze',
+    ];
+    for (const kw of keywords) {
+      expect(css).toContain(`--kw-${kw}:`);
+      expect(css).toContain(`.kw--${kw} {`);
+    }
   });
 });
 

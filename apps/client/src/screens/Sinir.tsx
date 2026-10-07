@@ -2,6 +2,7 @@ import { ARCHETYPES } from '@koidle/content-schema';
 import { type CSSProperties, useState } from 'react';
 import { Bar, Gold, ItemTile, NationDots, Panel, pct } from '../ui/common';
 import {
+  ARCHETYPE_ICON,
   BAG_ITEM_CAP,
   itemDef,
   RARITY_TR,
@@ -32,8 +33,6 @@ const MOBS: Record<string, string[]> = {
   'demir-tepe': ['🐺', '🦂', '🦴'],
   'olu-vadi': ['💀', '👻', '🦴'],
 };
-
-const FARM_HERO = { warrior: '⚔️', assassin: '🗡️', archer: '🏹' } as const;
 
 const perHour = (perTick: number) => Math.round((perTick * 60) / TICK_GAME_MIN);
 
@@ -272,7 +271,7 @@ function FarmView({
           </span>
         ))}
         <span className="farmstage__hero" aria-hidden="true">
-          {FARM_HERO[world.player.archetype]}
+          {ARCHETYPE_ICON[world.player.archetype]}
         </span>
         <span className="farmstage__ground" aria-hidden="true" />
         <div className="floaters" aria-hidden="true">

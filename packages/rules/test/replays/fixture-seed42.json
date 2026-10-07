@@ -49,6 +49,9 @@
         "poison": {
           "max": 6,
           "decay": 2
+        },
+        "freeze": {
+          "duration": 2
         }
       },
       "deckBuilding": {
@@ -1157,6 +1160,9 @@
           "poison": {
             "max": 6,
             "decay": 2
+          },
+          "freeze": {
+            "duration": 2
           }
         },
         "deckBuilding": {
@@ -1236,7 +1242,9 @@
           ],
           "turnsTaken": 7,
           "reshufflesLeft": 0,
-          "fatigueCount": 0
+          "fatigueCount": 0,
+          "maxHpReduction": 0,
+          "damageTaken": 33
         },
         {
           "name": "B",
@@ -1304,7 +1312,9 @@
           ],
           "turnsTaken": 7,
           "reshufflesLeft": 0,
-          "fatigueCount": 0
+          "fatigueCount": 0,
+          "maxHpReduction": 0,
+          "damageTaken": 26
         }
       ],
       "result": {

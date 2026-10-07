@@ -413,4 +413,6 @@ export const ARCHETYPE_ICON: Record<ArchetypeId, string> = {
   warrior: '🛡️',
   assassin: '🗡️',
   archer: '🏹',
+  mage: '🔮',
+  priest: '✨',
 };

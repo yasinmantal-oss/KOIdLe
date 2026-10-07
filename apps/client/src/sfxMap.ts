@@ -31,6 +31,14 @@ export function sfxFor(events: readonly BattleEvent[], me: PlayerIndex): SfxCue[
       case 'EVADED':
         cues.push({ kind: 'evade' });
         break;
+      case 'STATUS_CONSUMED':
+        // Faz 2b: Donma buharlaşırken duyulan yükselen hava sesi (mevcut statü cue'su).
+        cues.push({ kind: 'evade' });
+        break;
+      case 'MAX_HP_REDUCED':
+        // Faz 2b: kalıcı can kaybı; koyu, alçalan ton (mevcut Zehir cue'su).
+        cues.push({ kind: 'poison' });
+        break;
       case 'BATTLE_ENDED':
         if (e.winner !== null) cues.push({ kind: e.winner === me ? 'win' : 'lose' });
         break;

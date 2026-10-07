@@ -43,5 +43,10 @@ export function infoText(key: InfoKey, c: BattleConfig): string {
       return 'Kritik: sonraki hasar veren kartının her vuruşu iki kat vurur. Bir kez kullanılır.';
     case 'status:evade':
       return 'Kaçınma: rakibin sonraki hasar veren kartının ilk vuruşu 0 hasar verir. Kullanılmazsa sonraki turunda biter.';
+    case 'status:freeze':
+      return `Donma: tek başına hasar vermez; ${s.freeze.duration} tur sürer. Rakip Donmuşken Ateş kartları bonus hasar verir ve Donma'yı tüketir.`;
+    default:
+      // Yeni anahtar eklenip burada ele alınmazsa derleme hatası verir.
+      throw new Error(`Bilinmeyen bilgi anahtarı: ${key satisfies never}`);
   }
 }

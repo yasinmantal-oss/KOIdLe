@@ -42,6 +42,8 @@ export function createBattle(setup: BattleSetup): ApplyResult {
     turnsTaken: 0,
     reshufflesLeft: config.deck.reshuffles,
     fatigueCount: 0,
+    maxHpReduction: 0,
+    damageTaken: 0,
   });
 
   const state: BattleState = {

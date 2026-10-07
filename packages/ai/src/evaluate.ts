@@ -28,6 +28,13 @@ function statusScore(state: BattleState, p: PlayerState, w: Weights): number {
       case 'evade':
         score += w.evadeValue;
         break;
+      case 'freeze':
+        // Donma sahibi için kötüdür: Mage'in Ateş kartları bonus alır ve Donma'yı tüketir.
+        score -= w.freezeValue;
+        break;
+      default:
+        // Yeni statü eklenip burada ele alınmazsa derleme hatası verir.
+        throw new Error(`Beklenmeyen statü: ${s.id satisfies never}`);
     }
   }
   return score;
@@ -41,12 +48,17 @@ export function evaluate(state: BattleState, me: PlayerIndex, w: Weights): numbe
   }
   const mine = state.players[me];
   const theirs = state.players[me === 0 ? 1 : 0];
+  // O an oynanırsa boşa gidecek iyileşme: tam HP'de heal kartı oynamak "ölü kart"dır.
+  // (Elde duran heal cezalandırılmaz; yalnız boşa harcanan iyileşme ceza alır.)
+  const missing = Math.max(0, mine.maxHp - mine.hp);
   return (
-    w.enemyDamage * (theirs.maxHp - theirs.hp) -
-    w.selfDamage * (mine.maxHp - mine.hp) +
+    // Alınan toplam hasar: maks HP azaltma (Parasite) bu terimi KÜÇÜLTMEZ, hasar gibi sayılır.
+    w.enemyDamage * theirs.damageTaken -
+    w.selfDamage * mine.damageTaken +
     w.shield * mine.shield -
     w.enemyShield * theirs.shield +
     w.status * (statusScore(state, mine, w) - statusScore(state, theirs, w)) +
-    w.hand * mine.hand.length
+    w.hand * mine.hand.length -
+    w.wastedHeal * missing
   );
 }

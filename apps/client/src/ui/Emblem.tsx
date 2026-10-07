@@ -65,6 +65,44 @@ export function Emblem({ id, size = 48 }: { id: ArchetypeId; size?: number }) {
           />
         </g>
       )}
+      {id === 'mage' && (
+        <g>
+          <circle cx="24" cy="22" r="13" fill="#2b3a6b" stroke="#8fb6ff" strokeWidth="2.5" />
+          <path d="M24 9 C31 15 31 29 24 35 C17 29 17 15 24 9 Z" fill="#6fa8ff" opacity="0.85" />
+          <path d="M24 11 V33" stroke="#e8f1ff" strokeWidth="1.6" />
+          <path
+            d="M10 40 C16 34 32 34 38 40"
+            fill="none"
+            stroke="#d9a441"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <circle cx="24" cy="22" r="3.2" fill="#eaf4ff" />
+        </g>
+      )}
+      {id === 'priest' && (
+        <g>
+          <path
+            d="M24 5 L40 12 V22 C40 33 33 40 24 44 C15 40 8 33 8 22 V12 Z"
+            fill="#3b3550"
+            stroke="#f0e2b6"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M24 12 V34 M15 20 H33"
+            stroke="#ffe9a8"
+            strokeWidth="4.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M24 3 V8 M11 8 L15 12 M37 8 L33 12"
+            stroke="#ffe9a8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </g>
+      )}
     </svg>
   );
 }
@@ -73,4 +111,6 @@ export const EMBLEM_NAME: Record<ArchetypeId, string> = {
   warrior: 'Kalkan ve haç amblemi',
   assassin: 'Hançer amblemi',
   archer: 'Yay ve ok amblemi',
+  mage: 'Buz kristali ve küre amblemi',
+  priest: 'Işık haçı amblemi',
 };

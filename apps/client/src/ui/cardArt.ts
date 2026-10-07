@@ -32,6 +32,30 @@ const ART: Record<string, string> = {
   'blinding-strafe': '💫',
   'arrow-shower': '🌧️',
   'power-shot': '☄️',
+  // Faz 2b · Mage (Donma hazırlığı → Ateş bitirici)
+  freeze: '❄️',
+  burn: '🔥',
+  chill: '🌬️',
+  'fire-ball': '🧨',
+  'frozen-armor': '🧊',
+  lightning: '🌩️',
+  'ice-comet': '☄️',
+  'freezing-distance': '🌨️',
+  incineration: '🌋',
+  'meteor-fall': '🌠',
+  // Faz 2b · Priest (iyileşme, Zayıflık, Parasite)
+  healing: '💗',
+  malice: '😈',
+  'light-strike': '🔆',
+  massive: '🪨',
+  parasite: '🦠',
+  helis: '🌟',
+  restore: '🔄',
+  judgement: '⚖️',
+  'great-healing': '💖',
+  torment: '😖',
+  'superior-parasite': '🧬',
+  'complete-heal': '🕊️',
 };
 
 export const cardArt = (id: string): string => ART[id] ?? '🂠';

@@ -7,7 +7,9 @@
     "status": 1.5,
     "hand": 0.5,
     "criticalValue": 6,
-    "evadeValue": 3
+    "evadeValue": 3,
+    "freezeValue": 5,
+    "wastedHeal": 10
   },
   "balanced": {
     "enemyDamage": 2,
@@ -17,7 +19,9 @@
     "status": 1,
     "hand": 0.5,
     "criticalValue": 5,
-    "evadeValue": 3
+    "evadeValue": 3,
+    "freezeValue": 5,
+    "wastedHeal": 10
   },
   "defensive": {
     "enemyDamage": 1.5,
@@ -27,6 +31,8 @@
     "status": 1,
     "hand": 0.5,
     "criticalValue": 4,
-    "evadeValue": 4
+    "evadeValue": 4,
+    "freezeValue": 4,
+    "wastedHeal": 10
   }
 }

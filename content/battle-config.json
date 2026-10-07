@@ -45,6 +45,9 @@
     "poison": {
       "max": 6,
       "decay": 2
+    },
+    "freeze": {
+      "duration": 2
     }
   },
   "deckBuilding": {

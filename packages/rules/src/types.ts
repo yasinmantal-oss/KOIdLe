@@ -1,16 +1,21 @@
 export type PlayerIndex = 0 | 1;
-export type Job = 'warrior' | 'rogue';
+export type Job = 'warrior' | 'rogue' | 'mage' | 'priest';
 export type Branch = 'assassin' | 'archer';
 export type CardTag = 'heavy';
 export type CardType = 'attack' | 'skill' | 'defense' | 'heal' | 'buff' | 'debuff';
-export type StatusId = 'strength' | 'weak' | 'poison' | 'critical' | 'evade';
+export type StatusId = 'strength' | 'weak' | 'poison' | 'critical' | 'evade' | 'freeze';
+
+/** Olumsuz statüler: Judgement (debuff sayımı) bunları sayar. Maks HP azaltma statü değildir. */
+export const NEGATIVE_STATUSES: readonly StatusId[] = ['weak', 'poison', 'freeze'];
 
 /** Combat v0.2: kartın koşullu bonusu. Koşul kart oynandığı an değerlendirilir. */
 export type Condition =
   | { selfHas: StatusId }
   | { enemyHas: StatusId }
   | { enemyHpAtMost: number }
-  | { selfHpAtMost: number };
+  | { selfHpAtMost: number }
+  /** Judgement: rakipteki olumsuz statü sayısı × `per`. */
+  | { enemyDebuffCount: { per: number } };
 
 export interface Bonus {
   if: Condition;
@@ -29,8 +34,18 @@ export type Effect =
     }
   | { kind: 'selfDamage'; amount: number }
   | { kind: 'damageFromShieldGainedThisTurn' }
+  /** Ateş: rakip Donmuşsa `bonus` eklenir ve Donma tüketilir (tek kullanım). */
+  | { kind: 'damageFire'; amount: number; bonus: number; hits?: number; ignoreShield?: boolean }
   | { kind: 'shield'; amount: number }
-  | { kind: 'heal'; amount: number; bonus?: Bonus }
+  | {
+      kind: 'heal';
+      amount: number;
+      bonus?: Bonus;
+      /** Taşan iyileşme Kalkan olur (yalnız Priest). */
+      overflowToShield?: boolean;
+    }
+  /** Rakibin maks HP'si kalıcı azalır; HP yeni maksı aşıyorsa maksa iner (Parasite). */
+  | { kind: 'reduceMaxHp'; amount: number }
   | { kind: 'draw'; count: number }
   | { kind: 'applyStatus'; target: 'self' | 'enemy'; status: StatusId; amount: number };
 
@@ -77,6 +92,8 @@ export interface BattleConfig {
     strength: { max: number };
     /** Zehir: toplanır, üst sınırı var; sahibinin tur başında vurur, sonra `decay` azalır. */
     poison: { max: number; decay: number };
+    /** Donma: tek başına etkisi yok; Ateş kartları bonus alır ve Donma'yı tüketir. K7 gibi yenilenir. */
+    freeze: { duration: number };
   };
   /** Deste kurma sınırları. Motor yok sayar; deste kurma ekranı, hazır desteler ve sim doğrular. */
   deckBuilding: { maxHeavy: number; minOpeners: number };
@@ -113,6 +130,10 @@ export interface PlayerState {
   turnsTaken: number;
   reshufflesLeft: number;
   fatigueCount: number;
+  /** Kalıcı maks HP kaybı (Parasite). İyileşme bunu geri getirmez. */
+  maxHpReduction: number;
+  /** Bu oyuncunun topladığı toplam hasar (maks HP azaltmadan bağımsız). AI değerlemesi okur. */
+  damageTaken: number;
 }
 
 export type EndReason = 'normalDamage' | 'fatigue' | 'arenaCollapse' | 'roundCap';
@@ -166,6 +187,10 @@ export type BattleEvent =
     }
   | { type: 'STATUS_IGNORED'; player: PlayerIndex; status: StatusId; amount: number }
   | { type: 'STATUS_EXPIRED'; player: PlayerIndex; status: StatusId }
+  /** Statü tüketildi (Ateş → Donma). */
+  | { type: 'STATUS_CONSUMED'; player: PlayerIndex; status: StatusId }
+  /** Rakibin maks HP'si kalıcı azaldı; `maxHp` yeni değer. */
+  | { type: 'MAX_HP_REDUCED'; player: PlayerIndex; amount: number; maxHp: number }
   /** Güç harcandı: `amount` toplam eklenen değer (çarpan dahil); çarpan > 1 ise Hell Blade kombosu. */
   | { type: 'STRENGTH_USED'; player: PlayerIndex; amount: number; multiplier: number }
   | { type: 'CRIT_USED'; player: PlayerIndex }

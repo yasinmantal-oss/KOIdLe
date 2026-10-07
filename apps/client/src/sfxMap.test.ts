@@ -36,4 +36,16 @@ describe('sfxFor', () => {
     expect(sfxFor([end(1)], 0)).toEqual([{ kind: 'lose' }]);
     expect(sfxFor([end(null)], 0)).toEqual([]);
   });
+  it('Faz 2b: tüketilen statü ve kalıcı maks HP kaybı sessiz kalmaz', () => {
+    const events: BattleEvent[] = [
+      { type: 'STATUS_CONSUMED', player: 1, status: 'freeze' },
+      { type: 'DAMAGE_DEALT', source: 0, target: 1, amount: 5, absorbed: 0 },
+      { type: 'MAX_HP_REDUCED', player: 1, amount: 4, maxHp: 26 },
+    ];
+    expect(sfxFor(events, 0)).toEqual([
+      { kind: 'evade' },
+      { kind: 'hit', amount: 5 },
+      { kind: 'poison' },
+    ]);
+  });
 });

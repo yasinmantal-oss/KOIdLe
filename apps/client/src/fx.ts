@@ -46,6 +46,11 @@ export function fxFor(events: readonly BattleEvent[], me: PlayerIndex = 0): FxRe
   const hitTargets: PlayerIndex[] = [];
   const pops: Pop[] = [];
   const callouts: string[] = [];
+  // F2-12 "BUHARLAŞMA!": Donma tüketildiği aksiyonda kart hasarı da geldiyse. Olay sırası
+  // STATUS_CONSUMED → DAMAGE_DEALT olduğu için hasar önce taranır (sıradan bağımsız kalsın).
+  const cardDamageInBatch = events.some(
+    (e) => e.type === 'DAMAGE_DEALT' && e.amount > 0 && typeof e.source === 'number',
+  );
   for (const e of events) {
     if (e.type === 'DAMAGE_DEALT') {
       // Sarsıntı ve hitstop yalnız oyuncu kartlarının hasarına bağlı (Arena/Yorgunluk/Zehir hariç).
@@ -59,6 +64,11 @@ export function fxFor(events: readonly BattleEvent[], me: PlayerIndex = 0): FxRe
       callouts.push('KAÇINDI!');
     } else if (e.type === 'STRENGTH_USED' && e.multiplier > 1 && e.amount >= 1) {
       callouts.push('KOMBO!');
+    } else if (e.type === 'STATUS_CONSUMED' && e.status === 'freeze' && cardDamageInBatch) {
+      // Ateş Donma'yı yakınca buhar çıkar (spec F2-12).
+      callouts.push('BUHARLAŞMA!');
+    } else if (e.type === 'MAX_HP_REDUCED') {
+      callouts.push('PARASİT!');
     }
   }
   let shakePx = 0;

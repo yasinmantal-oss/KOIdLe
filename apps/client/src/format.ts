@@ -12,11 +12,14 @@ export const STATUS_TR: Record<StatusId, string> = {
   poison: 'Zehir',
   critical: 'Kritik',
   evade: 'Kaçınma',
+  freeze: 'Donma',
 };
 
-/** Statü etiketi: Kritik/Kaçınma tek seferliktir, değeri yazılmaz. */
+/** Statü etiketi: Kritik/Kaçınma/Donma tek seferlik ya da değersizdir, değeri yazılmaz. */
 export function statusLabel(id: StatusId, amount: number): string {
-  return id === 'critical' || id === 'evade' ? STATUS_TR[id] : `${STATUS_TR[id]} ${amount}`;
+  return id === 'critical' || id === 'evade' || id === 'freeze'
+    ? STATUS_TR[id]
+    : `${STATUS_TR[id]} ${amount}`;
 }
 
 const END_TR = {
@@ -61,6 +64,13 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
       }.`;
     case 'STATUS_IGNORED':
       return `${who(e.player)}: ${statusLabel(e.status, e.amount)} etkisiz (daha güçlüsü aktif).`;
+    case 'STATUS_CONSUMED':
+      // Şu an yalnız Ateş Donma'yı tüketiyor; olay tipi genele açık, not yalnız Donma'da düşülür.
+      return `${who(e.player)}: ${STATUS_TR[e.status]} tükendi${
+        e.status === 'freeze' ? ' (Ateş kombosu)' : ''
+      }.`;
+    case 'MAX_HP_REDUCED':
+      return `${who(e.player)}: maks HP ${e.amount} azaldı (yeni maks ${e.maxHp}).`;
     case 'STATUS_EXPIRED':
       return `${who(e.player)}: ${STATUS_TR[e.status]} sona erdi.`;
     case 'STRENGTH_USED':
@@ -76,10 +86,13 @@ export function formatEvent(e: BattleEvent, cards: Record<string, CardDef>): str
     case 'BATTLE_ENDED':
       if (e.winner === null) return `Berabere (${END_TR[e.reason]}).`;
       return `${e.winner === HUMAN ? 'Kazandın' : 'Kaybettin'} (${END_TR[e.reason]}, ${e.round}. raunt).`;
+    default:
+      // Yeni olay eklenip burada ele alınmazsa derleme hatası verir.
+      throw new Error(`Bilinmeyen olay: ${e satisfies never}`);
   }
 }
 
-export type Keyword = 'strength' | 'weak' | 'shield' | 'poison' | 'critical' | 'evade';
+export type Keyword = 'strength' | 'weak' | 'shield' | 'poison' | 'critical' | 'evade' | 'freeze';
 export interface TextPart {
   text: string;
   kw: Keyword | null;
@@ -92,6 +105,7 @@ const KEYWORDS: [RegExp, Keyword][] = [
   [/^Zehir/, 'poison'],
   [/^Kritik/, 'critical'],
   [/^Kaçınma/, 'evade'],
+  [/^Donma/, 'freeze'],
 ];
 
 /** Kartın metninde geçen anahtar kelimeler (sırayla, tekrarsız). */
@@ -111,6 +125,7 @@ export function glossaryLine(text: string, c: BattleConfig): string | null {
     weak: `Zayıflık: kart hasarın X azalır (${s.weak.duration} tur)`,
     poison: `Zehir: her tur başında X hasar (Kalkanı yok sayar), sonra ${s.poison.decay} azalır`,
     shield: "Kalkan: hasarı HP'den önce emer",
+    freeze: `Donma: tek başına etkisi yok; Ateş kartı bonus alır ve Donma'yı tüketir (${s.freeze.duration} tur)`,
   };
   const kws = keywordsIn(text);
   return kws.length === 0 ? null : `${kws.map((k) => defs[k]).join(' · ')}.`;
@@ -158,6 +173,8 @@ export function rulesSummary(c: BattleConfig): string[] {
     `Deste bitince ıskarta ${c.deck.reshuffles} kez karıştırılır. Sonra çekemediğin her kart için Yorgunluk hasarı alırsın (${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}, …).`,
     `Zehir X: sahibinin her tur başında X hasar (Kalkanı yok sayar), sonra ${s.poison.decay} azalır; toplanır, en fazla ${s.poison.max}.`,
     'Kritik: sonraki hasar veren kartın her vuruşu iki kat vurur (Güç ve Zayıflık sonrası, Kalkandan önce). Kaçınma: rakibin sonraki hasar veren kartının ilk vuruşu 0 hasar verir; kullanılmazsa sonraki turunda biter.',
+    `Donma X: tek başına etkisi yoktur, ${s.freeze.duration} tur sürer (süre yenilenir). Rakip Donmuşken Mage'in Ateş kartları bonus hasar verir ve Donma'yı tüketir.`,
+    `Parasite: rakibin maks HP'si kalıcı azalır (iyileşmeyle geri gelmez); taşan iyileşme Priest'te Kalkan olur. Judgement, rakipteki olumsuz statü (Zayıflık, Zehir, Donma) başına bonus kazanır.`,
     '"Bu tur oynanan kart" sayacı Turu Bitir’in yanında.',
     `Ağır kartlar (★): destede en fazla ${c.deckBuilding.maxHeavy}.${
       c.hand.openingGuarantee

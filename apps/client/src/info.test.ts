@@ -9,6 +9,8 @@ describe('infoText', () => {
     expect(infoText('hand', c)).toContain(String(c.hand.limit));
     expect(infoText('status:poison', c)).toContain(`${c.statuses.poison.decay} azalır`);
     expect(infoText('status:weak', c)).toContain(`${c.statuses.weak.duration} tur`);
+    expect(infoText('status:freeze', c)).toContain(`${c.statuses.freeze.duration} tur`);
+    expect(infoText('status:freeze', c)).toContain('Ateş');
     expect(infoText('fatigue', c)).toContain(
       `${c.fatigue.start}, ${c.fatigue.start + c.fatigue.step}`,
     );
@@ -28,6 +30,7 @@ describe('infoText', () => {
       'status:poison',
       'status:critical',
       'status:evade',
+      'status:freeze',
     ] as const) {
       expect(infoText(k, c).length).toBeGreaterThan(10);
     }

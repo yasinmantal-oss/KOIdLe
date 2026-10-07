@@ -1,0 +1,176 @@
+[
+  {
+    "id": "freeze",
+    "name": "Freeze",
+    "job": "mage",
+    "type": "debuff",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 2
+      },
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "freeze",
+        "amount": 1
+      }
+    ],
+    "text": "2 hasar ver. Rakibe Donma ver."
+  },
+  {
+    "id": "burn",
+    "name": "Burn",
+    "job": "mage",
+    "type": "attack",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "damageFire",
+        "amount": 2,
+        "bonus": 3
+      }
+    ],
+    "text": "2 hasar ver. Ateş: rakip Donmuşsa +3 hasar ve Donma biter."
+  },
+  {
+    "id": "chill",
+    "name": "Chill",
+    "job": "mage",
+    "type": "skill",
+    "cost": 1,
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "freeze",
+        "amount": 1
+      },
+      {
+        "kind": "draw",
+        "count": 1
+      }
+    ],
+    "text": "Rakibe Donma ver. 1 kart çek."
+  },
+  {
+    "id": "fire-ball",
+    "name": "Fire Ball",
+    "job": "mage",
+    "type": "attack",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "damageFire",
+        "amount": 5,
+        "bonus": 4
+      }
+    ],
+    "text": "5 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter."
+  },
+  {
+    "id": "frozen-armor",
+    "name": "Frozen Armor",
+    "job": "mage",
+    "type": "defense",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "shield",
+        "amount": 7
+      }
+    ],
+    "text": "7 Kalkan kazan."
+  },
+  {
+    "id": "lightning",
+    "name": "Lightning",
+    "job": "mage",
+    "type": "attack",
+    "cost": 2,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 5,
+        "ignoreShield": true
+      }
+    ],
+    "text": "Kalkanı yok sayarak 5 hasar ver."
+  },
+  {
+    "id": "ice-comet",
+    "name": "Ice Comet",
+    "job": "mage",
+    "type": "attack",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "damage",
+        "amount": 5
+      },
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "freeze",
+        "amount": 1
+      }
+    ],
+    "text": "5 hasar ver. Rakibe Donma ver."
+  },
+  {
+    "id": "freezing-distance",
+    "name": "Freezing Distance",
+    "job": "mage",
+    "tags": ["heavy"],
+    "type": "debuff",
+    "cost": 3,
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "freeze",
+        "amount": 1
+      },
+      {
+        "kind": "applyStatus",
+        "target": "enemy",
+        "status": "weak",
+        "amount": 3
+      }
+    ],
+    "text": "Rakibe Donma ver ve Zayıflık 3 ver."
+  },
+  {
+    "id": "incineration",
+    "name": "Incineration",
+    "job": "mage",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 4,
+    "effects": [
+      {
+        "kind": "damageFire",
+        "amount": 8,
+        "bonus": 4
+      }
+    ],
+    "text": "8 hasar ver. Ateş: rakip Donmuşsa +4 hasar ve Donma biter."
+  },
+  {
+    "id": "meteor-fall",
+    "name": "Meteor Fall",
+    "job": "mage",
+    "tags": ["heavy"],
+    "type": "attack",
+    "cost": 6,
+    "effects": [
+      {
+        "kind": "damageFire",
+        "amount": 10,
+        "bonus": 5
+      }
+    ],
+    "text": "10 hasar ver. Ateş: rakip Donmuşsa +5 hasar ve Donma biter."
+  }
+]

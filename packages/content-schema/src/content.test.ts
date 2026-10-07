@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import battleConfigJson from '@koidle/content/battle-config.json';
 import commonJson from '@koidle/content/cards/common.json';
+import mageJson from '@koidle/content/cards/mage.json';
+import priestJson from '@koidle/content/cards/priest.json';
 import rogueJson from '@koidle/content/cards/rogue.json';
 import warriorJson from '@koidle/content/cards/warrior.json';
 import { apply, createBattle, isHeavy } from '@koidle/rules';
@@ -35,16 +37,18 @@ describe('real content', () => {
     expect(loadAiProfiles().balanced).toBeDefined();
   });
 
-  it('32 cards, ids unique across files', () => {
-    expect(cards).toHaveLength(32);
-    expect(new Set(cards.map((c) => c.id)).size).toBe(32);
-    const ids = [...commonJson, ...warriorJson, ...rogueJson].map((c) => c.id);
+  it('54 cards, ids unique across files', () => {
+    expect(cards).toHaveLength(54);
+    expect(new Set(cards.map((c) => c.id)).size).toBe(54);
+    const ids = [...commonJson, ...warriorJson, ...rogueJson, ...mageJson, ...priestJson].map(
+      (c) => c.id,
+    );
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it.each(ARCHETYPE_IDS)('%s pool: 15 cards, exactly 3 heavy', (id) => {
+  it.each(ARCHETYPE_IDS)('%s pool: en az 15 kart, tam 3 Ağır', (id) => {
     const pool = loadPool(id);
-    expect(pool).toHaveLength(15);
+    expect(pool.length).toBeGreaterThanOrEqual(15);
     expect(pool.filter(isHeavy)).toHaveLength(3);
   });
 
@@ -71,8 +75,76 @@ describe('real content', () => {
     expect(state.players[0].hp).toBe(config.hero.hp);
   });
 
-  it('loadPresetDecks returns all three', () => {
-    expect(Object.keys(loadPresetDecks()).sort()).toEqual(['archer', 'assassin', 'warrior']);
+  it('loadPresetDecks returns all five', () => {
+    expect(Object.keys(loadPresetDecks()).sort()).toEqual([
+      'archer',
+      'assassin',
+      'mage',
+      'priest',
+      'warrior',
+    ]);
+  });
+
+  it('Mage: Freeze → Fire Ball kombosu 2 + 9 hasar verir (gerçek içerik)', () => {
+    const deck = loadPresetDeck('mage');
+    const { state } = createBattle({
+      config,
+      cards,
+      decks: [deck, deck],
+      names: ['A', 'B'],
+      seed: 1,
+    });
+    const me = state.active;
+    const foe = me === 0 ? 1 : 0;
+    const pl = state.players[me];
+    pl.hand = ['freeze', 'fire-ball'].map((cardId, i) => ({ iid: `c${i}`, cardId }));
+    pl.mp = 6;
+    pl.maxMp = 6;
+    let s = apply(state, { type: 'PLAY_CARD', player: me, iid: 'c0' }).state; // Freeze: 2 hasar + Donma
+    expect(s.players[foe].hp).toBe(config.hero.hp - 2);
+    s = apply(s, { type: 'PLAY_CARD', player: me, iid: 'c1' }).state; // Fire Ball: 5 + 4 Ateş
+    expect(s.players[foe].hp).toBe(config.hero.hp - 2 - 9);
+    expect(s.players[foe].statuses).toEqual([]);
+  });
+
+  it('Priest: Complete Heal taşan iyileşmeyi Kalkana çevirir (gerçek içerik)', () => {
+    const deck = loadPresetDeck('priest');
+    const { state } = createBattle({
+      config,
+      cards,
+      decks: [deck, deck],
+      names: ['A', 'B'],
+      seed: 1,
+    });
+    const me = state.active;
+    const pl = state.players[me];
+    pl.hand = [{ iid: 'c0', cardId: 'complete-heal' }];
+    pl.mp = 6;
+    pl.maxMp = 6;
+    pl.hp = 20;
+    const s = apply(state, { type: 'PLAY_CARD', player: me, iid: 'c0' }).state;
+    expect(s.players[me].hp).toBe(30);
+    expect(s.players[me].shield).toBe(5);
+  });
+
+  it('Priest: Parasite kalıcı maks HP kaybı verir (gerçek içerik)', () => {
+    const deck = loadPresetDeck('priest');
+    const { state } = createBattle({
+      config,
+      cards,
+      decks: [deck, deck],
+      names: ['A', 'B'],
+      seed: 1,
+    });
+    const me = state.active;
+    const foe = me === 0 ? 1 : 0;
+    const pl = state.players[me];
+    pl.hand = [{ iid: 'c0', cardId: 'parasite' }];
+    pl.mp = 6;
+    pl.maxMp = 6;
+    const s = apply(state, { type: 'PLAY_CARD', player: me, iid: 'c0' }).state;
+    expect(s.players[foe].maxHp).toBe(config.hero.hp - 4);
+    expect(s.players[foe].maxHpReduction).toBe(4);
   });
 
   it('Stab → Thrust → Spike deals 16 in one turn (real content)', () => {

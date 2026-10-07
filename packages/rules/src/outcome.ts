@@ -30,6 +30,7 @@ export function dealDamage(
   const absorbed = ignoreShield ? 0 : Math.min(t.shield, amount);
   t.shield -= absorbed;
   t.hp = Math.max(0, t.hp - (amount - absorbed));
+  t.damageTaken += amount;
   events.push({ type: 'DAMAGE_DEALT', source, target, amount, absorbed });
   if (t.hp === 0) {
     const reason = source === 'arena' || source === 'fatigue' ? REASON[source] : 'normalDamage';
