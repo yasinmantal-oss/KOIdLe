@@ -1,5 +1,6 @@
 # KOIdLe — Devam Notu (oturum devri)
 
+> **2026-10-07 gece: uygulayıcı DeepSeek Harness'a devredildi. Önce `docs/deepseek-devir.md`'yi oku.** Yedek etiketi: `yedek/2026-10-07-claude-devir`.
 > Son güncelleme: 2026-10-07 akşam (Faz 2a + düello revizesi yayında (sürüm 6+), Tanoth kararları, eşya tasarımı sıfırdan ele alınacak) · Bir sonraki oturum buradan başlar.
 > **Sayfalar:** savaş/maç formu https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT · tasarım vitrini https://claude.ai/artifact/K1g4KKYhjHVmpaeGAyjCAP
 > **Faz 2a planı:** `docs/superpowers/plans/2026-10-06-faz-2a-warrior-rogue.md` (Görev 1–11 uygulandı; kart içeriği planın değil spec "Revizyon 1–2"nin dediği gibidir).
@@ -125,11 +126,13 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Kalkan Darbesi (Gate 1B koşulu).** ÖNCE: "Bu tur kazandığın Kalkan kadar hasar ver" (tek başına 0). SONRA: "4 Kalkan kazan. Sonra bu tur kazandığın Kalkan kadar hasar ver." NEDEN: Yasin 2 notta "işe yaramıyor" dedi; artık tek başına da çalışıyor, Siper ile kombo sürüyor. Claude'un v0.2'deki "değiştirme" önerisi veriyle çürüdü.
 - **K3 ilk oyuncu kuralı (Faz 2a yön kontrolü, 2026-10-07).** ÖNCE: ilk oyuncu ilk turunda çekmez (`hand.firstPlayerSkipsFirstDraw: true`), ikinci oyuncuya ek MP yok. SONRA: ikinci oyuncu kendi 1. turunda +4 MP alır (`mp.secondPlayerFirstTurnBonus: 4`, yalnız o tur) ve ilk oyuncu da ilk turunda çeker (`firstPlayerSkipsFirstDraw: false`). NEDEN: 10 maçta ilk oyuncu %32 kazandı; sim'de K3 açıkken yalnız MP bonusu işe yaramadı (bonus 1 → 5 arası ilk oyuncu %33–38, çünkü MP zaten tam kullanılmıyor, sınır kart sayısı). K3 kapatılınca ve bonus 4 ile ilk oyuncu %57–59 (300 seed %57,0; hedef 45–55, ulaşılamadı). Bonus 5'te kazanım yok (%57,5). Kalan fark kartla çözülmeli; açık konu.
 - **Yıkım.** ÖNCE: 6 MP, 14 hasar (sim'de %99 "otomatik"). SONRA: rakip HP ≤ 15 ise 14, değilse 7. NEDEN: zamanlama kararı, bitirici rolü.
+- **Uygulayıcı (Yasin, 2026-10-07 gece).** ÖNCE: Claude tek uygulayıcı. SONRA: DeepSeek Harness uygular, Claude şimdilik projeden çekildi, Yasin karar verir. NEDEN: Yasin projenin bir kısmını DeepSeek Harness ile geliştirecek. Devir: `docs/deepseek-devir.md`; tam yedek etiketi `yedek/2026-10-07-claude-devir`. İlk iş: Faz 2b Görev 1 (ikinci oyuncu = ekstra kart).
 - **Çalışma düzeni.** ÖNCE: Claude uygular, Copilot inceler, Yasin karar verir. SONRA: Copilot geçici olarak devre dışı. NEDEN: süreç Yasin'in kafasını karıştırıyordu.
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)
 
 ## TEST / SİMÜLASYON
-- Testler: son doğrulanmış durum 81 test yeşil (Faz 1 kapanışı, 2026-10-06). Bu oturumda kod değişmedi, testler yeniden çalıştırılmadı.
+- **Testler (2026-10-07 gece, doğrulandı):** 187 test yeşil (rules 89, content-schema 29, ai 12, client 53, sim 4), typecheck temiz.
+- Eski: son doğrulanmış durum 81 test yeşil (Faz 1 kapanışı, 2026-10-06). Bu oturumda kod değişmedi, testler yeniden çalıştırılmadı.
 - Sim (`reports/sim/latest.md`, 900 maç):
   - raunt ort. 7,72 (medyan 8, 6–11)
   - ilk oyuncu %47,7 · berabere %0
@@ -196,7 +199,9 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Yeni oturumun ilk işi: hangisiyle başlanacağını Yasin seçer.**
+**DeepSeek'e verilen ilk iş (2026-10-07 gece): Faz 2b Görev 1, ikinci oyuncu = ekstra kart.** Ayrıntı ve kabul ölçütü: `docs/deepseek-devir.md` §7. Eşya tasarımı (A) Yasin'le ayrı tasarım oturumu olarak bekliyor.
+
+~~Yeni oturumun ilk işi: hangisiyle başlanacağını Yasin seçer.~~
 - **A. Eşya tasarımı sıfırdan (Yasin: OLDUKÇA ÖNEMLİ).** `superpowers:brainstorming` ile Yasin'le birlikte: item slotları, sınıf kısıtı, nadirlik, upgrade (Anvil), düelloda/CZ'de eşyanın etkisi (tavanlı stat + kart efekti), çanta/filtre, görünüm. Çıktı: kısa spec eki. Kod yok, onay sonrası.
 - **B. Faz 2b** (aşağıda).
 
@@ -220,7 +225,8 @@ Paralel ve engellemeyen işler: PR #1'i `master`'a birleştirme kararı (Yasin).
 6. Oturum sonunda `docs/kapanis-protokolu.md`'yi uygula.
 
 ## Çalışma düzeni
-- **Claude:** tek uygulayıcı (kod, test, commit, push).
+- **DeepSeek Harness:** 2026-10-07 gecesinden itibaren uygulayıcı (kod, test, commit, push).
+- **Claude:** geçici olarak çekildi (önceden tek uygulayıcıydı).
 - **Copilot:** geçici olarak devre dışı (2026-10-06). Geri dönerse: bağımsız inceleyici; repo'yu göremez, yalnız Yasin'in ilettiğini okur.
 - **Yasin:** karar veren ve köprü.
 - Copilot önerisi repo'daki gerçek durumla çelişirse Claude uygulamadan önce yazar ve Yasin'e sorar. Copilot önerisi emir değildir.
