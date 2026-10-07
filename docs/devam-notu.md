@@ -1,6 +1,7 @@
 # KOIdLe — Devam Notu (oturum devri)
 
-> Son güncelleme: 2026-10-07 (Faz 2a uygulandı, kartlar iki kez revize edildi, yön kontrolü oynandı, sayfa sürüm 5 yayında) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-07 akşam (Faz 2a + düello revizesi yayında (sürüm 6+), Tanoth kararları, eşya tasarımı sıfırdan ele alınacak) · Bir sonraki oturum buradan başlar.
+> **Sayfalar:** savaş/maç formu https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT · tasarım vitrini https://claude.ai/artifact/K1g4KKYhjHVmpaeGAyjCAP
 > **Faz 2a planı:** `docs/superpowers/plans/2026-10-06-faz-2a-warrior-rogue.md` (Görev 1–11 uygulandı; kart içeriği planın değil spec "Revizyon 1–2"nin dediği gibidir).
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
 > **Faz 2 tasarımı (onaylı spec eki):** `docs/superpowers/specs/2026-10-06-faz-2-dort-job-design.md`.
@@ -76,6 +77,16 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Hız kartları (Sprint, Light Feet) oyundan çıktı (Yasin).** Neden: kart çekme de ekstra MP de "hiçbir şeye oturmadı". Okçu'ya savunma kartı Evade geldi (Revizyon 2).
 - **İkinci oyuncu telafisi ekstra kart olacak (Yasin).** Neden: +4 MP bonusu oyuncu gözüyle garip; ekstra kart anlaşılır. Faz 2b'nin ilk işi.
 - **Çalışma şekli (Yasin):** ağır işler ajanlara; ara onaylar ve uzun planlar yok, "yapıştır bitir". Neden: token ve süre.
+- **Tanoth uyarlaması (Yasin, araştırma `docs/research/07-tanoth.md` sonrası):** Faz 3 tasarımına bağlayıcı girdi.
+  - **Günlük farm sınırı eklenir:** günde **5 farm başlatma** hakkı (öneri: 04:00 yenilenir, birikmez).
+  - **Günlük hak seviyeyle artar** (öneri: seviye başına +1, üst sınır 8; değerler `content/`'te).
+  - **Düelloda eşyanın önemi var** (öneri: CZ/baskında gear tam ama stat bonusu tavanlı; Quick Duel'de HP/Power normalize, item'ın kart efekti taşınır).
+  - **Aynı oyuncuya tekrar saldırmada bekleme süresi** olur (baskın kalkanından ayrı).
+  - NEDEN: Yasin, KOIdLe'nin farm/risk döngüsünün Tanoth'a benzediğini fark etti; "farm bu kadar hızlı olmamalı". Not: ÇIKSIN listesindeki "dayanıklılık/Sefer" ile çakışan kısım bu kararla açıkça değiştirilmiş sayılır (günlük sınır, dayanıklılık sistemi değil; tek sayaç).
+- **Ekran geri bildirimi** (`docs/geri-bildirim/2026-10-07-ekran-revizeleri.md`): Örs → Anvil, "Yükselt" butonu, item sınıf kısıtı, kuşanılı eşya tezgaha konmaz, çanta oto düzen + filtre, karakter sol üstte (profil resmi, unvan), uçuşan noktacıklar kalkar.
+- **Arena Çöküşü kaldırıldı (Yasin: "olmamalı").** `arenaCollapse.enabled: false`, commit `127d693`. Ayrıntı "DEĞİŞTİRİLEN KARARLAR".
+- **Savaş ekranı kart etkileşimi (Yasin):** karta dokun = seç, seçili karta tekrar dokun = **geri çek**; oynamak yalnız "Oyna" butonuyla. Önceki "ikinci dokunuş oynar" hali "çok kötü" bulundu. Ekrandaki kaymalar düzeltilir.
+- **Eşya tasarımı sıfırdan ele alınacak (Yasin, *OLDUKÇA ÖNEMLİ*).** Mevcut eşya tasarımı "tamamen kötü"; ayrı bir oturumda, sıfırdan düşünülüp yeniden tasarlanır (sistem + görünüm). Girdi: Tanoth raporu, ekran geri bildirimi, sınıf kısıtı, düelloda eşyanın rolü.
 
 ## ÖNCEKİ GÜN ALINAN KARARLAR (2026-10-06)
 - **Faz 2 tasarımı ONAYLANDI (Yasin).** Ayrıntı ve gerekçeler spec ekinde (F2-1…F2-15). Özet:
@@ -184,7 +195,11 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**Faz 2b (Claude, yeni oturum), sırayla:**
+**Yeni oturumun ilk işi: hangisiyle başlanacağını Yasin seçer.**
+- **A. Eşya tasarımı sıfırdan (Yasin: OLDUKÇA ÖNEMLİ).** `superpowers:brainstorming` ile Yasin'le birlikte: item slotları, sınıf kısıtı, nadirlik, upgrade (Anvil), düelloda/CZ'de eşyanın etkisi (tavanlı stat + kart efekti), çanta/filtre, görünüm. Çıktı: kısa spec eki. Kod yok, onay sonrası.
+- **B. Faz 2b** (aşağıda).
+
+**Faz 2b (Claude), sırayla:**
 1. **İkinci oyuncu telafisi = ekstra kart (Yasin, 2026-10-07).** `mp.secondPlayerFirstTurnBonus: 4` kaldırılır; ikinci oyuncu ilk turunda +1 kart çeker. Sim ile ilk oyuncu %45–55 hedeflenir (K3 kapalı kalır mı, sim karar verir).
 2. **Mage + Priest** kartları, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15.
 3. Sim (5×5 job matrisi, %40–60), sayfa yayını, Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
