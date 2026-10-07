@@ -17,6 +17,7 @@ describe('fxFor', () => {
       hitTargets: [],
       pops: [],
       callouts: [],
+      edgeFlash: false,
     });
   });
 
@@ -68,5 +69,11 @@ describe('fxFor', () => {
     expect(
       fxFor([{ type: 'STRENGTH_USED', player: 0, amount: 3, multiplier: 1 }]).callouts,
     ).toEqual([]);
+  });
+
+  it('edge flash only for big damage taken by the viewer', () => {
+    expect(fxFor([dmg(FX.edgeFlashAt, 0, 1)], 0).edgeFlash).toBe(true);
+    expect(fxFor([dmg(FX.edgeFlashAt - 1, 0, 1)], 0).edgeFlash).toBe(false);
+    expect(fxFor([dmg(20, 1, 0)], 0).edgeFlash).toBe(false);
   });
 });

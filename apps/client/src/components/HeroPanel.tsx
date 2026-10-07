@@ -1,7 +1,11 @@
+import type { ArchetypeId } from '@koidle/content-schema';
 import type { BattleConfig, PlayerState } from '@koidle/rules';
 import type { CSSProperties } from 'react';
 import { statusLabel } from '../format';
+import { type InfoKey, infoText } from '../info';
 import { ItemTile } from '../ui/common';
+import { Emblem } from '../ui/Emblem';
+import { Info } from '../ui/Info';
 import type { GearSlot } from '../world/protoData';
 import type { Item } from '../world/world';
 
@@ -15,7 +19,7 @@ interface Props {
   config: BattleConfig;
   title: string;
   sub: string;
-  portrait: string;
+  archetype: ArchetypeId;
   side: 'me' | 'opp';
   active: boolean;
   showHandCount: boolean;
@@ -31,7 +35,7 @@ export function HeroPanel({
   config,
   title,
   sub,
-  portrait,
+  archetype,
   side,
   active,
   showHandCount,
@@ -43,11 +47,11 @@ export function HeroPanel({
   const hpPct = p.maxHp === 0 ? 0 : Math.round((p.hp / p.maxHp) * 100);
   const por = (
     <div className="fighter__por">
-      <span aria-hidden="true">{portrait}</span>
+      <Emblem id={archetype} size={46} />
       {p.shield > 0 && (
-        <span className="fighter__shield" title="Kalkan">
+        <Info className="fighter__shield" text={infoText('shield', config)}>
           {p.shield}
-        </span>
+        </Info>
       )}
     </div>
   );
@@ -58,7 +62,11 @@ export function HeroPanel({
     >
       <div className="pops" aria-hidden="true">
         {pops.map((pop, i) => (
-          <span key={pop.key} className="pop" style={{ '--i': i } as CSSProperties}>
+          <span
+            key={pop.key}
+            className={`pop${pop.amount >= 14 ? ' pop--huge' : pop.amount >= 8 ? ' pop--big' : ''}`}
+            style={{ '--i': i } as CSSProperties}
+          >
             −{pop.amount}
           </span>
         ))}
@@ -78,7 +86,7 @@ export function HeroPanel({
           {title} <small>{sub}</small>
           {active && <span className="badge">{side === 'me' ? 'Senin sıran' : 'Oynuyor…'}</span>}
         </h2>
-        <div className="bar bar--hp">
+        <div className="bar bar--hp" title={infoText('hp', config)}>
           <i className="meter__fill" style={{ width: `${hpPct}%` }} />
           <b>
             <span className="sr-only">HP </span>
@@ -94,45 +102,58 @@ export function HeroPanel({
               className={`gem gem--${i < p.mp ? 'full' : i < p.maxMp ? 'empty' : 'locked'}`}
             />
           ))}
-          <b>
-            {p.mp}/{p.maxMp} MP
-          </b>
+          <Info text={infoText('mp', config)}>
+            <b>
+              {p.mp}/{p.maxMp} MP
+            </b>
+          </Info>
         </div>
         <div className="fxchips">
           {p.statuses.map((s) => (
-            <span key={s.id} className={`fxchip kw--${s.id}`}>
+            <Info
+              key={s.id}
+              className={`fxchip kw--${s.id}`}
+              text={infoText(`status:${s.id}`, config)}
+            >
               {statusLabel(s.id, s.amount)}
               {s.turnsLeft !== null && <small> · {s.turnsLeft} tur</small>}
-            </span>
+            </Info>
           ))}
         </div>
         <dl className="fighter__meta">
-          {showHandCount && (
-            <div>
-              <dt>El</dt>
-              <dd>{p.hand.length}</dd>
-            </div>
-          )}
-          <div>
-            <dt>Deste</dt>
-            <dd>{p.deck.length}</dd>
-          </div>
-          <div>
-            <dt>Iskarta</dt>
-            <dd>{p.discard.length}</dd>
-          </div>
-          <div>
-            <dt>Karıştırma</dt>
-            <dd>{p.reshufflesLeft}</dd>
-          </div>
-          <div>
-            <dt>Yorgunluk</dt>
-            <dd>
-              {p.fatigueCount} · sıradaki {nextFatigue}
-            </dd>
-          </div>
+          {showHandCount && <Meta k="hand" label="El" value={p.hand.length} config={config} />}
+          <Meta k="deck" label="Deste" value={p.deck.length} config={config} />
+          <Meta k="discard" label="Iskarta" value={p.discard.length} config={config} />
+          <Meta k="reshuffle" label="Karıştırma hakkı" value={p.reshufflesLeft} config={config} />
+          <Meta
+            k="fatigue"
+            label="Yorgunluk"
+            value={`${p.fatigueCount} · sıradaki ${nextFatigue}`}
+            config={config}
+          />
         </dl>
       </div>
     </section>
+  );
+}
+
+function Meta({
+  k,
+  label,
+  value,
+  config,
+}: {
+  k: InfoKey;
+  label: string;
+  value: string | number;
+  config: BattleConfig;
+}) {
+  return (
+    <div>
+      <dt>
+        <Info text={infoText(k, config)}>{label}</Info>
+      </dt>
+      <dd>{value}</dd>
+    </div>
   );
 }

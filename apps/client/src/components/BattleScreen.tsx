@@ -1,15 +1,17 @@
 import { ARCHETYPES } from '@koidle/content-schema';
-import type { PlayerIndex } from '@koidle/rules';
-import type { CSSProperties } from 'react';
+import { type PlayerIndex, validateAction } from '@koidle/rules';
+import { type CSSProperties, useEffect, useState, useSyncExternalStore } from 'react';
 import type { LoadedContent } from '../content';
 import { HUMAN } from '../format';
 import { FX } from '../fx';
 import type { MatchSetup } from '../match';
+import { isMuted, playSfxFor, setMuted, subscribeMuted } from '../sfx';
 import { useBattle } from '../useBattle';
-import { ARCHETYPE_ICON, type GearSlot } from '../world/protoData';
+import type { GearSlot } from '../world/protoData';
 import type { Item } from '../world/world';
 import { ArenaInfo, SeedLine } from './ArenaInfo';
 import { BattleLog } from './BattleLog';
+import { DeckPanel } from './DeckPanel';
 import { Hand } from './Hand';
 import { HeroPanel, type PopView } from './HeroPanel';
 import { ResultPanel } from './ResultPanel';
@@ -51,8 +53,29 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
     deck,
   );
   const fx = useFx(lastEvents, seq);
+  const muted = useSyncExternalStore(subscribeMuted, isMuted, () => false);
+  const [deckOpen, setDeckOpen] = useState(false);
+  const [confirmEnd, setConfirmEnd] = useState(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ses yalnız yeni aksiyonda (seq) çalar
+  useEffect(() => {
+    if (seq > 0) playSfxFor(lastEvents, HUMAN);
+  }, [seq]);
   const myTurn = !state.result && state.active === HUMAN;
   const foe: PlayerIndex = HUMAN === 0 ? 1 : 0;
+
+  const hasPlayable =
+    myTurn &&
+    state.players[HUMAN].hand.some(
+      (c) => validateAction(state, { type: 'PLAY_CARD', player: HUMAN, iid: c.iid }) === null,
+    );
+  // Tur değişince ya da oynanabilir kart kalmayınca bekleyen onay düşer.
+  useEffect(() => {
+    if (!hasPlayable) setConfirmEnd(false);
+  }, [hasPlayable]);
+  const endTurn = () => {
+    setConfirmEnd(false);
+    dispatch({ type: 'END_TURN', player: HUMAN });
+  };
 
   const parity = fx && fx.seq % 2 === 1 ? 1 : 0;
   const hitFor = (p: PlayerIndex): 0 | 1 | null =>
@@ -71,6 +94,7 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
     '--pop-ms': `${FX.popMs}ms`,
     '--callout-ms': `${FX.calloutMs}ms`,
     '--flash-ms': `${FX.flashMs}ms`,
+    '--edgeflash-ms': `${FX.edgeFlashMs}ms`,
     '--shake-px': `${fx?.result.shakePx ?? 0}px`,
   } as CSSProperties;
   const shake = fx && fx.result.shakePx > 0 ? ` fx-shake-${parity}` : '';
@@ -88,6 +112,21 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         ) : (
           <span className="chip chip--raid">{raid ? '⚔️ Sınır Baskını' : '🃏 Düello'}</span>
         )}
+        <span className="battle__tools">
+          <button type="button" className="chip chip--btn" onClick={() => setDeckOpen(true)}>
+            Destem
+          </button>
+          <button
+            type="button"
+            className="chip chip--btn"
+            aria-pressed={!muted}
+            aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
+            title={muted ? 'Sesi aç' : 'Sesi kapat'}
+            onClick={() => setMuted(!muted)}
+          >
+            {muted ? '🔇' : '🔊'}
+          </button>
+        </span>
         <ArenaInfo state={state} />
       </header>
       <HeroPanel
@@ -99,7 +138,7 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
             ? `${ARCHETYPES[ai].name} · Lv ${raid.foeLevel}`
             : `${ARCHETYPES[ai].name} · AI ${PROFILE_TR[profile]}`
         }
-        portrait={ARCHETYPE_ICON[ai]}
+        archetype={ai}
         side="opp"
         active={!state.result && state.active === foe}
         showHandCount
@@ -120,7 +159,7 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
           type="button"
           className="end-turn"
           disabled={!myTurn}
-          onClick={() => dispatch({ type: 'END_TURN', player: HUMAN })}
+          onClick={() => (hasPlayable && !confirmEnd ? setConfirmEnd(true) : endTurn())}
         >
           TURU
           <br />
@@ -132,7 +171,7 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         config={state.config}
         title={raid ? raid.myName : 'Sen'}
         sub={raid ? `${ARCHETYPES[mine].name} · Lv ${raid.myLevel}` : ARCHETYPES[mine].name}
-        portrait={ARCHETYPE_ICON[mine]}
+        archetype={mine}
         side="me"
         active={myTurn}
         showHandCount={false}
@@ -140,6 +179,17 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         pops={popsFor(HUMAN)}
         gear={gear ?? null}
       />
+      {confirmEnd && (
+        <div className="endconfirm" role="alert">
+          <span>Oynanabilir kartın var, yine de bitir?</span>
+          <button type="button" className="confirmbar__play" onClick={endTurn}>
+            Bitir
+          </button>
+          <button type="button" className="confirmbar__cancel" onClick={() => setConfirmEnd(false)}>
+            Geri
+          </button>
+        </div>
+      )}
       <Hand state={state} onPlay={(iid) => dispatch({ type: 'PLAY_CARD', player: HUMAN, iid })} />
       <details className="battle__more">
         <summary>Savaş kaydı ve kurallar</summary>
@@ -147,6 +197,8 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         <RulesSummary config={state.config} />
         <SeedLine seed={seed} />
       </details>
+      {fx?.result.edgeFlash && <div key={`ef${fx.seq}`} className="edgeflash" aria-hidden="true" />}
+      {deckOpen && <DeckPanel state={state} onClose={() => setDeckOpen(false)} />}
       {callout && (
         <div key={fx?.seq} className="callout" aria-hidden="true">
           {callout}

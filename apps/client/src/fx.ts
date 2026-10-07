@@ -10,8 +10,11 @@ export const FX = {
   shakeAt: 10,
   shakePx: 5,
   shakeBigAt: 14,
-  shakeBigPx: 8,
-  shakeMs: 180,
+  shakeBigPx: 12,
+  shakeMs: 240,
+  /** Sana tek aksiyonda bu kadar hasar gelirse ekran kenarı kırmızı yanar. */
+  edgeFlashAt: 8,
+  edgeFlashMs: 420,
   popMs: 500,
   calloutMs: 700,
   flashMs: 120,
@@ -32,11 +35,14 @@ export interface FxResult {
   /** Her DAMAGE_DEALT için bir sayı. */
   pops: Pop[];
   callouts: string[];
+  /** Bakış açısındaki oyuncu büyük hasar yedi: ekran kenarı kırmızı flaş. */
+  edgeFlash: boolean;
 }
 
 /** Bir aksiyonun olay yığınından görsel efektleri türetir. Saf; kural kararı vermez. */
-export function fxFor(events: readonly BattleEvent[]): FxResult {
+export function fxFor(events: readonly BattleEvent[], me: PlayerIndex = 0): FxResult {
   let cardDamage = 0;
+  let toMe = 0;
   const hitTargets: PlayerIndex[] = [];
   const pops: Pop[] = [];
   const callouts: string[] = [];
@@ -44,6 +50,7 @@ export function fxFor(events: readonly BattleEvent[]): FxResult {
     if (e.type === 'DAMAGE_DEALT') {
       // Sarsıntı ve hitstop yalnız oyuncu kartlarının hasarına bağlı (Arena/Yorgunluk/Zehir hariç).
       if (typeof e.source === 'number') cardDamage += e.amount;
+      if (e.target === me) toMe += e.amount;
       pops.push({ target: e.target, amount: e.amount });
       if (e.amount > 0 && !hitTargets.includes(e.target)) hitTargets.push(e.target);
     } else if (e.type === 'CRIT_USED') {
@@ -57,5 +64,12 @@ export function fxFor(events: readonly BattleEvent[]): FxResult {
   let shakePx = 0;
   if (cardDamage >= FX.shakeBigAt) shakePx = FX.shakeBigPx;
   else if (cardDamage >= FX.shakeAt) shakePx = FX.shakePx;
-  return { hitstop: cardDamage >= FX.hitstopAt, shakePx, hitTargets, pops, callouts };
+  return {
+    hitstop: cardDamage >= FX.hitstopAt,
+    shakePx,
+    hitTargets,
+    pops,
+    callouts,
+    edgeFlash: toMe >= FX.edgeFlashAt,
+  };
 }
