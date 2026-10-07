@@ -86,6 +86,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Ekran geri bildirimi** (`docs/geri-bildirim/2026-10-07-ekran-revizeleri.md`): Örs → Anvil, "Yükselt" butonu, item sınıf kısıtı, kuşanılı eşya tezgaha konmaz, çanta oto düzen + filtre, karakter sol üstte (profil resmi, unvan), uçuşan noktacıklar kalkar.
 - **Arena Çöküşü kaldırıldı (Yasin: "olmamalı").** `arenaCollapse.enabled: false`, commit `127d693`. Ayrıntı "DEĞİŞTİRİLEN KARARLAR".
 - **Savaş ekranı kart etkileşimi (Yasin):** karta dokun = seç, seçili karta tekrar dokun = **geri çek**; oynamak yalnız "Oyna" butonuyla. Önceki "ikinci dokunuş oynar" hali "çok kötü" bulundu. Ekrandaki kaymalar düzeltilir.
+- **Çoklu kart seçimi (Yasin, 2026-10-07 gece):** ÖNCE: başka karta dokunmak seçimi o karta taşıyordu, tek kart seçilebiliyordu. SONRA: MP yettiği kadar kart seçilir (sığmayan kart soluk), seçili karta dokunmak onu geri çeker, "Oyna" seçilenleri seçim sırasıyla tek tek oynar (kartta sıra rozeti). NEDEN: MP fazlayken birden fazla kart seçilemiyordu, bug gibi hissettiriyordu. Commit `7e316a7`.
 - **Eşya tasarımı sıfırdan ele alınacak (Yasin, *OLDUKÇA ÖNEMLİ*).** Mevcut eşya tasarımı "tamamen kötü"; ayrı bir oturumda, sıfırdan düşünülüp yeniden tasarlanır (sistem + görünüm). Girdi: Tanoth raporu, ekran geri bildirimi, sınıf kısıtı, düelloda eşyanın rolü.
 
 ## ÖNCEKİ GÜN ALINAN KARARLAR (2026-10-06)
