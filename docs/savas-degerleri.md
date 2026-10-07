@@ -12,11 +12,12 @@
 | MP başlangıcı | `mp.start` | 1 | Kendi 1. turundaki maks MP |
 | MP artışı | `mp.perTurn` | 1 | Her kendi turunda maks MP artışı |
 | MP tavanı | `mp.max` | 6 | MP her tur başında dolar, devretmez |
-| İkinci oyuncu 1. tur MP bonusu | `mp.secondPlayerFirstTurnBonus` | 4 | Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir |
+| İkinci oyuncu 1. tur MP bonusu | `mp.secondPlayerFirstTurnBonus` | 0 | Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir. 2026-10-07: 0 (telafi artık ekstra kart) |
 | Başlangıç eli | `hand.starting` | 4 | İki oyuncu için |
 | El sınırı | `hand.limit` | 8 | Dolu ele gelen kart yanar (ıskartaya gider) |
 | Tur başı çekiş | `hand.drawPerTurn` | 1 |  |
 | İlk oyuncu ilk çekişi atlar | `hand.firstPlayerSkipsFirstDraw` | hayır | K3 |
+| İkinci oyuncu 1. tur ekstra çekişi | `hand.secondPlayerFirstTurnExtraDraw` | 1 | İkinci oyuncu kendi 1. turunda 1 + bu kadar kart çeker (yalnız o tur); el sınırı ve Yorgunluk aynen geçerli |
 | Açılış eli garantisi | `hand.openingGuarantee` | evet | F2-7: başlangıç eline Ağır kart gelmez; elde en az bir 1 MP'lik kart olur |
 | Deste boyutu | `deck.size` | 12 | Oyuncu tek kopyalık deste kurar (F2-4); havuz 15 karttır |
 | Maks Ağır kart | `deckBuilding.maxHeavy` | 2 | F2-5: destede en fazla. Motor yok sayar; deste kurma, hazır desteler ve sim doğrular |

@@ -33,7 +33,7 @@ function rows(c: BattleConfig): Row[] {
       'İkinci oyuncu 1. tur MP bonusu',
       'mp.secondPlayerFirstTurnBonus',
       c.mp.secondPlayerFirstTurnBonus,
-      'Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir',
+      'Yalnız ikinci oyuncunun kendi 1. turunda maks MP’ye eklenir. 2026-10-07: 0 (telafi artık ekstra kart)',
     ],
     ['Başlangıç eli', 'hand.starting', c.hand.starting, 'İki oyuncu için'],
     ['El sınırı', 'hand.limit', c.hand.limit, 'Dolu ele gelen kart yanar (ıskartaya gider)'],
@@ -43,6 +43,12 @@ function rows(c: BattleConfig): Row[] {
       'hand.firstPlayerSkipsFirstDraw',
       c.hand.firstPlayerSkipsFirstDraw,
       'K3',
+    ],
+    [
+      'İkinci oyuncu 1. tur ekstra çekişi',
+      'hand.secondPlayerFirstTurnExtraDraw',
+      c.hand.secondPlayerFirstTurnExtraDraw,
+      `İkinci oyuncu kendi 1. turunda ${c.hand.drawPerTurn} + bu kadar kart çeker (yalnız o tur); el sınırı ve Yorgunluk aynen geçerli`,
     ],
     [
       'Açılış eli garantisi',

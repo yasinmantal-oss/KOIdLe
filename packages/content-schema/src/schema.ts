@@ -17,6 +17,7 @@ export const BattleConfigSchema = z.strictObject({
     limit: positive(),
     drawPerTurn: int(),
     firstPlayerSkipsFirstDraw: z.boolean(),
+    secondPlayerFirstTurnExtraDraw: int(),
     openingGuarantee: z.boolean(),
   }),
   deck: z.strictObject({ size: positive(), reshuffles: int() }),

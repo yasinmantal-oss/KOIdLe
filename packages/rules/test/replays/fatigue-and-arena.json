@@ -17,6 +17,7 @@
         "limit": 8,
         "drawPerTurn": 1,
         "firstPlayerSkipsFirstDraw": true,
+        "secondPlayerFirstTurnExtraDraw": 0,
         "openingGuarantee": false
       },
       "deck": {
@@ -1058,6 +1059,7 @@
           "limit": 8,
           "drawPerTurn": 1,
           "firstPlayerSkipsFirstDraw": true,
+          "secondPlayerFirstTurnExtraDraw": 0,
           "openingGuarantee": false
         },
         "deck": {

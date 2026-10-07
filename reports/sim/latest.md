@@ -11,14 +11,14 @@
 
 | Ölçüt | Değer |
 |---|---|
-| Raunt ortalama / medyan / min / maks | 7.30 / 7 / 3 / 15 |
-| İlk oyuncunun kazanma oranı | %61.3 |
-| Berabere | %0.0 |
+| Raunt ortalama / medyan / min / maks | 7.34 / 7 / 5 / 20 |
+| İlk oyuncunun kazanma oranı | %43.3 |
+| Berabere | %0.1 |
 | Arena Çöküşü görülen maç | %0.0 |
-| Yorgunluk görülen maç | %0.0 |
+| Yorgunluk görülen maç | %0.1 |
 | İkisi de görülen maç (bothArenaAndFatigueReachedRate) | %0.0 |
-| Karıştırma görülen maç | %18.3 |
-| Tur başına kullanılmayan MP (ortalama) | 1.10 |
+| Karıştırma görülen maç | %27.2 |
+| Tur başına kullanılmayan MP (ortalama) | 0.82 |
 
 ## Açılış (ilk 2 turda oynanabilir kart yok)
 
@@ -26,10 +26,10 @@ Hedef ~0 (spec §9). Oran: oyuncu-maçların kaçında ilk 2 turda bir kez bile 
 
 | Job | Ölü açılış oranı |
 |---|---|
-| Tümü | %0.5 |
-| Warrior | %0.5 |
+| Tümü | %0.0 |
+| Warrior | %0.0 |
 | Rogue · Asas | %0.0 |
-| Rogue · Okçu | %1.0 |
+| Rogue · Okçu | %0.0 |
 
 ## Job eşleşmeleri (satırın sütuna karşı kazanma oranı, iki koltuk birleşik)
 
@@ -37,42 +37,42 @@ Gate 2 aralığı %40–60; dışındakiler ⚠.
 
 | | Warrior | Rogue · Asas | Rogue · Okçu |
 |---|---|---|---|
-| Warrior | — | %50.5 | %51.0 |
-| Rogue · Asas | %49.5 | — | %41.0 |
-| Rogue · Okçu | %49.0 | %59.0 | — |
+| Warrior | — | %46.0 | %58.0 |
+| Rogue · Asas | %54.0 | — | %44.0 |
+| Rogue · Okçu | %42.0 | %56.0 | — |
 
 ## Kombo tetiklenmeleri (oyuncu-maç başına ortalama)
 
 | Job | Kritik kullanımı | Kaçınma tetiklenmesi | Zehir hasarı |
 |---|---|---|---|
 | Warrior | 0.00 | 0.00 | 0.00 |
-| Rogue · Asas | 0.85 | 1.80 | 0.00 |
-| Rogue · Okçu | 0.00 | 0.54 | 7.65 |
+| Rogue · Asas | 0.93 | 1.92 | 0.00 |
+| Rogue · Okçu | 0.00 | 0.57 | 8.19 |
 
 ## Bitiş nedeni (endReason)
 
 | Neden | Maç | Oran |
 |---|---|---|
-| normalDamage | 900 | %100.0 |
+| normalDamage | 899 | %99.9 |
 | fatigue | 0 | %0.0 |
 | arenaCollapse | 0 | %0.0 |
-| roundCap | 0 | %0.0 |
+| roundCap | 1 | %0.1 |
 
 ## Profil eşleşmeleri (satırın sütuna karşı kazanma oranı, iki koltuk birleşik)
 
 | | aggressive | balanced | defensive |
 |---|---|---|---|
-| aggressive | — | %50.0 | %53.3 |
-| balanced | %50.0 | — | %50.0 |
-| defensive | %46.7 | %50.0 | — |
+| aggressive | — | %40.0 | %38.3 |
+| balanced | %60.0 | — | %48.3 |
+| defensive | %61.7 | %51.7 | — |
 
 ## Kullanılmayan MP (tur başına, profile göre)
 
 | Profil | MP |
 |---|---|
-| aggressive | 1.20 |
-| balanced | 1.17 |
-| defensive | 1.27 |
+| aggressive | 0.98 |
+| balanced | 1.02 |
+| defensive | 1.13 |
 
 ## Kartlar (yalnız en az bir hazır destede olanlar)
 
@@ -80,32 +80,32 @@ Oynanma oranı: kartın destede olduğu oyuncu-maçların kaçında en az bir ke
 
 | Kart | MP | Destede (oyuncu-maç) | Oynanma oranı | Maç başı oynanma | Oynadığında kazanma | İşaret |
 |---|---|---|---|---|---|---|
-| Quick Strike (`quick-strike`) | 1 | 1200 | %87.3 | 0.91 | %48.8 |  |
-| Absoluteness (`absoluteness`) | 1 | 1800 | %84.0 | 0.86 | %48.1 |  |
-| Intimidate (`intimidate`) | 1 | 1200 | %77.9 | 0.79 | %50.4 |  |
-| Power Strike (`power-strike`) | 3 | 1200 | %91.4 | 0.95 | %52.6 |  |
-| Slash (`slash`) | 1 | 600 | %88.7 | 0.90 | %50.2 |  |
-| Gain (`gain`) | 1 | 600 | %83.5 | 0.85 | %50.9 |  |
-| Leg Cutting (`leg-cutting`) | 2 | 600 | %81.8 | 0.83 | %52.1 |  |
-| Berserker (`berserker`) | 2 | 600 | %58.5 | 0.59 | %50.4 |  |
-| Iron Skin (`iron-skin`) | 2 | 600 | %74.8 | 0.76 | %50.1 |  |
-| Cleave (`cleave`) | 3 | 600 | %86.0 | 0.87 | %53.9 |  |
-| Howling Sword (`howling-sword`) | 4 | 600 | %85.0 | 0.86 | %55.1 |  |
-| ★ Sword Dancing (`sword-dancing`) | 4 | 600 | %74.7 | 0.76 | %56.5 |  |
-| ★ Hell Blade (`hell-blade`) | 5 | 600 | %81.0 | 0.82 | %57.2 |  |
-| Minor Healing (`minor-healing`) | 1 | 1200 | %88.9 | 0.91 | %49.7 |  |
-| Evade (`evade`) | 1 | 1200 | %84.7 | 0.88 | %48.5 |  |
-| Stab (`stab`) | 1 | 600 | %95.2 | 1.01 | %46.4 |  |
-| Stealth (`stealth`) | 1 | 600 | %86.5 | 0.92 | %45.5 |  |
-| Thrust (`thrust`) | 2 | 600 | %95.7 | 1.02 | %47.4 |  |
-| Blinding (`blinding`) | 2 | 600 | %89.8 | 0.96 | %48.1 |  |
-| Spike (`spike`) | 3 | 600 | %94.2 | 1.00 | %48.7 |  |
-| ★ Critical Point (`critical-point`) | 2 | 600 | %91.8 | 0.97 | %49.9 |  |
-| ★ Beast Hiding (`beast-hiding`) | 4 | 600 | %83.5 | 0.89 | %51.5 |  |
-| Poison Arrow (`poison-arrow`) | 1 | 600 | %91.3 | 0.93 | %53.1 |  |
-| Perfect Arrow (`perfect-arrow`) | 1 | 600 | %77.3 | 0.79 | %54.7 |  |
-| Multiple Shot (`multiple-shot`) | 2 | 600 | %87.8 | 0.89 | %56.5 |  |
-| Viper (`viper`) | 2 | 600 | %87.0 | 0.88 | %54.8 |  |
-| Blinding Strafe (`blinding-strafe`) | 2 | 600 | %78.3 | 0.79 | %52.6 |  |
-| ★ Arrow Shower (`arrow-shower`) | 4 | 600 | %77.3 | 0.78 | %61.0 |  |
-| ★ Power Shot (`power-shot`) | 4 | 600 | %78.5 | 0.79 | %57.7 |  |
+| Quick Strike (`quick-strike`) | 1 | 1200 | %90.3 | 0.94 | %50.7 |  |
+| Absoluteness (`absoluteness`) | 1 | 1800 | %84.8 | 0.89 | %48.6 |  |
+| Intimidate (`intimidate`) | 1 | 1200 | %76.9 | 0.79 | %50.1 |  |
+| Power Strike (`power-strike`) | 3 | 1200 | %94.5 | 1.00 | %50.3 |  |
+| Slash (`slash`) | 1 | 600 | %91.5 | 0.93 | %52.1 |  |
+| Gain (`gain`) | 1 | 600 | %86.0 | 0.87 | %53.3 |  |
+| Leg Cutting (`leg-cutting`) | 2 | 600 | %78.0 | 0.79 | %54.1 |  |
+| Berserker (`berserker`) | 2 | 600 | %42.5 | 0.43 | %52.2 |  |
+| Iron Skin (`iron-skin`) | 2 | 600 | %66.8 | 0.69 | %51.1 |  |
+| Cleave (`cleave`) | 3 | 600 | %88.3 | 0.89 | %53.0 |  |
+| Howling Sword (`howling-sword`) | 4 | 600 | %81.8 | 0.83 | %56.6 |  |
+| ★ Sword Dancing (`sword-dancing`) | 4 | 600 | %82.5 | 0.84 | %54.1 |  |
+| ★ Hell Blade (`hell-blade`) | 5 | 600 | %80.0 | 0.81 | %60.4 |  |
+| Minor Healing (`minor-healing`) | 1 | 1200 | %91.7 | 0.97 | %48.5 |  |
+| Evade (`evade`) | 1 | 1200 | %82.9 | 0.88 | %48.7 |  |
+| Stab (`stab`) | 1 | 600 | %94.5 | 1.04 | %49.0 |  |
+| Stealth (`stealth`) | 1 | 600 | %84.2 | 0.92 | %48.3 |  |
+| Thrust (`thrust`) | 2 | 600 | %97.7 | 1.06 | %49.8 |  |
+| Blinding (`blinding`) | 2 | 600 | %93.0 | 1.01 | %50.7 |  |
+| Spike (`spike`) | 3 | 600 | %97.8 | 1.09 | %49.6 |  |
+| ★ Critical Point (`critical-point`) | 2 | 600 | %95.2 | 1.05 | %50.1 |  |
+| ★ Beast Hiding (`beast-hiding`) | 4 | 600 | %83.3 | 0.93 | %54.0 |  |
+| Poison Arrow (`poison-arrow`) | 1 | 600 | %92.5 | 0.94 | %49.2 |  |
+| Perfect Arrow (`perfect-arrow`) | 1 | 600 | %78.8 | 0.80 | %49.0 |  |
+| Multiple Shot (`multiple-shot`) | 2 | 600 | %87.5 | 0.88 | %52.2 |  |
+| Viper (`viper`) | 2 | 600 | %90.7 | 0.92 | %51.3 |  |
+| Blinding Strafe (`blinding-strafe`) | 2 | 600 | %79.2 | 0.80 | %49.5 |  |
+| ★ Arrow Shower (`arrow-shower`) | 4 | 600 | %75.7 | 0.78 | %54.8 |  |
+| ★ Power Shot (`power-shot`) | 4 | 600 | %80.8 | 0.82 | %55.3 |  |

@@ -6,13 +6,14 @@
     "start": 1,
     "perTurn": 1,
     "max": 6,
-    "secondPlayerFirstTurnBonus": 4
+    "secondPlayerFirstTurnBonus": 0
   },
   "hand": {
     "starting": 4,
     "limit": 8,
     "drawPerTurn": 1,
     "firstPlayerSkipsFirstDraw": false,
+    "secondPlayerFirstTurnExtraDraw": 1,
     "openingGuarantee": true
   },
   "deck": {

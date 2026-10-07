@@ -56,6 +56,8 @@ export interface BattleConfig {
     limit: number;
     drawPerTurn: number;
     firstPlayerSkipsFirstDraw: boolean;
+    /** Denge: ikinci oyuncu kendi 1. turunda `drawPerTurn` üstüne bu kadar kart çeker (yalnız o tur). */
+    secondPlayerFirstTurnExtraDraw: number;
     openingGuarantee: boolean;
   };
   deck: { size: number; reshuffles: number };

@@ -10,6 +10,7 @@ export const testConfig: BattleConfig = {
     limit: 8,
     drawPerTurn: 1,
     firstPlayerSkipsFirstDraw: true,
+    secondPlayerFirstTurnExtraDraw: 0,
     openingGuarantee: false,
   },
   deck: { size: 12, reshuffles: 1 },

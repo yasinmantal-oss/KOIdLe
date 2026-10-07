@@ -2903,6 +2903,19 @@ button.tile:hover {
   color: var(--gold-hi);
   border-color: var(--gold);
 }
+/* İkinci oynayan telafisi: yalnız oyuncu ikinci oynarken ve ilk turunda görünür (Faz 2b). */
+.compchip {
+  position: absolute;
+  left: 0;
+  top: calc(50% + 20px);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 3px 7px;
+}
 .played-count {
   position: relative;
   min-height: 20px;

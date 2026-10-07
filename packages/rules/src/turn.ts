@@ -55,7 +55,12 @@ export function startTurn(state: BattleState, p: PlayerIndex, events: BattleEven
 
   const skipDraw = hand.firstPlayerSkipsFirstDraw && p === state.firstPlayer && pl.turnsTaken === 1;
   if (skipDraw) return;
-  for (let i = 0; i < hand.drawPerTurn; i++) {
+  // Denge: ikinci oyuncu kendi 1. turunda ekstra kart çeker (yalnız o tur). El sınırı,
+  // karıştırma ve Yorgunluk `drawCard` üzerinden aynen geçerlidir.
+  const extra =
+    p !== state.firstPlayer && pl.turnsTaken === 1 ? hand.secondPlayerFirstTurnExtraDraw : 0;
+  const count = hand.drawPerTurn + extra;
+  for (let i = 0; i < count; i++) {
     drawCard(state, p, events);
     if (state.result) return;
   }

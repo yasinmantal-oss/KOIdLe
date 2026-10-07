@@ -78,6 +78,13 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
   };
 
   const parity = fx && fx.seq % 2 === 1 ? 1 : 0;
+  // İkinci oynayan telafisi (Faz 2b): ekran metni config'den türetilir, kural motorun işi.
+  const comp =
+    state.config.hand.secondPlayerFirstTurnExtraDraw > 0 &&
+    state.firstPlayer !== HUMAN &&
+    state.players[HUMAN].turnsTaken === 1
+      ? { extra: state.config.hand.secondPlayerFirstTurnExtraDraw }
+      : null;
   const hitFor = (p: PlayerIndex): 0 | 1 | null =>
     fx?.result.hitTargets.includes(p) ? parity : null;
   const popsFor = (p: PlayerIndex): PopView[] =>
@@ -150,6 +157,11 @@ export function BattleScreen({ content, setup, deck, onNew, gear, raid, onExit }
         <span className={`turnflag${myTurn ? ' turnflag--me' : ''}`}>
           {state.result ? 'Bitti' : myTurn ? 'Senin sıran' : 'Rakip düşünüyor…'}
         </span>
+        {comp && (
+          <span className="compchip" title="İkinci oynayanın ilk tur telafisi">
+            İkinci oynayan: +{comp.extra} kart
+          </span>
+        )}
         <span className={`played-count${myTurn ? '' : ' played-count--off'}`}>
           Bu tur oynanan kart: <strong>{state.players[HUMAN].cardsPlayedThisTurn}</strong>
         </span>

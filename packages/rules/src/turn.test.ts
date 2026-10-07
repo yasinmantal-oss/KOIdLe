@@ -19,6 +19,62 @@ function endTurns(state: BattleState, n: number) {
 
 const withConfig = (patch: Partial<BattleConfig>) => ({ ...testConfig, ...patch });
 
+describe('second player first-turn compensation', () => {
+  const withHand = (patch: Partial<BattleConfig['hand']>) =>
+    withConfig({ hand: { ...testConfig.hand, ...patch } });
+
+  it('draws drawPerTurn + extra on the second player first turn', () => {
+    const { state } = newBattle(1, withHand({ secondPlayerFirstTurnExtraDraw: 1 }));
+    const first = state.active;
+    const second = first === 0 ? 1 : 0;
+    expect(state.players[second].hand).toHaveLength(4); // açılış eli
+    const r = endTurn(state);
+    expect(r.state.active).toBe(second);
+    // 4 (açılış) + 1 (tur başı) + 1 (telafi) = 6
+    expect(r.state.players[second].hand).toHaveLength(6);
+    expect(r.state.players[second].turnsTaken).toBe(1);
+    expect(
+      r.events.filter((e) => e.type === 'CARD_DRAWN' && e.player === second),
+      'bu turda tam olarak drawPerTurn + extra kart çekilmeli',
+    ).toHaveLength(testConfig.hand.drawPerTurn + 1);
+  });
+
+  it('does not give the extra card on later turns or to the first player', () => {
+    const { state } = newBattle(1, withHand({ secondPlayerFirstTurnExtraDraw: 2 }));
+    const first = state.active;
+    const second = first === 0 ? 1 : 0;
+    const drewFor = (evs: BattleEvent[], p: number) =>
+      evs.filter((e) => e.type === 'CARD_DRAWN' && e.player === p).length;
+
+    const t1 = endTurn(state); // ikinci oyuncunun 1. turu
+    expect(drewFor(t1.events, second)).toBe(testConfig.hand.drawPerTurn + 2);
+    expect(drewFor(t1.events, first)).toBe(0);
+
+    const t2 = endTurn(t1.state); // ilk oyuncunun 2. turu
+    // İlk oyuncu ilk turunda çekmez (K3), ama kendi 2. turunda yalnız drawPerTurn çeker.
+    expect(drewFor(t2.events, first)).toBe(testConfig.hand.drawPerTurn);
+
+    const t3 = endTurn(t2.state); // ikinci oyuncunun 2. turu
+    expect(drewFor(t3.events, second)).toBe(testConfig.hand.drawPerTurn);
+  });
+
+  it('keeps the MP bonus available through config but does not touch MP by itself', () => {
+    const { state } = newBattle(1, withHand({ secondPlayerFirstTurnExtraDraw: 1 }));
+    const second = state.active === 0 ? 1 : 0;
+    const s = endTurn(state).state;
+    expect(s.players[second].maxMp).toBe(testConfig.mp.start); // ekstra kart MP vermez
+  });
+
+  it('burns the extra card when the hand is full (hand.limit)', () => {
+    const cfg = withHand({ secondPlayerFirstTurnExtraDraw: 1, limit: 4 });
+    const { state } = newBattle(1, cfg);
+    const second = state.active === 0 ? 1 : 0;
+    const r = endTurn(state);
+    expect(r.state.players[second].hand).toHaveLength(4);
+    expect(r.events.filter((e) => e.type === 'CARD_BURNED' && e.player === second)).toHaveLength(2);
+  });
+});
+
 describe('second player first-turn MP bonus', () => {
   it('gives +1 MP on the second player first turn only', () => {
     const cfg = withConfig({

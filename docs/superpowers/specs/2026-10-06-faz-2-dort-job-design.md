@@ -331,8 +331,9 @@ Yalnız sayı değişti (mekanik, ad ve AI aynı). Başlangıç: Okçu, Warrior'
 - **Evade** (Rogue ortak, `evade`, Skill, 1 MP): "Kaçınma kazan." Okçu ve Asas hazır destelerinde Light Feet'in yerine girdi.
 
 **Config:**
-- `mp.secondPlayerFirstTurnBonus`: ÖNCE yok → SONRA 4. İkinci oyuncunun kendi 1. turunda maks MP'ye eklenir (yalnız o tur).
-- `hand.firstPlayerSkipsFirstDraw`: ÖNCE true → SONRA false. Sim'de K3 açıkken MP bonusu ilk oyuncu oranını oynatmadı (%33–38); kapatınca %57–59. Ayrıntı: devam notu, K3.
+- `mp.secondPlayerFirstTurnBonus`: ÖNCE yok → SONRA 4. İkinci oyuncunun kendi 1. turunda maks MP'ye eklenir (yalnız o tur). **2026-10-07 gece (Faz 2b Görev 1): 0'a çekildi**, alan config için duruyor.
+- `hand.firstPlayerSkipsFirstDraw`: ÖNCE true → SONRA false. Sim'de K3 açıkken MP bonusu ilk oyuncu oranını oynatmadı (%33–38); kapatınca %57–59. Ayrıntı: devam notu, K3. **Faz 2b'de kapalı kaldı.**
+- `hand.secondPlayerFirstTurnExtraDraw`: **YENİ (2026-10-07, Faz 2b Görev 1)** → 1. İkinci oyuncu kendi 1. turunda `hand.drawPerTurn` üstüne bu kadar kart çeker (yalnız o tur); el sınırı, karıştırma ve Yorgunluk `drawCard` üzerinden aynen geçerli. Sim: ilk oyuncu %61,3 → %43,3 (4500 maçta %42,8), ort. raunt 7,34. Hedef %45–55 hedefi bu iş kapsamında tutmadı; dört kombinasyon içinde en yakın ve en sade olan seçildi, kart değerlerine dokunulmadı. Ayrıntı: devam notu "DEĞİŞTİRİLEN KARARLAR" + `reports/sim/latest.md`.
 
 **Kart sayıları (ÖNCE → SONRA):**
 - Multiple Shot: 3 MP → 2 MP (Okçu kısmi geri alma)

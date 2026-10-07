@@ -1,7 +1,7 @@
 # KOIdLe — Devam Notu (oturum devri)
 
 > **2026-10-07 gece: uygulayıcı DeepSeek Harness'a devredildi. Önce `docs/deepseek-devir.md`'yi oku.** Yedek etiketi: `yedek/2026-10-07-claude-devir`.
-> Son güncelleme: 2026-10-07 akşam (Faz 2a + düello revizesi yayında (sürüm 6+), Tanoth kararları, eşya tasarımı sıfırdan ele alınacak) · Bir sonraki oturum buradan başlar.
+> Son güncelleme: 2026-10-07 gece (Faz 2b Görev 1: ikinci oyuncu telafisi ekstra karta çevrildi; uygulayıcı DeepSeek) · Bir sonraki oturum buradan başlar.
 > **Sayfalar:** savaş/maç formu https://claude.ai/artifact/AtdFa2bS9SCTQgmCpCiBbT · tasarım vitrini https://claude.ai/artifact/K1g4KKYhjHVmpaeGAyjCAP
 > **Faz 2a planı:** `docs/superpowers/plans/2026-10-06-faz-2a-warrior-rogue.md` (Görev 1–11 uygulandı; kart içeriği planın değil spec "Revizyon 1–2"nin dediği gibidir).
 > **Geçerli tasarım belgesi:** `docs/superpowers/specs/2026-10-05-koidle-prototype-v0.2.md` (v0.1 tarihçe olarak duruyor).
@@ -18,7 +18,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Faz 2a özeti (2026-10-06/07):**
   - Kod: plan Görev 1–10 (statüler, açılış eli, 3 arketip, deste kurma ekranı, AI tur planı (beam 4×5), sim job matrisi, CSS coşkusu, Faz 2 maç formu). Kayıtlar sayfanın `faz2` deposunda.
   - Kartlar iki kez revize edildi: **Revizyon 1** (Yasin reddetti: mekanik KO skill etkisine uymalı, adlar İngilizce) ve **Revizyon 2** (yön kontrolü düzeltmeleri). Ayrıntı spec ekinde.
-  - Son durum: 32 kart, her havuz 15, deste 12. Sim: job eşleşmeleri %42–58, ort. 7,1 raunt, Arena bitişi %15,6, ilk oyuncu %58,6.
+  - Son durum: 32 kart, her havuz 15, deste 12. Sim: job eşleşmeleri %42–58, ort. 7,1 raunt, Arena bitişi %15,6, ilk oyuncu %58,6. **(Bu ölçüm Faz 2a'nın sonudur; 2026-10-07 gecesi ikinci oyuncu telafisi ekstra karta çevrildi → aşağıya ve "TEST / SİMÜLASYON"a bak.)**
   - Sayfa sürüm 5 yayında (aynı link). Son commit `4335f4d` + kapanış docs.
 - **Gate:** Gate 1, "Savaş tek başına eğlenceli mi?" (`docs/gate-1.md`). Durum: **PASS** (Yasin, 2026-10-06, doğrulama sonrası). Tarihçe: ilk karar FAIL / ITERATE (11 maç, `reports/gate-1/2026-10-06-gate-1-final-raporu.md`) → Combat v0.2 → Gate 1B CONDITIONAL PASS → doğrulama → PASS. Sıradaki gate: **Gate 2** (Faz 2b sonu, ölçütler spec eki §9).
 - **Gate 1B:** test tamam (8 maç, config `9473c565`). Eğlence medyanı 5 (Gate 1: 3), karar hatırlama 3/8 (0/11), kazanma 4/8 (1/11).
@@ -47,7 +47,7 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Combat v0.2 uygulandı** (commit `bee48ef`), test + sim + sayfa güncel.
 - **Yön kontrolü sonrası düzeltme paketi (Yasin onayı, 2026-10-07):** Sprint ve Light Feet kaldırıldı (`gainMp` efekti ve MP_GAINED olayı silindi), Evade eklendi, Okçu kısmen geri alındı, ikinci oyuncu MP bonusu, kart hasarları artırıldı. Ayrıntı: spec "Revizyon 2", rapor `reports/faz-2a/2026-10-07-yon-kontrolu.md`.
 - **Kart yeniden tasarımı (Yasin, 2026-10-07):** ilk Faz 2a kartları reddedildi. Lanet/Gizli/Zincir kaldırıldı; Güç tek seferlik, Kritik ve Kaçınma eklendi, Zehir azalır; kartlar KO skill etkisine göre, adlar İngilizce, metin Türkçe + kart altı sözlük. Ayrıntı: spec eki "Revizyon 1". Sim yeniden üretildi (`reports/sim/latest.md`).
-- **Tamamlanmayan:** ikinci oyuncu telafisinin ekstra karta çevrilmesi; Faz 2b; Gate 2.
+- **Tamamlanmayan:** Faz 2b; Gate 2. (İkinci oyuncu telafisinin ekstra karta çevrilmesi 2026-10-07 gecesi tamamlandı — DeepSeek, Faz 2b Görev 1.)
 
 ## KİLİTLİ KARARLAR (özet; ayrıntı spec ve planda)
 | Konu | Karar |
@@ -114,6 +114,8 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - **Rakip intent (Yasin):** PvP/CZ'de rakibin eli ve sıradaki kartı **gizlidir**; mockup'taki PvP intent göstergesi güncel karar değildir. Intent sistemi ileride yalnız PvE/Boss karşılaşmalarında kullanılabilir. Neden: PvP'de gizli bilgi kararın parçası; AI da gizli bilgiyi görmüyor.
 
 ## DEĞİŞTİRİLEN KARARLAR
+- **İkinci oyuncu telafisi: MP bonusu → ekstra kart (Yasin kararı 2026-10-07; uygulandı 2026-10-07 gece, Faz 2b Görev 1, DeepSeek).** ÖNCE: ikinci oyuncu kendi 1. turunda `mp.secondPlayerFirstTurnBonus: 4` MP alıyordu. SONRA: alan duruyor ama **0**; yerine ikinci oyuncu kendi 1. turunda `hand.secondPlayerFirstTurnExtraDraw` = **1** ekstra kart çeker (`drawPerTurn` üstüne, yalnız o tur; el sınırı, karıştırma ve Yorgunluk `drawCard` üzerinden aynen geçerli). K3 kapalı kalıyor (`firstPlayerSkipsFirstDraw: false`). NEDEN: +4 MP "oyuncu gözüyle garip"ti, ekstra kart anlaşılır. **Ölçüm (900 job maçı):** ilk oyuncu %61,3 → **%43,3**; ort. raunt 7,30 → 7,34; job hücreleri %42–58. 4500 job maçıyla doğrulama: **%42,8**, raunt 7,32, hücreler %41,9–58,1. **Hedef %45–55 yine tutmadı:** dört kombinasyon içinde hedefe en yakın ve en sade olan bu (`extra=2` → %28,4; K3 açık → %20,9 / %11,9); sıfır telafi %66,1. Not: bir kartlık fark çok büyük bir kol (~±22 puan); fazın kalanı (Mage + Priest) gelince yeniden ölçülür.
+- **`mp.secondPlayerFirstTurnBonus` alanı silinmedi (teknik karar, 2026-10-07).** ÖNCE: MP bonusu tek telafi yolu. SONRA: alan şemada ve değer tablosunda duruyor, değeri 0; eski davranış config ile hâlâ seçilebilir. NEDEN: projede `shield.persistence` ve `arenaCollapse.enabled` ile aynı gelenek — kapatılan mekaniğin kod yolu config için durur.
 - **Arena Çöküşü kaldırıldı (Yasin, 2026-10-07, düello geri bildirimi).** ÖNCE: 8. rauntan itibaren iki tarafa artan hasar (Arena bitişi %15,6). SONRA: `arenaCollapse.enabled: false` (kod yolu config için duruyor); maç Yorgunluk ve raunt tavanıyla biter. NEDEN: "Arena çökmesi diye bir şey olmamalı". Sim (1170 maç): ort. raunt 7,30, berabere %0, ilk oyuncu %61,3 (önce %58,6), job eşleşmeleri %41–59; Yorgunluk ve raunt tavanı bitişi %0. Ayar gerekmedi (ort. raunt 6,5–8,5 içinde); ilk oyuncu payı biraz yükseldi, açık konu.
 - **KO isimleri yasağı (kapsam netleşti).** ÖNCE: KO'ya ait isimler kullanılmaz (liste skill içermiyordu, kapsam belirsizdi). SONRA: skill isimleri serbest; ulus/şehir/item/boss/NPC/para yasağı aynen. NEDEN: skill hissi (Yasin).
 - **Warrior kart havuzu (Faz 2).** ÖNCE: Faz 1'in 12 kartı (Yarma, Yıkım, Kalkan Darbesi…). SONRA: KO skill'li 10 kart + 6 ortak; Yıkım ve Kalkan Darbesi havuzdan çıkıyor, bitirici rolü kurulum isteyen Hell Blade'de. NEDEN: "Yıkım çok güçlü", "Kalkan Darbesi iki iş, saçma", "kalkan kalkan deck" bulguları.
@@ -131,8 +133,21 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - (Spec v0.1 → v0.2 farkları spec başlığında listeli.)
 
 ## TEST / SİMÜLASYON
-- **Testler (2026-10-07 gece, doğrulandı):** 187 test yeşil (rules 89, content-schema 29, ai 12, client 53, sim 4), typecheck temiz.
-- Eski: son doğrulanmış durum 81 test yeşil (Faz 1 kapanışı, 2026-10-06). Bu oturumda kod değişmedi, testler yeniden çalıştırılmadı.
+- **Testler (2026-10-07 gece, DeepSeek doğrulaması):** **191 test yeşil** (rules 93, content-schema 29, ai 12, client 53, sim 4), `-r typecheck` temiz, `biome check apps packages content tools` temiz (128 dosya).
+- **Faz 2b Görev 1 sim ölçümü (DeepSeek, 2026-10-07 gece).** Ölçüm aracı: 4 kombinasyon, 900 job + 270 profil maçı, balanced vs balanced, hazır desteler, aynı seed'ler (job 1–100, profil 1–10).
+  | Kombinasyon | İlk oyuncu | Ort. raunt | Job hücreleri |
+  |---|---|---|---|
+  | ÖNCE (bonus 4 MP, ekstra kart yok) | %61,3 | 7,30 | %41–59 |
+  | bonus 0, ekstra yok | %66,1 | 7,63 | %38,5–61,5 |
+  | **bonus 0, ekstra 1 (SEÇİLDİ)** | **%43,3** | 7,34 | %42–58 |
+  | bonus 0, ekstra 2 | %28,4 | 6,83 | %40,5–59,5 |
+  | bonus 0, ekstra 1 + K3 açık | %20,9 | 7,27 | %43–57 |
+  | bonus 0, ekstra 2 + K3 açık | %11,9 | 6,68 | %45–55 |
+  - Seçilen kombinasyon 4500 job + 1350 profil maçıyla doğrulandı: ilk oyuncu **%42,8**, raunt 7,32, hücreler %41,9–58,1, tur başına kullanılmayan MP 0,81.
+  - **Yorum:** 1 kart eklemek ilk oyuncu oranını ~22 puan düşürüyor (4 MP bonusu ~5 puan). Hedefin 1–2 puan altında kalıyoruz; bu iş kapsamında kart değerlerine dokunulmadı (devir dokümanı §7/4).
+  - **Güncel rapor** (`corepack pnpm --filter @koidle/sim sim`, seçilen config): ilk oyuncu %43,3, raunt 7,34 (medyan 7, 5–20), berabere %0,1, Arena %0 (kapalı), Yorgunluk %0,1, karıştırma %27,2, kullanılmayan MP 0,82; job hücreleri %42–58 (hepsi %40–60 içinde); en düşük kart oynanma oranı Berserker %42,5 (eşik %30).
+- Eski: son doğrulanmış durum 187 test yeşil (rules 89, content-schema 29, ai 12, client 53, sim 4).
+- Daha eski: 81 test yeşil (Faz 1 kapanışı, 2026-10-06).
 - Sim (`reports/sim/latest.md`, 900 maç):
   - raunt ort. 7,72 (medyan 8, 6–11)
   - ilk oyuncu %47,7 · berabere %0
@@ -199,15 +214,17 @@ KOIdLe, karakterini riskli farm slotlarına bıraktığın, item düşürüp yü
 - Gate 1 değerlendirmesinden önce oyun değeri değiştirmek.
 
 ## SIRADAKİ ADIM
-**DeepSeek'e verilen ilk iş (2026-10-07 gece): Faz 2b Görev 1, ikinci oyuncu = ekstra kart.** Ayrıntı ve kabul ölçütü: `docs/deepseek-devir.md` §7. Eşya tasarımı (A) Yasin'le ayrı tasarım oturumu olarak bekliyor.
+**Faz 2b Görev 1 tamamlandı (2026-10-07 gece, DeepSeek):** ikinci oyuncu telafisi ekstra karta çevrildi; seçilen config `hand.secondPlayerFirstTurnExtraDraw: 1`, `mp.secondPlayerFirstTurnBonus: 0`, K3 kapalı. Ölçüm ve yorum: "TEST / SİMÜLASYON" + "DEĞİŞTİRİLEN KARARLAR". **İlk oyuncu %43,3 (4500 maçta %42,8)** — hedef %45–55 hâlâ tutmadı; Yasin'in kararı beklenir (kabul / kartla çözüm / yeni telafi).
+
+**Sıradaki iş: Faz 2b Görev 2 — Mage + Priest kart havuzları** (Yasin onayıyla). Kart listesi kodlamadan önce Yasin'e tablo olarak gösterilir (ad, MP, etki, KO karşılığı); kart tasarımı Yasin'in kararı. Sonra AI/sim desteği, 5×5 job matrisi (%40–60) ve Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
 
 ~~Yeni oturumun ilk işi: hangisiyle başlanacağını Yasin seçer.~~
-- **A. Eşya tasarımı sıfırdan (Yasin: OLDUKÇA ÖNEMLİ).** `superpowers:brainstorming` ile Yasin'le birlikte: item slotları, sınıf kısıtı, nadirlik, upgrade (Anvil), düelloda/CZ'de eşyanın etkisi (tavanlı stat + kart efekti), çanta/filtre, görünüm. Çıktı: kısa spec eki. Kod yok, onay sonrası.
+- **A. Eşya tasarımı sıfırdan (Yasin: OLDUKÇA ÖNEMLİ).** Yasin'le birlikte ayrı bir tasarım oturumu: item slotları, sınıf kısıtı, nadirlik, upgrade (Anvil), düelloda/CZ'de eşyanın etkisi (tavanlı stat + kart efekti), çanta/filtre, görünüm. Çıktı: kısa spec eki. Kod yok, onay sonrası.
 - **B. Faz 2b** (aşağıda).
 
-**Faz 2b (Claude), sırayla:**
-1. **İkinci oyuncu telafisi = ekstra kart (Yasin, 2026-10-07).** `mp.secondPlayerFirstTurnBonus: 4` kaldırılır; ikinci oyuncu ilk turunda +1 kart çeker. Sim ile ilk oyuncu %45–55 hedeflenir (K3 kapalı kalır mı, sim karar verir).
-2. **Mage + Priest** kartları, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15.
+**Faz 2b (uygulayıcı: DeepSeek), sırayla:**
+1. ~~**İkinci oyuncu telafisi = ekstra kart**~~ **TAMAMLANDI (2026-10-07 gece).** `mp.secondPlayerFirstTurnBonus: 0`; ikinci oyuncu ilk turunda +1 kart (`hand.secondPlayerFirstTurnExtraDraw`). Sim: ilk oyuncu %43,3 (hedef %45–55; 4 kombinasyon içinde en yakın/en sade). K3 kapalı kaldı.
+2. **Mage + Priest** kartları, Revizyon 1 kurallarıyla: mekanik KO skill etkisine karşılık gelir (`docs/research/06-ko-skilleri.md`), ad İngilizce, metin Türkçe, kart altı sözlük. Mage: Donma hazırlığı → ateş bitirici. Priest: iyileşme + Zayıflık. Her havuz 15. **Kodlamadan önce kart listesi Yasin'e tablo olarak sunulur.**
 3. Sim (5×5 job matrisi, %40–60), sayfa yayını, Yasin her job ile en az 2 maç → **Gate 2** (ölçütler spec eki §9).
 - **Çalışma şekli (Yasin):** hızlı ilerle; ağır işleri ajanlara ver; ara onay için durma, sonucu getir. Uzun plan dokümanı yazma.
 - Açık soru (Yasin): "Kartları güce göre sınıflandırıp elde etmeyi zorlaştırmak" fikri, kilitli "tüm job kartları baştan açık" kararıyla çelişiyor. İstenirse spec değişikliği olarak ayrıca karar verilir.
